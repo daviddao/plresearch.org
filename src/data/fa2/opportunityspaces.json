@@ -10,6 +10,14 @@
       "tagline": "Open, verifiable, privacy-preserving rails for nation-states",
       "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80",
       "description": "A new category of infrastructure is emerging. Nation-states, multilateral institutions, and regional blocs are recognizing that their core public systems need to be rebuilt on open, verifiable, privacy-preserving foundations. This is the promise of sovereign-grade Digital Public Infrastructure (DPI).",
+      "inflectionPoint": "A nation-state successfully runs core systems (identity, payment, registries) on crypto-rails and gains measurable advantages (e.g. World becomes mandated digital identity layer, or Anden digital zone catalyses Argentina's economic growth).",
+      "tippingSignals": [
+        "Cabinet-level DPI adoption",
+        "Copycat pilots across regions",
+        "Multilateral endorsement of open DPI standards",
+        "DPI referenced in national security or industrial policy"
+      ],
+      "shift": "Crypto transforms from purely 'financial infra' to become sovereign infrastructure.",
       "subfields": ["(Sovereign) DPI", "Network States / new societies", "Improving Nations"],
       "keyAssumptions": [
         "Sovereign demand is real and growing. Argentina, Bhutan, UAE, Singapore, Estonia, and dozens of other jurisdictions are actively exploring or piloting crypto-native public infrastructure. Multilaterals (UNDP, UNICEF, World Bank, IDB) have moved from skepticism to active engagement.",
@@ -57,6 +65,14 @@
       "tagline": "Sustainable funding mechanisms connecting crypto innovation to institutional capital",
       "image": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=80",
       "description": "Public Goods Funding mechanisms have matured from quadratic funding experiments to sophisticated retroactive funding, hypercerts, and impact certificates. Yet they remain disconnected from the institutional capital and legitimacy needed for scale.",
+      "inflectionPoint": "Large-scale adoption of AI/crypto-native PGF mechanism for national public goods funding in the billions of dollars (e.g. Hypercerts getting adopted as default certificate for global philanthropy).",
+      "tippingSignals": [
+        "$Bn scale PGF mechanisms",
+        "Joint PL-multilateral funding vehicles",
+        "PGF embedded in national budgets or climate programs",
+        "AI agents participating in funding allocation"
+      ],
+      "shift": "Public goods shifts from discretionary philanthropy to durable markets.",
       "subfields": ["Public Goods Funding", "DeFi", "Improving Nations"],
       "keyAssumptions": [
         "Capital is searching for legitimacy; legitimacy is searching for capital. Impact investors, development finance institutions, and sovereign wealth funds want to fund public goods infrastructure but lack measurement frameworks, funding mechanisms, and deal flow to do so at scale.",
@@ -104,6 +120,13 @@
       "tagline": "New coordination mechanisms for collective decision-making",
       "image": "https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?w=1200&q=80",
       "description": "Traditional governance systems struggle with scale, legitimacy, and responsiveness. Crypto-native governance mechanisms offer new primitives for collective decision-making: quadratic voting, conviction voting, futarchy, and novel delegation systems.",
+      "inflectionPoint": "Crypto-native governance is adopted because existing institutions can no longer credibly claim authority (e.g. Edge City-derived governance frameworks adopted by a city or jurisdiction).",
+      "tippingSignals": [
+        "Cities allocating budgets via crypto",
+        "Crypto-enabled civic identity systems adopted",
+        "Governance tooling referenced in constitutional or legal reform"
+      ],
+      "shift": "Crypto governance moves from 'experiments' to institutional necessity.",
       "subfields": ["DeGov / Governance improvements", "Network States / new societies", "(Sovereign) DPI", "Improving Nations"],
       "keyAssumptions": [
         "Democratic institutions are facing a legitimacy crisis. Declining trust in government, polarization, and slow responsiveness create demand for governance innovations that can restore citizen engagement and institutional effectiveness.",
@@ -151,6 +174,14 @@
       "tagline": "DePIN networks and ReFi mechanisms for climate action at scale",
       "image": "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&q=80",
       "description": "Decentralized Physical Infrastructure Networks (DePIN) are demonstrating that compute, energy, sensing, mapping, and telecommunications can be coordinated through crypto-native mechanisms. Combined with Regenerative Finance (ReFi), this creates new possibilities for funding and operating climate infrastructure at global scale.",
+      "inflectionPoint": "There exists a billion-dollar DePIN-enabled climate business (e.g. Glow scaling to control large parts of the solar market).",
+      "tippingSignals": [
+        "Institutional climate funds via crypto rails",
+        "DePIN coordinating real renewable capacity",
+        "Verified climate assets traded on-chain",
+        "Multilateral climate standards reference crypto-native MRV"
+      ],
+      "shift": "Crypto becomes planetary-scale coordination infrastructure.",
       "subfields": ["DePIN", "Climate / ReFi", "DeFi", "Public Goods Funding"],
       "keyAssumptions": [
         "Climate infrastructure requires unprecedented coordination. The scale of renewable energy, sensing networks, and adaptation infrastructure needed exceeds what traditional coordination mechanisms can deliver. Decentralized coordination offers a path to the required scale.",

@@ -18,15 +18,14 @@ export type NavItem = {
 
 export const mainNav: NavItem[] = [
   { name: 'About', url: '/about/' },
-  { name: 'Team', url: '/authors/' },
   {
     name: 'Focus Areas',
     url: '/areas/',
     children: [
-      { name: 'Digital Human Rights', url: '/areas/fa1-digital-human-rights/' },
-      { name: 'Economies & Governance', url: '/areas/fa2-upgrade-economies-governance-systems/' },
-      { name: 'AI & Robotics', url: '/areas/fa3-ai-robotics/' },
-      { name: 'Neurotech', url: '/areas/fa4-neurotech/' },
+      { name: 'Digital Human Rights', url: '/areas/digital-human-rights/' },
+      { name: 'Economies & Governance', url: '/areas/upgrade-economies-governance/' },
+      { name: 'AI & Robotics', url: '/areas/ai-robotics/' },
+      { name: 'Neurotech', url: '/areas/neurotech/' },
     ],
   },
   {
@@ -38,6 +37,7 @@ export const mainNav: NavItem[] = [
       { name: 'Tutorials', url: '/tutorials/' },
     ],
   },
+  { name: 'Team', url: '/authors/' },
   { name: 'Blog', url: '/blog/' },
 ]
 
@@ -45,7 +45,5 @@ export const footerNav: NavItem[] = [
   { name: 'About', url: '/about/' },
   { name: 'Team', url: '/authors/' },
   { name: 'Research', url: '/research/' },
-  { name: 'Outreach', url: '/outreach/' },
   { name: 'Blog', url: '/blog/' },
-  { name: 'Contact', url: '/contact/' },
 ]

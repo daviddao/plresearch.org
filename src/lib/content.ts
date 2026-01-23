@@ -2,7 +2,6 @@ import publicationsData from '@/data/generated/publications.json'
 import authorsData from '@/data/generated/authors.json'
 import talksData from '@/data/generated/talks.json'
 import tutorialsData from '@/data/generated/tutorials.json'
-import outreachData from '@/data/generated/outreach.json'
 import areasData from '@/data/generated/areas.json'
 import sectionsData from '@/data/generated/sections.json'
 
@@ -56,15 +55,6 @@ export type Tutorial = {
   html: string
 }
 
-export type OutreachItem = {
-  slug: string
-  title: string
-  weight: number
-  linkText: string
-  linkUrl: string
-  html: string
-}
-
 export type Area = {
   slug: string
   title: string
@@ -83,6 +73,5 @@ export const publications = publicationsData as Publication[]
 export const authors = authorsData as Author[]
 export const talks = talksData as Talk[]
 export const tutorials = tutorialsData as Tutorial[]
-export const outreach = outreachData as OutreachItem[]
 export const areas = areasData as Area[]
 export const sections = sectionsData as Record<string, Section>

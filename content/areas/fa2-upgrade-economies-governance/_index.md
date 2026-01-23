@@ -14,22 +14,20 @@ By leveraging cryptoeconomics and improved governance tools, we are rethinking h
 
 ## Explore FA2
 
-<div class="grid md:grid-cols-3 gap-4 mt-8 border-t border-gray-50 pt-8">
-  <a href="/areas/fa2-upgrade-economies-governance-systems/opportunity-spaces/" class="group block p-6 bg-white border border-gray-100 rounded hover:border-gray-300 transition-all no-underline">
-    <div class="text-[10px] tracking-widest uppercase text-gray-400 mb-2 font-medium">Strategy</div>
-    <h3 class="text-lg font-light text-almost-black group-hover:text-blue transition-colors mb-2">Opportunity Spaces</h3>
-    <p class="text-xs text-gray-500 leading-relaxed font-light">Explore 4 convergence zones where FA2 can catalyze systemic change in economies and governance.</p>
+<div class="grid md:grid-cols-3 gap-6 mt-6 border-t border-gray-100 pt-8">
+  <a href="/areas/fa2-upgrade-economies-governance/opportunity-spaces/" class="group block py-4 border-l-2 border-gray-200 pl-5 hover:border-blue transition-colors no-underline">
+    <div class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Strategy</div>
+    <h3 class="text-sm font-medium text-black group-hover:text-blue transition-colors mb-1">Opportunity Spaces</h3>
+    <p class="text-xs text-gray-500 leading-relaxed">4 convergence zones where FA2 can catalyze systemic change.</p>
   </a>
-
-  <a href="/areas/fa2-upgrade-economies-governance-systems/impact/" class="group block p-6 bg-white border border-gray-100 rounded hover:border-gray-300 transition-all no-underline">
-    <div class="text-[10px] tracking-widest uppercase text-gray-400 mb-2 font-medium">Data & Metrics</div>
-    <h3 class="text-lg font-light text-almost-black group-hover:text-blue transition-colors mb-2">Impact Dashboard</h3>
-    <p class="text-xs text-gray-500 leading-relaxed font-light">Explore the impact of FA2 ecosystem initiatives across global villages, research, and funding.</p>
+  <a href="/areas/fa2-upgrade-economies-governance/impact/" class="group block py-4 border-l-2 border-gray-200 pl-5 hover:border-blue transition-colors no-underline">
+    <div class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Metrics</div>
+    <h3 class="text-sm font-medium text-black group-hover:text-blue transition-colors mb-1">Impact Dashboard</h3>
+    <p class="text-xs text-gray-500 leading-relaxed">FA2 ecosystem impact across villages, research, and funding.</p>
   </a>
-
-  <a href="/areas/fa2-upgrade-economies-governance-systems/projects/" class="group block p-6 bg-white border border-gray-100 rounded hover:border-gray-300 transition-all no-underline">
-    <div class="text-[10px] tracking-widest uppercase text-gray-400 mb-2 font-medium">Ecosystem Explorer</div>
-    <h3 class="text-lg font-light text-almost-black group-hover:text-blue transition-colors mb-2">Project Explorer</h3>
-    <p class="text-xs text-gray-500 leading-relaxed font-light">Browse 242+ teams building sovereign DPI, DeSci, DePIN, and public goods funding infrastructure.</p>
+  <a href="/areas/fa2-upgrade-economies-governance/projects/" class="group block py-4 border-l-2 border-gray-200 pl-5 hover:border-blue transition-colors no-underline">
+    <div class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Ecosystem</div>
+    <h3 class="text-sm font-medium text-black group-hover:text-blue transition-colors mb-1">Project Explorer</h3>
+    <p class="text-xs text-gray-500 leading-relaxed">242+ teams building sovereign DPI, DeSci, and public goods.</p>
   </a>
 </div>

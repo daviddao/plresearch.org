@@ -13,58 +13,55 @@ export default function OffCanvasNav({ isOpen, onClose }: Props) {
   const pathname = usePathname()
 
   return (
-    <div
-      id="off-canvas-nav"
-      className={`z-50 fixed top-0 left-0 right-0 bottom-0 bg-white py-4 md:py-8 overflow-y-auto max-h-screen ${isOpen ? 'open' : ''}`}
-    >
-      <div className="flex justify-between items-center mb-12 px-4 md:px-10">
-        <Link href="/" className="flex items-center mr-auto">
-          <img
-            src="/images/pl_research_logo.svg"
-            className="h-20 md:h-24"
-            alt="Protocol Labs Research"
-          />
-        </Link>
+    <>
+      {/* Backdrop */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/10 backdrop-blur-sm transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={onClose}
+      />
 
-        <button className="flex-shrink-0" onClick={onClose} aria-label="Close menu">
-          <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-            <path d="M18.3 5.71a1 1 0 00-1.42 0L12 10.59 7.11 5.7a1 1 0 00-1.41 1.42L10.59 12l-4.89 4.88a1 1 0 101.41 1.42L12 13.41l4.88 4.89a1 1 0 001.42-1.42L13.41 12l4.89-4.88a1 1 0 000-1.41z" />
-          </svg>
-        </button>
-      </div>
-
-      {mainNav.map((item) => (
-        <div key={item.name} className="relative pt-4 mb-4">
-          <Link
-            href={item.url}
-            className="font-light text-md relative inline-block align-middle mx-4 mb-4"
-            onClick={onClose}
-          >
-            <span>{item.name}</span>
-            {pathname === item.url && (
-              <div className="absolute inset-x-0 bottom-0 border border-black" />
-            )}
-          </Link>
-
-          {item.children && (
-            <div className="flex flex-col items-start justify-start mb-4 pl-8 pt-4">
-              {item.children.map((child) => (
-                <Link
-                  key={child.name}
-                  href={child.url}
-                  className="inline-block font-light relative mb-4 text-gray-700"
-                  onClick={onClose}
-                >
-                  <span>{child.name}</span>
-                  {pathname.startsWith(child.url) && (
-                    <div className="absolute inset-x-0 bottom-0 border border-black" />
-                  )}
-                </Link>
-              ))}
-            </div>
-          )}
+      {/* Panel */}
+      <div
+        className={`fixed top-0 right-0 bottom-0 z-50 w-72 bg-white shadow-lg transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      >
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+          <span className="text-xs text-gray-400 uppercase tracking-wide">Menu</span>
+          <button onClick={onClose} aria-label="Close menu" className="text-gray-400 hover:text-black transition-colors">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-      ))}
-    </div>
+
+        <nav className="px-6 py-6">
+          {mainNav.map((item) => (
+            <div key={item.name} className="mb-5">
+              <Link
+                href={item.url}
+                onClick={onClose}
+                className={`text-sm ${pathname.startsWith(item.url) ? 'text-black font-medium' : 'text-gray-600 hover:text-black'} transition-colors`}
+              >
+                {item.name}
+              </Link>
+
+              {item.children && (
+                <div className="mt-2 ml-3 flex flex-col gap-2 border-l border-gray-100 pl-3">
+                  {item.children.map((child) => (
+                    <Link
+                      key={child.name}
+                      href={child.url}
+                      onClick={onClose}
+                      className={`text-xs ${pathname.startsWith(child.url) ? 'text-black' : 'text-gray-400 hover:text-black'} transition-colors`}
+                    >
+                      {child.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </nav>
+      </div>
+    </>
   )
 }

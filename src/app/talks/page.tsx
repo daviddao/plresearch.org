@@ -5,7 +5,7 @@ export const metadata = { title: 'Talks' }
 
 export default function TalksPage() {
   return (
-    <div className="max-w-[1146px] mx-auto pt-8 px-4 md:px-10">
+    <div className="max-w-4xl mx-auto px-6 pt-8">
       <h1 className="text-lg font-semibold mb-8">Talks</h1>
       <div className="divide-y divide-gray-200">
         {talks.map((talk) => (

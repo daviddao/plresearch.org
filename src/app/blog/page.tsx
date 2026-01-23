@@ -2,9 +2,46 @@ export const metadata = { title: 'Blog' }
 
 export default function BlogPage() {
   return (
-    <div className="max-w-[1146px] mx-auto pt-8 px-4 md:px-10">
-      <h1 className="text-lg font-semibold mb-8">Blog</h1>
-      <p className="text-gray-600">No posts yet.</p>
+    <div className="max-w-4xl mx-auto px-6 pt-8 pb-16">
+      {/* Hero */}
+      <div className="relative pt-12 pb-10 mb-10 overflow-hidden">
+        <PageGeo />
+        <h1 className="relative z-10 text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4 max-w-lg">
+          Blog
+        </h1>
+        <p className="relative z-10 text-gray-600 leading-relaxed max-w-xl">
+          Updates, insights, and reflections from the Protocol Labs Research team.
+        </p>
+      </div>
+
+      {/* Content */}
+      <p className="text-sm text-gray-500">No posts yet.</p>
     </div>
+  )
+}
+
+function PageGeo() {
+  // Flowing horizontal lines suggesting writing/communication
+  return (
+    <svg
+      className="absolute top-2 right-0 w-[300px] h-[240px] lg:w-[380px] lg:h-[300px] opacity-[0.4] pointer-events-none select-none"
+      viewBox="0 0 700 500"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path d="M 380 120 Q 480 100 580 130 Q 640 150 680 140" stroke="#C3E1FF" strokeWidth="0.75" />
+      <path d="M 360 200 Q 460 180 560 210 Q 640 230 700 215" stroke="#C3E1FF" strokeWidth="0.75" />
+      <path d="M 390 280 Q 490 260 590 290 Q 650 305 700 295" stroke="#C3E1FF" strokeWidth="0.75" />
+      <path d="M 370 360 Q 470 340 570 370 Q 640 385 690 375" stroke="#C3E1FF" strokeWidth="0.75" />
+      <path d="M 400 440 Q 500 420 580 445" stroke="#C3E1FF" strokeWidth="0.75" />
+      <circle cx="380" cy="120" r="3" fill="#C3E1FF" />
+      <circle cx="360" cy="200" r="3" fill="#C3E1FF" />
+      <circle cx="390" cy="280" r="3" fill="#C3E1FF" />
+      <circle cx="370" cy="360" r="3" fill="#C3E1FF" />
+      <circle cx="400" cy="440" r="3" fill="#C3E1FF" />
+      <circle cx="580" cy="130" r="2" fill="#C3E1FF" />
+      <circle cx="560" cy="210" r="2" fill="#C3E1FF" />
+      <circle cx="590" cy="290" r="2" fill="#C3E1FF" />
+    </svg>
   )
 }

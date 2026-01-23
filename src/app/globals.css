@@ -151,8 +151,8 @@ ul li li {
   color: var(--color-blue);
 }
 
-.page-top a:hover,
-.page-content a:hover {
+.page-top a:not(.no-underline):hover,
+.page-content a:not(.no-underline):hover {
   color: var(--color-blue);
   text-decoration: underline;
 }
@@ -268,17 +268,6 @@ ul li li {
 
 [data-tooltip]:hover::after {
   transform: translateX(-50%) scale(1) !important;
-}
-
-/* ===== Section fade-in animation ===== */
-.section-fade-in {
-  animation: fadeIn 0.8s ease-out forwards;
-  opacity: 0;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 
 /* ===== Highlight pre ===== */

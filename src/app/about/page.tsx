@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import AuthorCard from '@/components/AuthorCard'
 
 export const metadata: Metadata = {
   title: 'About',
@@ -9,35 +10,33 @@ export default function AboutPage() {
   return (
     <div>
       {/* Hero */}
-      <div className="max-w-5xl mx-auto px-6 pt-12 mb-12">
-        <div className="relative h-[240px] lg:h-[300px] overflow-hidden rounded-sm">
+      <div className="max-w-4xl mx-auto px-6">
+        <div className="relative pt-20 pb-16 lg:pt-28 lg:pb-20 overflow-hidden">
+          {/* Subtle background image on the right */}
           <img
-            className="absolute inset-0 w-full h-full object-cover"
             src="/images/about-page/about-header@2x.jpg"
             alt=""
+            aria-hidden="true"
+            className="absolute right-0 top-0 h-full w-auto max-w-[60%] object-contain object-right opacity-[0.15] pointer-events-none select-none hidden md:block"
           />
+          {/* Geometric decoration */}
+          <AboutGeometry />
+
+          <h1 className="relative z-10 font-semibold text-xl lg:text-[48px] leading-[1.1] tracking-tight mb-6 max-w-xl">
+            Our research is driven by beliefs about how technology should serve humanity.
+          </h1>
+          <p className="relative z-10 text-gray-600 text-big lg:text-bigger leading-relaxed max-w-2xl mb-6">
+            Substantial engineering efforts are necessary to turn ideas into real and useful tools that people can use. Our longest-term vision-driven innovation takes place in Protocol Labs R&amp;D.
+          </p>
+          <div className="relative z-10 flex gap-6">
+            <Link href="/areas" className="text-blue hover:underline">Focus areas</Link>
+            <Link href="/authors" className="text-blue hover:underline">Meet the team</Link>
+          </div>
         </div>
       </div>
 
-      {/* Intro */}
-      <div className="max-w-3xl mx-auto px-6 mb-24">
-        <h1 className="font-semibold text-lg lg:text-xl leading-tight mb-6">
-          Our research and development efforts are driven by beliefs about how technology should serve humanity.
-        </h1>
-        <p className="text-gray-700 leading-relaxed mb-6">
-          Substantial engineering efforts are necessary to turn ideas into real and useful tools that people can use. While those engineering efforts take place in Protocol Lab&apos;s several projects, our longest-term vision-driven innovation takes place in Protocol Labs R&amp;D.
-        </p>
-        <p className="text-gray-700 leading-relaxed mb-6">
-          Our mission spans four interconnected focus areas that address humanity&apos;s most pressing challenges: securing digital human rights, upgrading economies and governance systems, advancing AI and robotics, and developing neurotechnology responsibly.
-        </p>
-        <Link href="/research" className="text-blue hover:underline text-sm">
-          Our Focus Areas
-          <img className="inline pl-2" src="/icons/chevron-pink.svg" alt="" />
-        </Link>
-      </div>
-
       {/* Focus Areas */}
-      <div className="max-w-5xl mx-auto px-6 mb-28">
+      <div className="max-w-4xl mx-auto px-6 mb-28">
         <h2 className="font-semibold text-md mb-8">Our Four Focus Areas</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FocusCard
@@ -82,13 +81,12 @@ export default function AboutPage() {
       </Section>
 
       {/* Quote */}
-      <div className="max-w-3xl mx-auto px-6 py-16 text-center">
-        <img className="mx-auto mb-6 opacity-30 w-8" src="/images/about-page/quote-icon.svg" alt="" />
-        <h3 className="font-semibold text-md lg:text-lg leading-relaxed mb-4">
+      <div className="max-w-4xl mx-auto px-6 py-16 flex flex-col items-center text-center">
+        <img className="mb-6 opacity-30 w-8" src="/images/about-page/quote-icon.svg" alt="" />
+        <h3 className="font-semibold text-md lg:text-lg leading-relaxed mb-6">
           More innovation faster
         </h3>
-        <p className="text-dark-blue">Juan Benet</p>
-        <p className="text-blue-gray text-sm">Founder and CEO</p>
+        <AuthorCard slug="juan-benet" />
       </div>
 
       {/* The Future */}
@@ -104,22 +102,12 @@ export default function AboutPage() {
       </Section>
 
       {/* Will Scott quote */}
-      <div className="max-w-3xl mx-auto px-6 pb-24">
+      <div className="max-w-4xl mx-auto px-6 pb-24">
         <div className="border-l-2 border-pink pl-6 py-2">
           <p className="text-gray-700 leading-relaxed mb-4 italic">
             &ldquo;We consistently bet, not only that the future could be a fantastic and wonderful place, but that it&apos;s worthwhile for us, as an organization, to work toward that future.&rdquo;
           </p>
-          <div className="flex items-center">
-            <img
-              className="w-10 h-10 rounded-full mr-3"
-              src="/images/authors/will-scott/avatar.png"
-              alt="Will Scott"
-            />
-            <div>
-              <p className="text-sm font-semibold leading-none pb-1">Will Scott</p>
-              <p className="text-gray-600 text-sm">Digital Human Rights Lead</p>
-            </div>
-          </div>
+          <AuthorCard slug="will-scott" />
         </div>
       </div>
     </div>
@@ -128,7 +116,7 @@ export default function AboutPage() {
 
 function Section({ label, title, children }: { label: string; title: string; children: React.ReactNode }) {
   return (
-    <div className="max-w-5xl mx-auto px-6 mb-24">
+    <div className="max-w-4xl mx-auto px-6 mb-24">
       <p className="text-pink text-sm tracking-wide mb-2">{label}</p>
       <h2 className="font-semibold text-md leading-relaxed mb-6 max-w-2xl">{title}</h2>
       {children}
@@ -142,5 +130,39 @@ function FocusCard({ title, description }: { title: string; description: string 
       <h3 className="font-semibold mb-2">{title}</h3>
       <p className="text-sm text-gray-700">{description}</p>
     </div>
+  )
+}
+
+function AboutGeometry() {
+  return (
+    <svg
+      className="absolute top-4 right-0 w-[320px] h-[280px] lg:w-[420px] lg:h-[340px] opacity-[0.4] pointer-events-none select-none"
+      viewBox="0 0 700 500"
+      fill="none"
+      aria-hidden="true"
+    >
+      {/* Network pattern */}
+      <circle cx="480" cy="100" r="70" stroke="#C3E1FF" strokeWidth="1" />
+      <circle cx="580" cy="220" r="50" stroke="#C3E1FF" strokeWidth="1" />
+      <circle cx="400" cy="220" r="90" stroke="#C3E1FF" strokeWidth="0.75" />
+      <circle cx="550" cy="370" r="60" stroke="#C3E1FF" strokeWidth="1" />
+      <circle cx="420" cy="400" r="45" stroke="#C3E1FF" strokeWidth="0.75" />
+      <circle cx="340" cy="320" r="35" stroke="#C3E1FF" strokeWidth="1" />
+      {/* Connections */}
+      <line x1="480" y1="100" x2="580" y2="220" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="580" y1="220" x2="550" y2="370" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="400" y1="220" x2="420" y2="400" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="480" y1="100" x2="400" y2="220" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="550" y1="370" x2="420" y2="400" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="340" y1="320" x2="400" y2="220" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="340" y1="320" x2="420" y2="400" stroke="#C3E1FF" strokeWidth="0.5" />
+      {/* Nodes */}
+      <circle cx="480" cy="100" r="3" fill="#C3E1FF" />
+      <circle cx="580" cy="220" r="3" fill="#C3E1FF" />
+      <circle cx="400" cy="220" r="3" fill="#C3E1FF" />
+      <circle cx="550" cy="370" r="3" fill="#C3E1FF" />
+      <circle cx="420" cy="400" r="3" fill="#C3E1FF" />
+      <circle cx="340" cy="320" r="3" fill="#C3E1FF" />
+    </svg>
   )
 }
