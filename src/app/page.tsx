@@ -54,7 +54,7 @@ export default function HomePage() {
           Driving breakthroughs in computing to push humanity forward.
         </h1>
         <p className="relative z-10 text-gray-600 text-big lg:text-bigger leading-relaxed max-w-2xl mb-8">
-          Protocol Labs Research explores the frontiers of computing, networking, and knowledge systems to build infrastructure that empowers humanity.
+          Protocol Labs R&D explores the frontiers of computing, networking, and knowledge systems to build infrastructure that empowers humanity.
         </p>
         <div className="relative z-10 flex gap-6">
           <Link href="/about" className="text-blue hover:underline">About us</Link>

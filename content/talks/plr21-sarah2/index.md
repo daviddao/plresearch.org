@@ -10,7 +10,7 @@ date: 2021-05-03
 # publishDate: 2019-09-03
 
 # Venue name
-venue: Protocol Labs Research Talks
+venue: Protocol Labs R&D Talks
 
 # Venue link
 venue_url:
@@ -41,7 +41,7 @@ resources:
 
 # Short abstract
 # Describe talk here
-abstract: "Protocol Labs Researcher Sarah Azouvi presents her work on game theoretic models of security for cryptocurrencies. This work was originally presented at the Cryptoeconomic Systems Conference at MIT in March 2020."
+abstract: "Protocol Labs R&Der Sarah Azouvi presents her work on game theoretic models of security for cryptocurrencies. This work was originally presented at the Cryptoeconomic Systems Conference at MIT in March 2020."
 
 ---
 

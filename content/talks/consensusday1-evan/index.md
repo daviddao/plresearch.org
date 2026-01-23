@@ -24,7 +24,7 @@ resources:
   - title: featured-image
     src: featured.jpg
 
-abstract: Evan Miyazono (Protocol Labs Research) talks about mergeable consensus at ConsensusDay 1.
+abstract: Evan Miyazono (Protocol Labs R&D) talks about mergeable consensus at ConsensusDay 1.
 
 ---
 

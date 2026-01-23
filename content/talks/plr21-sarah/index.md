@@ -10,7 +10,7 @@ date: 2021-02-09
 # publishDate: 2019-09-03
 
 # Venue name
-venue: Protocol Labs Research Talks
+venue: Protocol Labs R&D Talks
 
 # Venue link
 venue_url:
@@ -41,7 +41,7 @@ resources:
 
 # Short abstract
 # Describe talk here
-abstract: "Protocol Labs Researcher Sarah Azouvi presents her research on Winkle,
+abstract: "Protocol Labs R&Der Sarah Azouvi presents her research on Winkle,
 which protects any validator-based byzantine fault tolerant consensus mechanisms,
 such as those used in modern Proof-of-Stake blockchains, against long-range attacks
 where old validators’ signature keys get compromised."

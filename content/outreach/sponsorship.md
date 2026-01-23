@@ -3,12 +3,12 @@ headless: true
 nositemap: false
 weight: 5
 title: Sponsorship
-summary: "We support conferences, workshops, and events that are directly aligned with the mission and values of Protocol Labs Research. These sponsorships support open source collaboration and innovation, further the visibility and impact of our research, and strengthen relationships between Protocol Labs and other open source communities."
+summary: "We support conferences, workshops, and events that are directly aligned with the mission and values of Protocol Labs R&D. These sponsorships support open source collaboration and innovation, further the visibility and impact of our research, and strengthen relationships between Protocol Labs and other open source communities."
 #linkText: Read our sponsorship policy
 #linkUrl: "/outreach/sponsorship"
 ---
 
-# What kind of support does Protocol Labs Research provide for events?
+# What kind of support does Protocol Labs R&D provide for events?
 
 Protocol Labs (PL) Research reviews requests for sponsorship at research-focused events.
 In addition to financial support, we seek to support these events by providing speakers, sending attendees, and promoting them on our website when appropriate. Note that we do not sponsor pay-to-speak events (discussed in detail below).

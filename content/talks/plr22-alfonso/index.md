@@ -10,7 +10,7 @@ date: 2022-02-23
 # publishDate: 2019-09-03
 
 # Venue name
-venue: Protocol Labs Research Talks
+venue: Protocol Labs R&D Talks
 
 # Venue link
 venue_url:

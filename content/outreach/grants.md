@@ -7,4 +7,4 @@ title: Research grants
 #linkUrl: "mailto:research-grants@protocol.ai"
 ---
 
-The Protocol Labs Research Grant Program aims to support collaborative work on problems defined by the broader research community. It comprises both researcher-centric open grants and targeted RFPs. We welcome unique perspectives and diverse backgrounds.
+The Protocol Labs R&D Grant Program aims to support collaborative work on problems defined by the broader research community. It comprises both researcher-centric open grants and targeted RFPs. We welcome unique perspectives and diverse backgrounds.

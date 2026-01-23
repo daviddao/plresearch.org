@@ -41,7 +41,7 @@ resources:
 
 # Short abstract
 # Describe talk here
-abstract: "Protocol Labs Research Engineer Friedel Ziegelmayer explains the technical accomplishments for solving scaling issues with the rising use of Filecoin."
+abstract: "Protocol Labs R&D Engineer Friedel Ziegelmayer explains the technical accomplishments for solving scaling issues with the rising use of Filecoin."
 
 ---
 

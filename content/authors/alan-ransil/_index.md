@@ -51,4 +51,4 @@ quote:
 ---
 Alan's research at Protocol Labs applied design principles from distributed systems and the decentralized web to the power grid. His doctoral work focused on structural batteries that can be incorporated into vehicles to bear mechanical load. He previously cofounded CoolComposites, a startup aimed at integrating inorganic phase change materials into building insulation in order to improve energy efficiency. Studying the interaction of these materials with the power grid, using materials to shift energy use from the afternoon to the night, led him to his current research. He has degrees in Materials Engineering from Stanford and MIT.
 
-Alan left Protocol Labs Research to lead the [Filecoin Green](https://filecoin.energy/) team. Learn more about the project in the announcement [blog post](https://filecoin.io/blog/posts/filecoin-green/).
+Alan left Protocol Labs R&D to lead the [Filecoin Green](https://filecoin.energy/) team. Learn more about the project in the announcement [blog post](https://filecoin.io/blog/posts/filecoin-green/).

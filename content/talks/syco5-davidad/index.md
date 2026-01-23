@@ -28,7 +28,7 @@ resources:
   - title: slides
     src: slides.pdf
 
-abstract: David Dalrymple (Protocol Labs Research) talks about Dioptics at SYCO 5.
+abstract: David Dalrymple (Protocol Labs R&D) talks about Dioptics at SYCO 5.
 
 ---
 

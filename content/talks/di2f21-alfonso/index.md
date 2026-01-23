@@ -42,7 +42,7 @@ resources:
 
 # Short abstract
 # Describe talk here
-abstract: "Protocol Labs Research Engineer Alfonso de la Rocha discusses 
+abstract: "Protocol Labs R&D Engineer Alfonso de la Rocha discusses 
 IPFS-FAN, a general architecture of a decentralised network for 
 general-purpose and permissionless computation based on content-addressing."
 

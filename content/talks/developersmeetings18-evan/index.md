@@ -1,6 +1,6 @@
 ---
 # Talk title
-title: "Protocol Labs Research Overview"
+title: "Protocol Labs R&D Overview"
 
 # Website post date
 # format YYYY-MM-DD
@@ -41,7 +41,7 @@ resources:
 
 # Short abstract
 # Describe talk here
-abstract: "An overview of Protocol Labs Research from team lead Evan Miyazono."
+abstract: "An overview of Protocol Labs R&D from team lead Evan Miyazono."
 
 ---
 
