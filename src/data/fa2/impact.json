@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "title": "Impact Dashboard 2025",
+    "subtitle": "FA2 Ecosystem Initiatives",
+    "year": 2025
+  },
+  "highlights": [
+    { "value": "22K+", "label": "People Reached", "source": "All Initiatives" },
+    { "value": "80+", "label": "Countries", "source": "Edge City" },
+    { "value": "230+", "label": "Startups Accelerated", "source": "Crecimiento" },
+    { "value": "42", "label": "Projects Catalyzed", "source": "FTC Residency" }
+  ],
+  "initiatives": [
+    {
+      "id": "edge_city",
+      "name": "Edge City",
+      "category": "Governance",
+      "description": "Society incubator hosting monthlong popup villages where builders at the frontiers of technology, science, and culture live and work together.",
+      "website": "https://www.edgecity.live/",
+      "logo": "https://pl-directory-images-prod.s3.us-west-1.amazonaws.com/288ea3fdaa2f0822.webp",
+      "metrics": [
+        { "value": "11K+", "label": "Residents" },
+        { "value": "4", "label": "Villages" },
+        { "value": "80+", "label": "Countries" },
+        { "value": "$1M", "label": "Grants" }
+      ],
+      "events": [
+        { "title": "Edge City Austin", "month": "Mar" },
+        { "title": "Edge Esmeralda", "month": "May" },
+        { "title": "Edge City Bhutan", "month": "Sep" },
+        { "title": "Edge Patagonia", "month": "Oct" }
+      ]
+    },
+    {
+      "id": "crecimiento",
+      "name": "Crecimiento",
+      "category": "Governance",
+      "description": "Movement transforming Argentina into a hub for crypto innovation.",
+      "website": "https://crecimiento.build/",
+      "logo": "https://pl-directory-images-prod.s3.us-west-1.amazonaws.com/c855162894c23686.webp",
+      "metrics": [
+        { "value": "10K", "label": "Builders" },
+        { "value": "230+", "label": "Startups" },
+        { "value": "3", "label": "Events" }
+      ],
+      "events": [
+        { "title": "Aleph Crecimiento", "month": "Mar" },
+        { "title": "RealFi Hack", "month": "Sep" },
+        { "title": "Startup World Cup", "month": "Nov" }
+      ]
+    },
+    {
+      "id": "ftc",
+      "name": "Funding the Commons",
+      "category": "Public Goods Funding",
+      "description": "Bridge builder between web3 and institutions, providing critical space for dialogue and innovation on public goods funding mechanisms.",
+      "website": "https://www.fundingthecommons.io/",
+      "logo": "https://pl-directory-images-prod.s3.us-west-1.amazonaws.com/84b46740a536aab3.webp",
+      "metrics": [
+        { "value": "3", "label": "Conferences" },
+        { "value": "957", "label": "Attendees" },
+        { "value": "42", "label": "Projects" },
+        { "value": "6", "label": "Partners" }
+      ],
+      "events": [
+        { "title": "FTC San Francisco", "month": "Mar" },
+        { "title": "FTC Berlin", "month": "Jun" },
+        { "title": "FTC Residency", "month": "Oct" },
+        { "title": "FTC Buenos Aires", "month": "Nov" }
+      ]
+    },
+    {
+      "id": "glow",
+      "name": "Glow",
+      "category": "Regenerative Finance",
+      "description": "Incentivized solar farms generating sustainable energy globally.",
+      "website": "https://glow.org/",
+      "logo": "https://pl-directory-images-prod.s3.us-west-1.amazonaws.com/c947fb928560e7b4.png",
+      "metrics": [
+        { "value": "120", "label": "Solar Farms" },
+        { "value": "100K+", "label": "kWh/week" }
+      ],
+      "chartData": [
+        { "week": 18, "farms": 4 },
+        { "week": 30, "farms": 29 },
+        { "week": 40, "farms": 50 },
+        { "week": 52, "farms": 92 },
+        { "week": 74, "farms": 100 },
+        { "week": 90, "farms": 102 },
+        { "week": 107, "farms": 120 }
+      ]
+    },
+    {
+      "id": "hypercerts",
+      "name": "Hypercerts",
+      "category": "Public Goods Funding",
+      "description": "Protocol for impact certificates tracking and funding regenerative outcomes.",
+      "website": "https://hypercerts.org/",
+      "logo": "https://pl-directory-images-prod.s3.us-west-1.amazonaws.com/9e026c5639ec942b.webp",
+      "metrics": [
+        { "value": "$38K", "label": "Raised" },
+        { "value": "$2M", "label": "Committed" }
+      ],
+      "events": [
+        { "title": "Berlin Gathering", "month": "Jul" }
+      ]
+    },
+    {
+      "id": "research",
+      "name": "Research Retreats",
+      "category": "Decentralized Science",
+      "description": "Intensive programs bridging research and practice in public goods funding and decentralized systems.",
+      "website": "https://researchretreat.org/",
+      "logo": "/images/fa2/research_retreat_logo.png",
+      "metrics": [
+        { "value": "2", "label": "Retreats" },
+        { "value": "33", "label": "Participants" },
+        { "value": "28", "label": "Artifacts" }
+      ],
+      "events": [
+        { "title": "IERR Iceland", "month": "Jul" },
+        { "title": "d/acc Residency", "month": "Oct" }
+      ]
+    }
+  ]
+}

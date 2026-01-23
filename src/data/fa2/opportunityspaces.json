@@ -1,0 +1,207 @@
+{
+  "meta": {
+    "title": "Opportunity Spaces",
+    "subtitle": "Convergence zones where multiple subfields unite to create transformative opportunities. These are the high-leverage areas where FA2 can catalyze systemic change by bridging technologies, communities, and institutions."
+  },
+  "opportunities": [
+    {
+      "id": "sovereign-dpi",
+      "title": "Sovereign Digital Public Infrastructure",
+      "tagline": "Open, verifiable, privacy-preserving rails for nation-states",
+      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200&q=80",
+      "description": "A new category of infrastructure is emerging. Nation-states, multilateral institutions, and regional blocs are recognizing that their core public systems need to be rebuilt on open, verifiable, privacy-preserving foundations. This is the promise of sovereign-grade Digital Public Infrastructure (DPI).",
+      "subfields": ["(Sovereign) DPI", "Network States / new societies", "Improving Nations"],
+      "keyAssumptions": [
+        "Sovereign demand is real and growing. Argentina, Bhutan, UAE, Singapore, Estonia, and dozens of other jurisdictions are actively exploring or piloting crypto-native public infrastructure. Multilaterals (UNDP, UNICEF, World Bank, IDB) have moved from skepticism to active engagement.",
+        "The DPI movement has legitimacy but lacks rails. India's UPI, Brazil's PIX, and the EU's digital identity frameworks have demonstrated DPI works at population scale, but these systems are centralized, siloed, and difficult to replicate.",
+        "Crypto infrastructure has matured but lacks institutional pathways. Filecoin, IPFS, libp2p have demonstrated technical viability. What's missing is the translation layer: reference architectures, regulatory playbooks, and trust frameworks for sovereign adoption.",
+        "The window is open but closing. If decentralized, open-source, privacy-preserving infrastructure doesn't become the default stack for the next wave of DPI, closed alternatives will. The choices made in the next 3-5 years will shape public infrastructure for decades."
+      ],
+      "observations": [
+        "From pilots to nowhere: The field has produced dozens of promising pilots (blockchain land registries, decentralized identity, crypto-native payment rails) but pilots rarely become deployments. No systematic funnel converts proof-of-concept into production-grade systems.",
+        "Fragmented actors, no coordination layer: Sovereigns, multilaterals, protocols, funders, and builders operate in parallel with minimal coordination. A government exploring digital identity may not know about relevant protocol teams.",
+        "No sovereign-grade reference architectures: When a minister asks 'how do we build open, verifiable public infrastructure?', there is no credible, detailed answer. The field lacks deployment guides, regulatory templates, and operational playbooks.",
+        "Invisible opportunities: The global landscape of sovereign DPI activity is opaque. Which countries are piloting what? Where are the regulatory sandboxes? This invisibility prevents coordination and leaves capital undeployed."
+      ],
+      "theOpportunity": "Multiple nation-states and regional blocs run core public infrastructure on open, verifiable, privacy-preserving rails built with PL-aligned technology. A 'Sovereign DPI Playbook' and 'Global DPI Atlas' make opportunities visible and investable. Shared testbeds and coordination mechanisms align actors around common standards, converting pilots into deployments that generate real workloads for PL networks.",
+      "fieldSignals": [
+        {
+          "kpi": "Sovereign Engagements",
+          "measurement": "# of nation-states, regional blocs, or multilaterals actively engaged in DPI pilots or deployments"
+        },
+        {
+          "kpi": "Reference Architectures Deployed",
+          "measurement": "# of sovereign-grade DPI playbooks, regulatory templates, and deployment guides adopted"
+        },
+        {
+          "kpi": "Protocol Integrations",
+          "measurement": "# of Filecoin, IPFS, or libp2p deployments in real-world sovereign contexts"
+        },
+        {
+          "kpi": "Pilot-to-Production Conversions",
+          "measurement": "# of proof-of-concept projects that transition to production-grade deployments"
+        },
+        {
+          "kpi": "Coordination Partnerships",
+          "measurement": "# of formal MoUs or collaborations with governments, multilaterals, and protocol teams"
+        },
+        {
+          "kpi": "Capital Mobilized",
+          "measurement": "$XM+ catalyzed toward sovereign DPI infrastructure (grants, development aid, co-investment)"
+        }
+      ]
+    },
+    {
+      "id": "public-goods-funding",
+      "title": "AI & Crypto-Native Public Goods Funding at Nation-Scale",
+      "tagline": "Sustainable funding mechanisms connecting crypto innovation to institutional capital",
+      "image": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200&q=80",
+      "description": "Public Goods Funding mechanisms have matured from quadratic funding experiments to sophisticated retroactive funding, hypercerts, and impact certificates. Yet they remain disconnected from the institutional capital and legitimacy needed for scale.",
+      "subfields": ["Public Goods Funding", "DeFi", "Improving Nations"],
+      "keyAssumptions": [
+        "Capital is searching for legitimacy; legitimacy is searching for capital. Impact investors, development finance institutions, and sovereign wealth funds want to fund public goods infrastructure but lack measurement frameworks, funding mechanisms, and deal flow to do so at scale.",
+        "AI agents can dramatically improve capital allocation efficiency. Technologies like ERC-8004 and x402 enable AI agents to participate directly in economic activities, assess impact, and optimize funding decisions without human intermediation.",
+        "Crypto-native mechanisms have proven product-market fit. Quadratic funding, retroactive funding, and hypercerts work. The gap is connecting them to institutional capital and sovereign legitimacy.",
+        "Nation-scale public goods require nation-scale funding. Current grant-based models cannot fund infrastructure at the level required for population-scale impact. New mechanisms must bridge crypto innovation to institutional finance."
+      ],
+      "observations": [
+        "Disconnected capital flows: Public goods funding mechanisms (grants, retro funding, QF, hypercerts) have proliferated but remain disconnected from institutional capital, academic legitimacy, and sustainable business models.",
+        "No bridge to institutional finance: Development banks, impact investors, and sovereign wealth funds cannot easily participate in crypto-native funding mechanisms due to regulatory uncertainty, measurement gaps, and operational friction.",
+        "Sustainability crisis: Most public goods projects remain perpetually grant-dependent with no path to self-sustaining operations. The field lacks models for converting funded projects into durable infrastructure.",
+        "Measurement and attribution gaps: Impact investors require clear measurement frameworks. Current public goods funding lacks the rigorous impact assessment infrastructure that institutional capital demands."
+      ],
+      "theOpportunity": "Public markets for public goods emerge, connecting crypto-native funding mechanisms to institutional capital at scale. AI agents manage funding rounds, analyze impact metrics, and optimize capital allocation continuously. Sustainable co-funding vehicles bring together PL, multilaterals (UNDP, UNICEF), and development finance institutions around shared measurement frameworks and deal flow pipelines.",
+      "fieldSignals": [
+        {
+          "kpi": "Institutional Bridges",
+          "measurement": "# of development banks, impact investors, or sovereign funds connected to crypto-native funding mechanisms"
+        },
+        {
+          "kpi": "AI Agent Deployments",
+          "measurement": "# of AI agents (ERC-8004, x402) actively participating in capital allocation or impact assessment"
+        },
+        {
+          "kpi": "Funding Rounds Facilitated",
+          "measurement": "# of quadratic funding, retroactive funding, or hypercert rounds connected to institutional capital"
+        },
+        {
+          "kpi": "Capital Unlocked",
+          "measurement": "$XM+ mobilized through public goods funding mechanisms (grants, co-investment, impact bonds)"
+        },
+        {
+          "kpi": "Measurement Frameworks Adopted",
+          "measurement": "# of impact assessment standards or attribution frameworks deployed with institutional buy-in"
+        },
+        {
+          "kpi": "Sustainable Projects",
+          "measurement": "# of grant-funded projects transitioned to self-sustaining operations or durable infrastructure"
+        }
+      ]
+    },
+    {
+      "id": "governance-democracy",
+      "title": "Crypto-Native Governance & Democracy",
+      "tagline": "New coordination mechanisms for collective decision-making",
+      "image": "https://images.unsplash.com/photo-1577962917302-cd874c4e31d2?w=1200&q=80",
+      "description": "Traditional governance systems struggle with scale, legitimacy, and responsiveness. Crypto-native governance mechanisms offer new primitives for collective decision-making: quadratic voting, conviction voting, futarchy, and novel delegation systems.",
+      "subfields": ["DeGov / Governance improvements", "Network States / new societies", "(Sovereign) DPI", "Improving Nations"],
+      "keyAssumptions": [
+        "Democratic institutions are facing a legitimacy crisis. Declining trust in government, polarization, and slow responsiveness create demand for governance innovations that can restore citizen engagement and institutional effectiveness.",
+        "Network states provide safe experimentation zones. Voluntary communities can test governance innovations at meaningful scale without the constraints of legacy systems, creating proof points for broader adoption.",
+        "Decentralized identity unlocks new participation models. Privacy-preserving, verifiable credentials enable civic participation models impossible with current identity infrastructure, from quadratic voting to liquid democracy.",
+        "Progressive jurisdictions are actively seeking innovations. Cities, special economic zones, and small states are experimenting with participatory budgeting, digital democracy tools, and new forms of citizen engagement."
+      ],
+      "observations": [
+        "DAO governance has not crossed to mainstream adoption: Despite billions in DAO treasuries, governance innovations remain largely confined to crypto-native communities. Translation to civic institutions has been minimal.",
+        "No sovereign-grade governance tooling: Existing tools (Snapshot, Tally, Aragon) are built for DAOs, not governments. Sovereign adoption requires different security, compliance, and accessibility standards.",
+        "Fragmented experimentation: Cities and jurisdictions experimenting with digital democracy tools do so in isolation. No coordination layer shares learnings or develops common standards.",
+        "Identity remains the blocker: Most governance innovations require identity infrastructure that doesn't exist at sovereign grade. Sybil resistance, privacy, and verifiability remain unsolved at population scale."
+      ],
+      "theOpportunity": "Network state communities serve as living laboratories for governance innovations that then propagate to progressive jurisdictions. Sovereign-grade governance tooling emerges, enabling quadratic voting for participatory budgeting, conviction voting for resource allocation, and liquid democracy for representation. Decentralized identity infrastructure enables privacy-preserving civic participation at scale.",
+      "fieldSignals": [
+        {
+          "kpi": "Network State Laboratories",
+          "measurement": "# of network state communities actively testing governance innovations with proof-of-concept outcomes"
+        },
+        {
+          "kpi": "Jurisdiction Adoptions",
+          "measurement": "# of cities, SEZs, or progressive jurisdictions piloting crypto-native governance tools"
+        },
+        {
+          "kpi": "Governance Tooling Deployed",
+          "measurement": "# of sovereign-grade governance tools (voting, delegation, budgeting) deployed in civic contexts"
+        },
+        {
+          "kpi": "Civic Participants",
+          "measurement": "# of citizens actively participating through decentralized identity or governance mechanisms"
+        },
+        {
+          "kpi": "Coordination Standards",
+          "measurement": "# of shared governance standards, playbooks, or frameworks adopted across jurisdictions"
+        },
+        {
+          "kpi": "Identity Infrastructure",
+          "measurement": "# of privacy-preserving, sybil-resistant identity deployments at population scale"
+        }
+      ]
+    },
+    {
+      "id": "climate-infrastructure",
+      "title": "Decentralized Climate Infrastructure & Finance",
+      "tagline": "DePIN networks and ReFi mechanisms for climate action at scale",
+      "image": "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&q=80",
+      "description": "Decentralized Physical Infrastructure Networks (DePIN) are demonstrating that compute, energy, sensing, mapping, and telecommunications can be coordinated through crypto-native mechanisms. Combined with Regenerative Finance (ReFi), this creates new possibilities for funding and operating climate infrastructure at global scale.",
+      "subfields": ["DePIN", "Climate / ReFi", "DeFi", "Public Goods Funding"],
+      "keyAssumptions": [
+        "Climate infrastructure requires unprecedented coordination. The scale of renewable energy, sensing networks, and adaptation infrastructure needed exceeds what traditional coordination mechanisms can deliver. Decentralized coordination offers a path to the required scale.",
+        "DePIN has demonstrated technical viability. Filecoin, Helium, Glow, and other networks prove that physical infrastructure can be coordinated through crypto-native mechanisms. The gap is sovereign-grade trust and institutional adoption.",
+        "Carbon markets and climate finance are broken but essential. Current carbon markets suffer from fraud, double-counting, and opacity. Verifiable, transparent, crypto-native alternatives could unlock institutional climate capital.",
+        "Community ownership aligns incentives for climate action. When communities own renewable energy infrastructure and benefit directly from its operation, adoption accelerates and outcomes improve."
+      ],
+      "observations": [
+        "DePIN hasn't achieved sovereign-grade trust: Despite technical success, DePIN networks remain in crypto-native usage. Institutional and sovereign adoption requires different trust frameworks, compliance, and operational standards.",
+        "ReFi remains disconnected from real climate action: Most ReFi projects focus on tokenizing existing carbon credits rather than funding new climate infrastructure or driving measurable environmental outcomes.",
+        "Measurement and verification gaps: Climate impact claims lack rigorous, verifiable measurement infrastructure. This prevents institutional capital deployment and undermines market integrity.",
+        "No coordination between DePIN and climate finance: Energy DePIN networks (Glow, etc.) operate separately from climate finance mechanisms. Integration could unlock significant capital and accelerate deployment."
+      ],
+      "theOpportunity": "DePIN becomes a mainstream infrastructure category for climate action. Glow-style solar coordination scales globally, with verifiable impact measurement connecting to institutional climate finance. Environmental sensing networks provide transparent, verifiable climate data. ReFi mechanisms evolve from carbon tokenization to funding real infrastructure deployment, with clear measurement frameworks that institutional investors can trust.",
+      "fieldSignals": [
+        {
+          "kpi": "DePIN Climate Deployments",
+          "measurement": "# of DePIN networks (energy, sensing, mapping) deployed for climate infrastructure at scale"
+        },
+        {
+          "kpi": "Institutional Climate Capital",
+          "measurement": "$XM+ of institutional climate finance connected to DePIN or ReFi mechanisms"
+        },
+        {
+          "kpi": "Verifiable Impact Measurement",
+          "measurement": "# of climate projects with rigorous, verifiable measurement infrastructure for institutional trust"
+        },
+        {
+          "kpi": "Community-Owned Infrastructure",
+          "measurement": "# of renewable energy or climate infrastructure projects with community ownership models"
+        },
+        {
+          "kpi": "ReFi Infrastructure Funding",
+          "measurement": "# of real infrastructure projects funded through ReFi mechanisms (beyond carbon tokenization)"
+        },
+        {
+          "kpi": "Environmental Sensing Networks",
+          "measurement": "# of transparent, verifiable climate data networks deployed for monitoring and verification"
+        }
+      ]
+    }
+  ],
+  "subfields": [
+    "(Sovereign) DPI",
+    "DeSci",
+    "DePIN",
+    "Public Goods Funding",
+    "DeFi",
+    "DeGov / Governance improvements",
+    "Network States / new societies",
+    "Improving Nations",
+    "Climate / ReFi"
+  ]
+}

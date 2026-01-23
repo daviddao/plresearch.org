@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Protocol Labs Research</title>
+    <link>https://research.protocol.ai</link>
+    <description>Driving Breakthroughs in Computing to Push Humanity Forward.</description>
+    <atom:link href="https://research.protocol.ai/feed.xml" rel="self" type="application/rss+xml"/>
+    
+    <item>
+      <title><![CDATA[F3 and GossipBFT: Fast finality on longest-chain protocols]]></title>
+      <link>https://research.protocol.ai/talks/ethdenver24-alejandro/</link>
+      <pubDate>Tue, 27 Feb 2024 00:00:00 GMT</pubDate>
+      <description><![CDATA[We present F3, a finality component designed to bring fast finality to Filecoin. F3 leverages a novel consensus protocol, GossiPBFT,  that runs on the side and finalizes tipsets in tens of seconds instead of hours, while laying the basis for verifiable cross-chain bridging.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[A finality calculator for Filecoin’s Expected Consensus]]></title>
+      <link>https://research.protocol.ai/publications/goren2024/</link>
+      <pubDate>Thu, 01 Feb 2024 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Filecoin Proof of Useful Space]]></title>
+      <link>https://research.protocol.ai/publications/giacomelli2023/</link>
+      <pubDate>Wed, 30 Aug 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Security analysis of Filecoin's Expected Consensus in the Byzantine vs honest model]]></title>
+      <link>https://research.protocol.ai/publications/wang2023/</link>
+      <pubDate>Mon, 14 Aug 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Janus and Granite]]></title>
+      <link>https://research.protocol.ai/talks/plr23-henrique/</link>
+      <pubDate>Mon, 17 Jul 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[Henrique presents Janus and Granite, a consensus framework and algorithm to bring fast finality to the Filecoin network.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Base fee manipulation in Ethereum's EIP-1559 transaction fee mechanism]]></title>
+      <link>https://research.protocol.ai/publications/azouvi2023/</link>
+      <pubDate>Sat, 22 Apr 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Scalable asynchronous randomized byzantine agreement]]></title>
+      <link>https://research.protocol.ai/talks/randomnesssummit23-matej/</link>
+      <pubDate>Thu, 30 Mar 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[Most algorithms solving Byzantine agreement that are implemented and used in practice today rely on some form of synchrony assumptions. Especially when used in blockchain systems, where scalability is of great importance, purely asynchronous solutions suffer from high message complexity or strong as]]></description>
+    </item>
+    <item>
+      <title><![CDATA[tlock: Practical timelock encryption based on threshold BLS]]></title>
+      <link>https://research.protocol.ai/talks/rwc23-yolan/</link>
+      <pubDate>Wed, 29 Mar 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[We present a practical construction and implementation of timelock encryption, in which a ciphertext is guaranteed to be decryptable only after some specified time has passed. We employ an existing threshold network, the League of Entropy, implementing threshold BLS in the context of Boneh and Frank]]></description>
+    </item>
+    <item>
+      <title><![CDATA[A metaverse of walled gardens?]]></title>
+      <link>https://research.protocol.ai/talks/wipo23-jorge/</link>
+      <pubDate>Wed, 29 Mar 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[The way in which the development and commercialisation of the metaverse unfold may result in an open architecture for collaborative innovation and participation, or in a series of silos tightly controlled by a small number of commercial entities. But does the outcome even matter? And, if so, how can]]></description>
+    </item>
+    <item>
+      <title><![CDATA[SpaceVDF: Verifiable delay functions using cryptographic satellites]]></title>
+      <link>https://research.protocol.ai/publications/winetraub2023/</link>
+      <pubDate>Tue, 21 Mar 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[LURK: Lambda, the ultimate recursive knowledge]]></title>
+      <link>https://research.protocol.ai/publications/amin2023/</link>
+      <pubDate>Thu, 16 Mar 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[tlock: Practical timelock encryption from threshold BLS]]></title>
+      <link>https://research.protocol.ai/publications/gailly2023/</link>
+      <pubDate>Mon, 13 Feb 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Generalized Impact Evaluators]]></title>
+      <link>https://research.protocol.ai/publications/plnetworkgoods2023/</link>
+      <pubDate>Tue, 10 Jan 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Pikachu: Securing PoS blockchains from long-range attacks by checkpointing into Bitcoin PoW using Taproot]]></title>
+      <link>https://research.protocol.ai/publications/azouvi2022b/</link>
+      <pubDate>Tue, 13 Dec 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Enriching Kademlia by partitioning]]></title>
+      <link>https://research.protocol.ai/publications/monteiro2022/</link>
+      <pubDate>Tue, 13 Dec 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Interplanetary Consensus: Now playing in Eudico near you]]></title>
+      <link>https://research.protocol.ai/talks/consensuslabsummit22-alfonso/</link>
+      <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[Alfonso de la Rocha, Research Engineer at ConsensusLab, describes the technical details of interplanetary consensus.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Interplanetary Consensus: Scaling blockchains with subnets in an easy-to-trust model]]></title>
+      <link>https://research.protocol.ai/talks/consensuslabsummit22-guy/</link>
+      <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[Guy Goren, Research Scientist at ConsensusLab, presents a simplified subnet model for blockchain scaling.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Applications of Interplanetary Consensus]]></title>
+      <link>https://research.protocol.ai/talks/consensuslabsummit22-juan/</link>
+      <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[Juan Benet, CEO of Protocol Labs, outlines the scaling requirements of web3 and the many applications of IPC.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Realising web3: 15 months of ConsensusLab]]></title>
+      <link>https://research.protocol.ai/talks/consensuslabsummit22-marko/</link>
+      <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[Marko Vukolic, ConsensusLab lead at Protocol Labs, reviews the work done by ConsensusLab since its creation and its future directions.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Building modular and scalable BFT consensus using the Mir framework]]></title>
+      <link>https://research.protocol.ai/talks/consensuslabsummit22-matej/</link>
+      <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[Matej Pavlovic, Research Scientist at ConsensusLab, introduces the Mir framework and the work being done at ConsensusLab implementing performant BFT consensus.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[To the InterPlanetary File System – and beyond!: Peer-to-peer file sharing would make the Internet far more efficient]]></title>
+      <link>https://research.protocol.ai/publications/psaras2022/</link>
+      <pubDate>Mon, 07 Nov 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Structure-preserving compilers from new notions of obfuscations]]></title>
+      <link>https://research.protocol.ai/publications/campanelli2022f/</link>
+      <pubDate>Tue, 01 Nov 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Mir-BFT: Scalable and robust BFT for decentralized networks]]></title>
+      <link>https://research.protocol.ai/publications/vukolic2022/</link>
+      <pubDate>Mon, 24 Oct 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Decentralized hole punching]]></title>
+      <link>https://research.protocol.ai/publications/seemann2022/</link>
+      <pubDate>Wed, 28 Sep 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Impossibilities in succinct arguments: Black-box extraction and more]]></title>
+      <link>https://research.protocol.ai/publications/campanelli2022e/</link>
+      <pubDate>Fri, 09 Sep 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Curve trees: Practical and transparent zero-knowledge accumulators]]></title>
+      <link>https://research.protocol.ai/publications/campanelli2022d/</link>
+      <pubDate>Thu, 08 Sep 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Encryption to the future: A paradigm for sending secret messages to future (anonymous) committees]]></title>
+      <link>https://research.protocol.ai/publications/campanelli2022c/</link>
+      <pubDate>Tue, 30 Aug 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Design and evaluation of IPFS: A storage layer for the decentralized web]]></title>
+      <link>https://research.protocol.ai/publications/trautwein2022/</link>
+      <pubDate>Tue, 26 Jul 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Linear-map vector commitments and their practical applications]]></title>
+      <link>https://research.protocol.ai/publications/campanelli2022b/</link>
+      <pubDate>Wed, 06 Jul 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+    <item>
+      <title><![CDATA[What makes Fiat–Shamir zkSNARKs (updatable SRS) simulation extractable?]]></title>
+      <link>https://research.protocol.ai/publications/ganesh2022/</link>
+      <pubDate>Wed, 06 Jul 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[]]></description>
+    </item>
+  </channel>
+</rss>
