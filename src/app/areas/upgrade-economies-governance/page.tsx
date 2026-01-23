@@ -61,7 +61,7 @@ export default function FA2MainPage() {
       {/* Content */}
       <div className="mb-10 pb-10 border-b border-gray-100">
         <p className="text-sm text-gray-700 leading-relaxed mb-4">
-          FA2 focuses on rectifying the inadequacies of current macro systems, which often struggle to coordinate and solve monumental challenges like climate change. By leveraging cryptoeconomics and improved governance tools, we are rethinking how capital is formed and deployed.
+          This focus area rectifies the inadequacies of current macro systems, which often struggle to coordinate and solve monumental challenges like climate change. By leveraging cryptoeconomics and improved governance tools, we are rethinking how capital is formed and deployed.
         </p>
         <p className="text-sm text-gray-700 leading-relaxed">
           This movement harnesses mechanism design to align millions of people worldwide toward shared goals, creating structures that can allocate resources at the scale of nation-states for the benefit of all humanity.
@@ -96,6 +96,54 @@ export default function FA2MainPage() {
           description="242+ teams building public goods infrastructure."
         />
       </div>
+
+      {/* How to Engage */}
+      <div className="mt-16">
+        <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">How to Engage</h2>
+        <p className="text-sm text-gray-600 mb-6">We are actively seeking:</p>
+        <div className="grid md:grid-cols-2 gap-6">
+          <EngageItem
+            title="Feedback on this framing"
+            description="Does this opportunity space resonate? What's missing? What's wrong?"
+          />
+          <EngageItem
+            title="Case studies and examples"
+            description="What sovereign DPI deployments, DeSci infrastructure, DePIN projects, or PGF mechanisms should we be learning from?"
+          />
+          <EngageItem
+            title="Partner identification"
+            description="Who else should be at the table? What institutions, teams, or individuals are essential to this work?"
+          />
+          <EngageItem
+            title="Technical input"
+            description="What reference architectures, standards, or specifications would be most valuable?"
+          />
+          <EngageItem
+            title="Strategic counsel"
+            description="What have we gotten wrong about the field, the opportunity, or the approach?"
+          />
+        </div>
+        <a
+          href="https://forms.gle/xfuuf8U6UPX3obnh8"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 mt-8 text-sm text-blue hover:text-black border border-blue/30 hover:border-black/30 px-4 py-2 rounded-full transition-colors"
+        >
+          Share feedback
+          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  )
+}
+
+function EngageItem({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="border-l-2 border-gray-100 pl-5">
+      <h3 className="text-sm font-medium text-black mb-1">{title}</h3>
+      <p className="text-xs text-gray-500 leading-relaxed">{description}</p>
     </div>
   )
 }

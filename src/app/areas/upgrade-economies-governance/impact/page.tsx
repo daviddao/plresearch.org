@@ -5,7 +5,7 @@ import projectsData from '@/data/fa2/projects.json'
 
 export const metadata: Metadata = {
   title: 'Impact Dashboard',
-  description: 'Explore the impact of Protocol Labs FA2 ecosystem initiatives in 2025.',
+  description: 'Explore the impact of Protocol Labs ecosystem initiatives in 2025.',
 }
 
 export default function ImpactPage() {

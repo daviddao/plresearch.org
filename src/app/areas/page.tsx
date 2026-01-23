@@ -3,6 +3,8 @@ import { areas } from '@/lib/content'
 
 export const metadata = { title: 'Focus Areas' }
 
+const AREA_ORDER = ['digital-human-rights', 'upgrade-economies-governance', 'ai-robotics', 'neurotech']
+
 function stripFaPrefix(title: string): string {
   return title.replace(/^FA\d+:\s*/, '')
 }
@@ -23,7 +25,7 @@ export default function AreasPage() {
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-200">
-        {areas.map((area) => (
+        {[...areas].sort((a, b) => AREA_ORDER.indexOf(a.slug) - AREA_ORDER.indexOf(b.slug)).map((area) => (
           <Link
             key={area.slug}
             href={`/areas/${area.slug}`}

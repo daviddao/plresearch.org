@@ -4,7 +4,7 @@ import opportunityData from '@/data/fa2/opportunityspaces.json'
 
 export const metadata: Metadata = {
   title: 'Opportunity Spaces',
-  description: 'Convergence zones where multiple subfields unite to create transformative opportunities for FA2.',
+  description: 'Convergence zones where multiple subfields unite to create transformative opportunities.',
 }
 
 export default function OpportunitySpacesPage() {
