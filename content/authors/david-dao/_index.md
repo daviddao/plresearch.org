@@ -20,6 +20,20 @@ resources:
   - name: avatar
     src: avatar.jpg
 
+# Research interests
+interests:
+  - Artificial Intelligence
+  - Data Valuation
+  - AI for Conservation
+  - AI for Public Goods
+
+# Degrees
+education:
+  courses:
+  - course: PhD in AI Systems
+    institution: ETH Zurich
+    year: 2023
+
 social:
 - icon: twitter
   link: https://twitter.com/dwddao
