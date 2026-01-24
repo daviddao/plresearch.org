@@ -5,11 +5,19 @@
   "scripts": {
     "prebuild": "node scripts/build-content.mjs",
     "dev": "node scripts/build-content.mjs && next dev",
-    "build": "node scripts/build-content.mjs && next build && node scripts/copy-routes-manifest.mjs",
-    "start": "next start"
+    "build": "node scripts/build-content.mjs && next build",
+    "start": "next start",
+    "generate-jwk": "node scripts/generate-jwk.js"
   },
   "dependencies": {
+    "@atproto/api": "^0.18.17",
+    "@atproto/common-web": "^0.4.13",
+    "@atproto/jwk-jose": "^0.1.11",
+    "@atproto/oauth-client-node": "^0.3.15",
+    "@atproto/syntax": "^0.4.3",
+    "envalid": "^8.1.1",
     "fuse.js": "^7.0.0",
+    "iron-session": "^8.0.4",
     "next": "15.5.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

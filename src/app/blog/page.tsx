@@ -1,6 +1,32 @@
-export const metadata = { title: 'Blog' }
+'use client'
+
+import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { useAuth } from '@/lib/atproto'
+import type { PostEntry } from '@/lib/lexicons'
 
 export default function BlogPage() {
+  const { isAuthenticated } = useAuth()
+  const [posts, setPosts] = useState<PostEntry[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const response = await fetch('/api/feed')
+        if (response.ok) {
+          const data = await response.json()
+          setPosts(data.posts || [])
+        }
+      } catch {
+        // Ignore
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchPosts()
+  }, [])
+
   return (
     <div className="max-w-4xl mx-auto px-6 pt-8 pb-16">
       {/* Hero */}
@@ -12,16 +38,61 @@ export default function BlogPage() {
         <p className="relative z-10 text-gray-600 leading-relaxed max-w-xl">
           Updates, insights, and reflections from the Protocol Labs R&D team.
         </p>
+        {isAuthenticated && (
+          <Link href="/write" className="relative z-10 inline-block mt-4 text-sm text-blue hover:underline">
+            New entry →
+          </Link>
+        )}
       </div>
 
-      {/* Content */}
-      <p className="text-sm text-gray-500">No posts yet.</p>
+      {/* Posts */}
+      {isLoading ? (
+        <p className="text-sm text-gray-400">Loading posts...</p>
+      ) : posts.length === 0 ? (
+        <p className="text-sm text-gray-500">No posts yet.</p>
+      ) : (
+        <div className="divide-y divide-gray-200">
+          {posts.map((post) => (
+            <div key={post.uri} className="py-4">
+              <div className="flex items-baseline gap-3 mb-1">
+                <span className="text-xs text-gray-400 uppercase tracking-wide">
+                  {post.record.postType}
+                </span>
+                <span className="text-xs text-gray-400">
+                  {formatDate(post.record.createdAt)}
+                </span>
+              </div>
+              <h3 className="text-black font-medium leading-snug mb-1">
+                {post.record.title}
+              </h3>
+              {post.record.summary && (
+                <p className="text-sm text-gray-600 mb-1">{post.record.summary}</p>
+              )}
+              <div className="flex items-center gap-3 mt-2">
+                {post.author.avatar && (
+                  <img src={post.author.avatar} alt="" className="w-5 h-5 rounded-full" />
+                )}
+                <span className="text-xs text-gray-400">
+                  {post.author.displayName || post.author.handle}
+                </span>
+                {post.record.venue && (
+                  <span className="text-xs text-gray-400">· {post.record.venue}</span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
+
 function PageGeo() {
-  // Flowing horizontal lines suggesting writing/communication
   return (
     <svg
       className="absolute top-2 right-0 w-[300px] h-[240px] lg:w-[380px] lg:h-[300px] opacity-[0.4] pointer-events-none select-none"

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { siteConfig } from '@/lib/site-config'
+import { AuthProvider } from '@/lib/atproto'
 import SiteShell from '@/components/SiteShell'
 import './globals.css'
 
@@ -44,7 +45,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} font-body min-w-[320px] text-base text-black leading-normal antialiased`}>
-        <SiteShell>{children}</SiteShell>
+        <AuthProvider>
+          <SiteShell>{children}</SiteShell>
+        </AuthProvider>
       </body>
     </html>
   )

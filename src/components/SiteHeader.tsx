@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { mainNav } from '@/lib/site-config'
+import { useAuth } from '@/lib/atproto'
 import Fuse from 'fuse.js'
 
 type SearchItem = {
@@ -20,6 +21,7 @@ type Props = {
 
 export default function SiteHeader({ onMenuClick }: Props) {
   const pathname = usePathname()
+  const { isAuthenticated, session } = useAuth()
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<SearchItem[]>([])
@@ -187,6 +189,27 @@ export default function SiteHeader({ onMenuClick }: Props) {
               </div>
             )}
           </div>
+
+          {/* Auth Profile */}
+          {isAuthenticated && session && (
+            <Link
+              href="/admin"
+              className="flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-colors ml-4"
+            >
+              {session.avatar ? (
+                <img
+                  src={session.avatar}
+                  alt={session.handle}
+                  className="w-7 h-7 rounded-full"
+                />
+              ) : (
+                <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-600">
+                  {(session.displayName || session.handle).charAt(0).toUpperCase()}
+                </div>
+              )}
+              <span className="hidden lg:inline">{session.displayName || session.handle}</span>
+            </Link>
+          )}
         </div>
 
         {/* Mobile */}
