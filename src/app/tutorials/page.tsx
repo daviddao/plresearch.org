@@ -5,12 +5,23 @@ export const metadata = { title: 'Tutorials' }
 
 export default function TutorialsPage() {
   return (
-    <div className="max-w-[1146px] mx-auto pt-8 px-4 md:px-10">
-      <h1 className="text-lg font-semibold mb-8">Tutorials</h1>
+    <div className="max-w-4xl mx-auto px-6 pt-8 pb-16">
+      {/* Hero */}
+      <div className="relative pt-12 pb-10 mb-10 overflow-hidden">
+        <PageGeo />
+        <h1 className="relative z-10 text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4 max-w-lg">
+          Tutorials
+        </h1>
+        <p className="relative z-10 text-gray-600 leading-relaxed max-w-xl">
+          In-depth guides and educational materials on core research topics.
+        </p>
+      </div>
+
+      {/* List */}
       <div className="divide-y divide-gray-200">
         {tutorials.map((t) => (
           <div key={t.slug} className="py-4">
-            <Link href={`/tutorials/${t.slug}`} className="text-black hover:text-blue font-medium">
+            <Link href={`/tutorials/${t.slug}`} className="text-black hover:text-blue font-medium transition-colors">
               {t.title || t.slug}
             </Link>
             {t.summary && <p className="text-sm text-gray-500 mt-1">{t.summary}</p>}
@@ -18,5 +29,35 @@ export default function TutorialsPage() {
         ))}
       </div>
     </div>
+  )
+}
+
+function PageGeo() {
+  return (
+    <svg
+      className="absolute top-2 right-0 w-[300px] h-[240px] lg:w-[380px] lg:h-[300px] opacity-[0.4] pointer-events-none select-none"
+      viewBox="0 0 700 500"
+      fill="none"
+      aria-hidden="true"
+    >
+      {/* Step-based learning path */}
+      <rect x="400" y="80" width="120" height="80" rx="4" stroke="#C3E1FF" strokeWidth="0.75" />
+      <rect x="460" y="200" width="120" height="80" rx="4" stroke="#C3E1FF" strokeWidth="0.75" />
+      <rect x="520" y="320" width="120" height="80" rx="4" stroke="#C3E1FF" strokeWidth="0.75" />
+      {/* Connecting arrows */}
+      <line x1="460" y1="160" x2="520" y2="200" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="520" y1="280" x2="580" y2="320" stroke="#C3E1FF" strokeWidth="0.5" />
+      {/* Step indicators */}
+      <circle cx="460" cy="160" r="3" fill="#C3E1FF" />
+      <circle cx="520" cy="280" r="3" fill="#C3E1FF" />
+      <circle cx="580" cy="320" r="3" fill="#C3E1FF" />
+      {/* Lines inside boxes */}
+      <line x1="420" y1="110" x2="490" y2="110" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="420" y1="130" x2="500" y2="130" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="480" y1="230" x2="550" y2="230" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="480" y1="250" x2="560" y2="250" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="540" y1="350" x2="610" y2="350" stroke="#C3E1FF" strokeWidth="0.5" />
+      <line x1="540" y1="370" x2="620" y2="370" stroke="#C3E1FF" strokeWidth="0.5" />
+    </svg>
   )
 }

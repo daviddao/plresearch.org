@@ -28,6 +28,7 @@ export default function SiteFooter() {
             <a href="/feed.xml" className="hover:text-gray-600">RSS</a>
             <a href="https://github.com/protocol/research" className="hover:text-gray-600">GitHub</a>
             <a href="https://twitter.com/ProtoResearch" className="hover:text-gray-600">Twitter</a>
+            <a href="https://bsky.app/profile/protoresearch.bsky.social" className="hover:text-gray-600">Bluesky</a>
           </div>
         </div>
       </div>

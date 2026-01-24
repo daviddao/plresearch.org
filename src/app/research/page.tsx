@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { sections, publications } from '@/lib/content'
+import { sections, publications, talks, tutorials } from '@/lib/content'
 
 export const metadata = { title: 'Research' }
 
@@ -20,6 +20,30 @@ export default function ResearchPage() {
         </p>
       </div>
 
+      {/* Subpages */}
+      <div className="mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <ResearchCard
+            href="/publications"
+            title="Publications"
+            description="Papers and articles advancing the frontiers of decentralized systems, cryptography, and more."
+            count={publications.length}
+          />
+          <ResearchCard
+            href="/talks"
+            title="Talks"
+            description="Presentations and lectures from conferences and events around the world."
+            count={talks.length}
+          />
+          <ResearchCard
+            href="/tutorials"
+            title="Tutorials"
+            description="In-depth guides and educational materials on core research topics."
+            count={tutorials.length}
+          />
+        </div>
+      </div>
+
       {/* Content */}
       {section?.html && (
         <div className="mb-10 pb-10 border-b border-gray-100">
@@ -27,10 +51,10 @@ export default function ResearchPage() {
         </div>
       )}
 
-      {/* Publications */}
+      {/* Recent Publications */}
       {recentPubs.length > 0 && (
         <div className="mb-10">
-          <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Publications</h2>
+          <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Recent Publications</h2>
           <div className="divide-y divide-gray-100">
             {recentPubs.map((p) => (
               <div key={p.slug} className="py-3">
@@ -49,6 +73,16 @@ export default function ResearchPage() {
         </div>
       )}
     </div>
+  )
+}
+
+function ResearchCard({ href, title, description, count }: { href: string; title: string; description: string; count: number }) {
+  return (
+    <Link href={href} className="border border-gray-300 p-6 hover:border-blue hover:shadow-sm transition-all block">
+      <h3 className="font-semibold mb-1">{title}</h3>
+      <p className="text-sm text-gray-700 mb-3">{description}</p>
+      <span className="text-xs text-gray-400">{count} entries</span>
+    </Link>
   )
 }
 

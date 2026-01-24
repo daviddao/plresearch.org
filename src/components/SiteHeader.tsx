@@ -102,7 +102,7 @@ export default function SiteHeader({ onMenuClick }: Props) {
   }, [pathname])
 
   return (
-    <nav className="w-full top-0 z-30 border-b border-gray-200">
+    <nav className="relative w-full top-0 z-30 bg-white border-b border-gray-200">
       <div className="max-w-4xl mx-auto px-6 py-4 flex items-center">
         <Link href="/" className="mr-auto flex items-center gap-2.5">
           <img src="/images/pl_logo_mark.svg" className="h-8" alt="" />
@@ -164,16 +164,16 @@ export default function SiteHeader({ onMenuClick }: Props) {
 
             {/* Results dropdown */}
             {searchOpen && results.length > 0 && (
-              <div className="absolute right-0 top-full mt-3 w-80 bg-white border border-gray-200 rounded shadow-lg overflow-hidden">
+              <div className="absolute right-0 top-full mt-2 w-72 z-50 bg-white border border-gray-200 shadow-md py-2">
                 {results.map((item) => (
                   <Link
                     key={item.relpermalink}
                     href={item.relpermalink}
                     onClick={closeSearch}
-                    className="block px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                    className="block px-4 py-2 hover:bg-gray-50 transition-colors"
                   >
-                    <div className="text-sm font-medium text-black leading-snug mb-0.5">{item.title}</div>
-                    <div className="text-[11px] text-gray-400">
+                    <div className="text-sm text-black leading-snug">{item.title}</div>
+                    <div className="text-[11px] text-gray-400 mt-0.5">
                       {item.type}{item.date && ` · ${new Date(item.date).getFullYear()}`}
                     </div>
                   </Link>
@@ -182,8 +182,8 @@ export default function SiteHeader({ onMenuClick }: Props) {
             )}
 
             {searchOpen && query.length >= 2 && results.length === 0 && fuseRef.current && (
-              <div className="absolute right-0 top-full mt-3 w-64 bg-white border border-gray-200 rounded shadow-lg px-4 py-3">
-                <p className="text-sm text-gray-400">No results found.</p>
+              <div className="absolute right-0 top-full mt-2 w-56 z-50 bg-white border border-gray-200 shadow-md px-4 py-3">
+                <p className="text-xs text-gray-400">No results found.</p>
               </div>
             )}
           </div>
@@ -214,7 +214,7 @@ export default function SiteHeader({ onMenuClick }: Props) {
 
       {/* Mobile search bar */}
       {searchOpen && (
-        <div ref={!containerRef.current ? containerRef : undefined} className="md:hidden border-t border-gray-100 px-6 py-3 relative">
+        <div ref={!containerRef.current ? containerRef : undefined} className="md:hidden bg-white border-t border-gray-100 px-6 py-3 relative z-50">
           <input
             ref={inputRef}
             type="text"
@@ -224,16 +224,16 @@ export default function SiteHeader({ onMenuClick }: Props) {
             className="w-full text-sm bg-transparent border-b border-gray-300 focus:border-black outline-none py-1 transition-colors"
           />
           {results.length > 0 && (
-            <div className="mt-2 border border-gray-200 rounded shadow-lg overflow-hidden bg-white">
+            <div className="mt-2 bg-white border border-gray-200 shadow-md py-2">
               {results.map((item) => (
                 <Link
                   key={item.relpermalink}
                   href={item.relpermalink}
                   onClick={closeSearch}
-                  className="block px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0"
+                  className="block px-4 py-2 hover:bg-gray-50 transition-colors"
                 >
-                  <div className="text-sm font-medium text-black leading-snug mb-0.5">{item.title}</div>
-                  <div className="text-[11px] text-gray-400">
+                  <div className="text-sm text-black leading-snug">{item.title}</div>
+                  <div className="text-[11px] text-gray-400 mt-0.5">
                     {item.type}{item.date && ` · ${new Date(item.date).getFullYear()}`}
                   </div>
                 </Link>
@@ -241,7 +241,7 @@ export default function SiteHeader({ onMenuClick }: Props) {
             </div>
           )}
           {query.length >= 2 && results.length === 0 && fuseRef.current && (
-            <p className="text-sm text-gray-400 mt-2">No results found.</p>
+            <p className="text-xs text-gray-400 mt-2">No results found.</p>
           )}
         </div>
       )}

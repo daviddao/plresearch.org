@@ -40,18 +40,22 @@ export default function AboutPage() {
         <h2 className="font-semibold text-md mb-8">Our Four Focus Areas</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FocusCard
+            slug="digital-human-rights"
             title="Digital Human Rights"
             description="Securing freedom and safety in the digital age through improved internet infrastructure and Web3 technologies."
           />
           <FocusCard
+            slug="upgrade-economies-governance"
             title="Economics & Governance"
             description="Upgrading coordination systems through cryptoeconomics, mechanism design, and public goods funding."
           />
           <FocusCard
+            slug="ai-robotics"
             title="AI & Robotics"
             description="Advancing artificial intelligence and robotics with focus on beneficial outcomes and responsible development."
           />
           <FocusCard
+            slug="neurotech"
             title="Neurotechnology"
             description="Pioneering brain-computer interfaces and related technologies to expand human capabilities safely."
           />
@@ -124,12 +128,12 @@ function Section({ label, title, children }: { label: string; title: string; chi
   )
 }
 
-function FocusCard({ title, description }: { title: string; description: string }) {
+function FocusCard({ slug, title, description }: { slug: string; title: string; description: string }) {
   return (
-    <div className="border border-gray-300 p-6">
+    <Link href={`/areas/${slug}`} className="border border-gray-300 p-6 hover:border-blue hover:shadow-sm transition-all block">
       <h3 className="font-semibold mb-2">{title}</h3>
       <p className="text-sm text-gray-700">{description}</p>
-    </div>
+    </Link>
   )
 }
 
