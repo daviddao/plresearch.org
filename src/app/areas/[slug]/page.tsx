@@ -58,9 +58,9 @@ export default async function AreaPage({ params }: Props) {
           </p>
         )}
         {AREA_LEADS[slug] && (
-          <div className="relative z-10 flex flex-wrap gap-3">
+          <div className="relative z-10 flex flex-wrap gap-4">
             {AREA_LEADS[slug].map((authorSlug) => (
-              <AuthorCard key={authorSlug} slug={authorSlug} />
+              <AuthorCard key={authorSlug} slug={authorSlug} variant="lead" />
             ))}
           </div>
         )}

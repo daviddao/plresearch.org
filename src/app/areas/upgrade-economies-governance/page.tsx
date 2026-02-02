@@ -33,15 +33,15 @@ export default function FA2MainPage() {
         <p className="relative z-10 text-lg text-gray-600 leading-relaxed max-w-2xl mb-8">
           Building crypto-native economic and governance infrastructure to create more efficient, equitable structures that coordinate at the scale of nation-states.
         </p>
-        <div className="relative z-10 flex flex-wrap gap-4 mb-8">
-          <Link href="/areas/upgrade-economies-governance/subareas/" className="text-base text-blue hover:underline">Subareas</Link>
-          <Link href="/areas/upgrade-economies-governance/opportunity-spaces/" className="text-base text-blue hover:underline">Opportunity Spaces</Link>
-          <Link href="/areas/upgrade-economies-governance/impact/" className="text-base text-blue hover:underline">Impact</Link>
-          <Link href="/areas/upgrade-economies-governance/projects/" className="text-base text-blue hover:underline">Projects</Link>
+        <div className="relative z-10 flex flex-wrap gap-3 mb-10">
+          <NavPill href="/areas/upgrade-economies-governance/subareas/" label="Subareas" description="9 domains" />
+          <NavPill href="/areas/upgrade-economies-governance/opportunity-spaces/" label="Opportunity Spaces" description="4 zones" />
+          <NavPill href="/areas/upgrade-economies-governance/impact/" label="Impact" description="Metrics" />
+          <NavPill href="/areas/upgrade-economies-governance/projects/" label="Projects" description="242+ teams" />
         </div>
-        <div className="relative z-10 flex flex-col items-start gap-2">
-          <AuthorCard slug="david-dao" />
-          <AuthorCard slug="james-tunningley" />
+        <div className="relative z-10 flex flex-wrap gap-4">
+          <AuthorCard slug="david-dao" variant="lead" />
+          <AuthorCard slug="james-tunningley" variant="lead" />
         </div>
       </div>
 
@@ -132,6 +132,23 @@ function EngageItem({ title, description }: { title: string; description: string
       <h3 className="text-base font-medium text-black mb-1">{title}</h3>
       <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
     </div>
+  )
+}
+
+function NavPill({ href, label, description }: { href: string; label: string; description: string }) {
+  return (
+    <Link
+      href={href}
+      className="group inline-flex items-center gap-3 px-5 py-3 bg-white border border-gray-200 rounded-2xl hover:border-blue hover:shadow-sm transition-all no-underline"
+    >
+      <span className="flex flex-col">
+        <span className="text-base font-medium text-black group-hover:text-blue transition-colors">{label}</span>
+        <span className="text-xs text-gray-400">{description}</span>
+      </span>
+      <svg className="w-4 h-4 text-gray-300 group-hover:text-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
+    </Link>
   )
 }
 
