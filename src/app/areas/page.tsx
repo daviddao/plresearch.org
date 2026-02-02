@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { areas } from '@/lib/content'
+import Breadcrumb from '@/components/Breadcrumb'
 
 export const metadata = { title: 'Focus Areas' }
 
@@ -19,13 +20,14 @@ function stripFaPrefix(title: string): string {
 export default function AreasPage() {
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+      <Breadcrumb items={[{ label: 'Focus Areas' }]} />
       {/* Hero */}
-      <div className="relative pt-12 pb-10 mb-10 overflow-hidden">
+      <div className="relative pt-8 pb-12 mb-12 overflow-hidden">
         <AreasGeo />
-        <h1 className="relative z-10 text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4 max-w-lg">
+        <h1 className="relative z-10 text-2xl lg:text-[44px] font-semibold leading-[1.1] tracking-tight mb-5 max-w-xl">
           Focus Areas
         </h1>
-        <p className="relative z-10 text-gray-600 leading-relaxed max-w-xl">
+        <p className="relative z-10 text-lg text-gray-600 leading-relaxed max-w-2xl">
           Four research directions driving breakthroughs in computing, coordination, and human capability.
         </p>
       </div>
@@ -36,13 +38,13 @@ export default function AreasPage() {
           <Link
             key={area.slug}
             href={`/areas/${area.slug}`}
-            className="bg-white p-6 hover:bg-gray-50 transition-colors relative overflow-hidden group"
+            className="bg-white p-8 hover:bg-gray-50 transition-colors relative overflow-hidden group"
           >
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-5">
               <AreaIcon type={AREA_ICONS[area.slug] || 'shield'} />
               <div className="flex-1">
-                <h2 className="font-medium mb-2 group-hover:text-blue transition-colors">{stripFaPrefix(area.title)}</h2>
-                {area.summary && <p className="text-sm text-gray-600 leading-relaxed">{area.summary}</p>}
+                <h2 className="text-lg font-medium mb-2 group-hover:text-blue transition-colors">{stripFaPrefix(area.title)}</h2>
+                {area.summary && <p className="text-base text-gray-600 leading-relaxed">{area.summary}</p>}
               </div>
             </div>
           </Link>
@@ -55,7 +57,7 @@ export default function AreasPage() {
 type AreaIconType = 'shield' | 'hexagon' | 'neural' | 'brain'
 
 function AreaIcon({ type }: { type: AreaIconType }) {
-  const baseClass = "w-10 h-10 shrink-0 text-blue/60 group-hover:text-blue transition-colors duration-300"
+  const baseClass = "w-12 h-12 shrink-0 text-blue/60 group-hover:text-blue transition-colors duration-300"
   
   switch (type) {
     case 'shield':

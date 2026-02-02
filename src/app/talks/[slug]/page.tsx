@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { talks } from '@/lib/content'
 import AuthorCard from '@/components/AuthorCard'
+import Breadcrumb from '@/components/Breadcrumb'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -30,7 +31,8 @@ export default async function TalkPage({ params }: Props) {
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
-      <div className="mb-2 text-sm text-gray-500">
+      <Breadcrumb items={[{ label: 'Talks', href: '/talks/' }, { label: talk.title }]} />
+      <div className="mb-2 text-sm text-gray-500 mt-6">
         {talk.venue}
         {talk.venue_location && <> &middot; {talk.venue_location}</>}
         {talk.date && <> &middot; {new Date(talk.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short' })}</>}

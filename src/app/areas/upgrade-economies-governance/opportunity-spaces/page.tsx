@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import Breadcrumb from '@/components/Breadcrumb'
 import opportunityData from '@/data/fa2/opportunityspaces.json'
 
 export const metadata: Metadata = {
@@ -10,18 +11,18 @@ export const metadata: Metadata = {
 export default function OpportunitySpacesPage() {
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
-      {/* Breadcrumb */}
-      <Link
-        href="/areas/upgrade-economies-governance/"
-        className="text-xs text-gray-400 hover:text-black transition-colors mb-8 inline-block"
-      >
-        ← Economies & Governance
-      </Link>
+      <Breadcrumb
+        items={[
+          { label: 'Areas', href: '/areas' },
+          { label: 'Economies & Governance', href: '/areas/upgrade-economies-governance' },
+          { label: 'Opportunity Spaces' },
+        ]}
+      />
 
       {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-lg font-semibold mb-2">{opportunityData.meta.title}</h1>
-        <p className="text-sm text-gray-600 leading-relaxed max-w-xl">
+      <div className="mb-12">
+        <h1 className="text-2xl lg:text-[36px] font-semibold mb-3">{opportunityData.meta.title}</h1>
+        <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">
           {opportunityData.meta.subtitle}
         </p>
       </div>
@@ -32,11 +33,11 @@ export default function OpportunitySpacesPage() {
           <Link
             key={opp.id}
             href={`/areas/upgrade-economies-governance/opportunity-spaces/${opp.id}/`}
-            className="bg-white p-6 hover:bg-gray-50 transition-colors relative overflow-hidden group"
+            className="bg-white p-8 hover:bg-gray-50 transition-colors relative overflow-hidden group"
           >
             <OppCardGeo />
             {opp.image && (
-              <div className="h-24 mb-4 bg-gray-100 overflow-hidden rounded-sm">
+              <div className="h-28 mb-5 bg-gray-100 overflow-hidden rounded-sm">
                 <img
                   src={opp.image}
                   alt={opp.title}
@@ -44,19 +45,19 @@ export default function OpportunitySpacesPage() {
                 />
               </div>
             )}
-            <h3 className="relative z-10 font-medium text-black group-hover:text-blue transition-colors mb-1">
+            <h3 className="relative z-10 text-lg font-medium text-black group-hover:text-blue transition-colors mb-1">
               {opp.title}
             </h3>
             {opp.tagline && (
-              <p className="relative z-10 text-xs text-gray-400 mb-2">{opp.tagline}</p>
+              <p className="relative z-10 text-sm text-gray-400 mb-3">{opp.tagline}</p>
             )}
-            <p className="relative z-10 text-sm text-gray-600 leading-relaxed mb-3">
+            <p className="relative z-10 text-base text-gray-600 leading-relaxed mb-4">
               {opp.description.slice(0, 140)}...
             </p>
             {opp.subfields.length > 0 && (
-              <div className="relative z-10 flex flex-wrap gap-1">
+              <div className="relative z-10 flex flex-wrap gap-1.5">
                 {opp.subfields.map((sf) => (
-                  <span key={sf} className="text-[10px] text-gray-400 border border-gray-200 px-1.5 py-0.5 rounded-sm">
+                  <span key={sf} className="text-xs text-gray-400 border border-gray-200 px-2 py-0.5 rounded-sm">
                     {sf}
                   </span>
                 ))}

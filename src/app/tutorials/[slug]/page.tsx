@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { tutorials } from '@/lib/content'
+import Breadcrumb from '@/components/Breadcrumb'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -22,7 +23,8 @@ export default async function TutorialPage({ params }: Props) {
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
-      <h1 className="text-lg md:text-larger mb-4 leading-tight font-semibold">{tutorial.title || slug}</h1>
+      <Breadcrumb items={[{ label: 'Tutorials', href: '/tutorials/' }, { label: tutorial.title || slug }]} />
+      <h1 className="text-lg md:text-larger mb-4 leading-tight font-semibold mt-6">{tutorial.title || slug}</h1>
       {tutorial.html && <div className="page-content" dangerouslySetInnerHTML={{ __html: tutorial.html }} />}
     </div>
   )

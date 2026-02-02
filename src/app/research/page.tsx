@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { sections, publications, talks, tutorials } from '@/lib/content'
+import Breadcrumb from '@/components/Breadcrumb'
 
 export const metadata = { title: 'Research' }
 
@@ -9,13 +10,14 @@ export default function ResearchPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+      <Breadcrumb items={[{ label: 'Research' }]} />
       {/* Hero */}
-      <div className="relative pt-12 pb-10 mb-10 overflow-hidden">
+      <div className="relative pt-8 pb-12 mb-12 overflow-hidden">
         <PageGeo />
-        <h1 className="relative z-10 text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4 max-w-lg">
+        <h1 className="relative z-10 text-2xl lg:text-[44px] font-semibold leading-[1.1] tracking-tight mb-5 max-w-xl">
           {section?.title || 'Research'}
         </h1>
-        <p className="relative z-10 text-gray-600 leading-relaxed max-w-xl">
+        <p className="relative z-10 text-lg text-gray-600 leading-relaxed max-w-2xl">
           Exploring the frontiers of computing, networking, and knowledge systems to build infrastructure that empowers humanity.
         </p>
       </div>
@@ -46,28 +48,28 @@ export default function ResearchPage() {
 
       {/* Content */}
       {section?.html && (
-        <div className="mb-10 pb-10 border-b border-gray-100">
-          <div className="page-content text-sm text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: section.html }} />
+        <div className="mb-12 pb-12 border-b border-gray-100">
+          <div className="page-content text-base text-gray-700 leading-relaxed max-w-3xl" dangerouslySetInnerHTML={{ __html: section.html }} />
         </div>
       )}
 
       {/* Recent Publications */}
       {recentPubs.length > 0 && (
-        <div className="mb-10">
-          <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Recent Publications</h2>
+        <div className="mb-12">
+          <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-8">Recent Publications</h2>
           <div className="divide-y divide-gray-100">
             {recentPubs.map((p) => (
-              <div key={p.slug} className="py-3">
-                <Link href={`/publications/${p.slug}`} className="text-sm text-black hover:text-blue transition-colors">
+              <div key={p.slug} className="py-4">
+                <Link href={`/publications/${p.slug}`} className="text-base text-black hover:text-blue transition-colors">
                   {p.title}
                 </Link>
-                <div className="text-xs text-gray-400 mt-0.5">
+                <div className="text-sm text-gray-400 mt-1">
                   {p.venue}{p.date && ` · ${new Date(p.date).getFullYear()}`}
                 </div>
               </div>
             ))}
           </div>
-          <Link href="/publications" className="text-xs text-blue hover:underline mt-4 inline-block">
+          <Link href="/publications" className="text-base text-blue hover:underline mt-6 inline-block">
             All publications →
           </Link>
         </div>
@@ -78,10 +80,10 @@ export default function ResearchPage() {
 
 function ResearchCard({ href, title, description, count }: { href: string; title: string; description: string; count: number }) {
   return (
-    <Link href={href} className="border border-gray-300 p-6 hover:border-blue hover:shadow-sm transition-all block">
-      <h3 className="font-semibold mb-1">{title}</h3>
-      <p className="text-sm text-gray-700 mb-3">{description}</p>
-      <span className="text-xs text-gray-400">{count} entries</span>
+    <Link href={href} className="border border-gray-300 p-8 hover:border-blue hover:shadow-sm transition-all block">
+      <h3 className="font-semibold text-lg mb-2">{title}</h3>
+      <p className="text-base text-gray-700 mb-4">{description}</p>
+      <span className="text-sm text-gray-400">{count} entries</span>
     </Link>
   )
 }

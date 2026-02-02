@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { areas, publications, talks } from '@/lib/content'
 import AuthorCard from '@/components/AuthorCard'
+import Breadcrumb from '@/components/Breadcrumb'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -41,14 +42,18 @@ export default async function AreaPage({ params }: Props) {
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+      <Breadcrumb items={[{ label: 'Focus Areas', href: '/areas/' }, { label: stripFaPrefix(area.title) }]} />
       {/* Hero */}
-      <div className="relative pt-12 pb-10 mb-10 overflow-hidden">
+      <div className="relative pt-8 pb-12 mb-12 overflow-hidden">
         <AreaGeo slug={slug} />
-        <h1 className="relative z-10 text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4 max-w-lg">
-          {stripFaPrefix(area.title)}
-        </h1>
+        <div className="flex items-start gap-5 mb-6">
+          <AreaIcon slug={slug} />
+          <h1 className="relative z-10 text-2xl lg:text-[44px] font-semibold leading-[1.1] tracking-tight max-w-xl">
+            {stripFaPrefix(area.title)}
+          </h1>
+        </div>
         {area.summary && (
-          <p className="relative z-10 text-gray-600 leading-relaxed max-w-xl mb-6">
+          <p className="relative z-10 text-lg text-gray-600 leading-relaxed max-w-2xl mb-8">
             {area.summary}
           </p>
         )}
@@ -63,28 +68,28 @@ export default async function AreaPage({ params }: Props) {
 
       {/* Content */}
       {area.html && (
-        <div className="mb-10 pb-10 border-b border-gray-100">
-          <div className="page-content text-sm text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: area.html }} />
+        <div className="mb-12 pb-12 border-b border-gray-100">
+          <div className="page-content text-base text-gray-700 leading-relaxed max-w-3xl" dangerouslySetInnerHTML={{ __html: area.html }} />
         </div>
       )}
 
       {/* Publications */}
       {areaPubs.length > 0 && (
-        <div className="mb-10 pb-10 border-b border-gray-100">
+        <div className="mb-12 pb-12 border-b border-gray-100">
           <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Publications</h2>
           <div className="divide-y divide-gray-100">
             {areaPubs.map((p) => (
-              <div key={p.slug} className="py-3">
-                <Link href={`/publications/${p.slug}`} className="text-sm text-black hover:text-blue transition-colors">
+              <div key={p.slug} className="py-4">
+                <Link href={`/publications/${p.slug}`} className="text-base text-black hover:text-blue transition-colors">
                   {p.title}
                 </Link>
-                <div className="text-xs text-gray-400 mt-0.5">
+                <div className="text-sm text-gray-400 mt-1">
                   {p.venue}{p.date && ` · ${new Date(p.date).getFullYear()}`}
                 </div>
               </div>
             ))}
           </div>
-          <Link href="/publications" className="text-xs text-blue hover:underline mt-4 inline-block">
+          <Link href="/publications" className="text-sm text-blue hover:underline mt-6 inline-block">
             All publications →
           </Link>
         </div>
@@ -96,22 +101,168 @@ export default async function AreaPage({ params }: Props) {
           <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Talks</h2>
           <div className="divide-y divide-gray-100">
             {areaTalks.map((t) => (
-              <div key={t.slug} className="py-3">
-                <Link href={`/talks/${t.slug}`} className="text-sm text-black hover:text-blue transition-colors">
+              <div key={t.slug} className="py-4">
+                <Link href={`/talks/${t.slug}`} className="text-base text-black hover:text-blue transition-colors">
                   {t.title}
                 </Link>
-                <div className="text-xs text-gray-400 mt-0.5">
+                <div className="text-sm text-gray-400 mt-1">
                   {t.venue}{t.date && ` · ${new Date(t.date).getFullYear()}`}
                 </div>
               </div>
             ))}
           </div>
-          <Link href="/talks" className="text-xs text-blue hover:underline mt-4 inline-block">
+          <Link href="/talks" className="text-sm text-blue hover:underline mt-6 inline-block">
             All talks →
           </Link>
         </div>
       )}
     </div>
+  )
+}
+
+function AreaIcon({ slug }: { slug: string }) {
+  const baseClass = "w-14 h-14 lg:w-16 lg:h-16 shrink-0 text-blue/70"
+  
+  switch (slug) {
+    case 'digital-human-rights':
+      return <ShieldIcon className={baseClass} />
+    case 'ai-robotics':
+      return <NeuralIcon className={baseClass} />
+    case 'neurotech':
+      return <BrainIcon className={baseClass} />
+    default:
+      return <HexagonIcon className={baseClass} />
+  }
+}
+
+// Digital Human Rights - Shield with grid pattern
+function ShieldIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M20 4L6 10V18C6 26.8 12 34.4 20 36C28 34.4 34 26.8 34 18V10L20 4Z"
+        className="stroke-current"
+        strokeWidth="1.5"
+        fill="none"
+        strokeLinejoin="round"
+      >
+        <animate attributeName="stroke-dasharray" values="0 100;100 0" dur="2s" fill="freeze" />
+      </path>
+      <line x1="14" y1="14" x2="26" y2="14" className="stroke-current" strokeWidth="1" opacity="0.5">
+        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" />
+      </line>
+      <line x1="14" y1="20" x2="26" y2="20" className="stroke-current" strokeWidth="1" opacity="0.5">
+        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" begin="0.5s" />
+      </line>
+      <line x1="14" y1="26" x2="26" y2="26" className="stroke-current" strokeWidth="1" opacity="0.5">
+        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite" begin="1s" />
+      </line>
+      <line x1="20" y1="10" x2="20" y2="30" className="stroke-current" strokeWidth="1" opacity="0.4">
+        <animate attributeName="opacity" values="0.2;0.5;0.2" dur="3s" repeatCount="indefinite" begin="0.25s" />
+      </line>
+    </svg>
+  )
+}
+
+// Economies & Governance - Hexagon network
+function HexagonIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" className={className} aria-hidden="true">
+      <polygon
+        points="20,6 30,12 30,24 20,30 10,24 10,12"
+        className="stroke-current"
+        strokeWidth="1.5"
+        fill="none"
+        strokeLinejoin="round"
+      >
+        <animateTransform attributeName="transform" type="rotate" values="0 20 18;360 20 18" dur="30s" repeatCount="indefinite" />
+      </polygon>
+      <circle cx="20" cy="6" r="2" className="fill-current" opacity="0.6">
+        <animate attributeName="r" values="1.5;2.5;1.5" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <circle cx="30" cy="12" r="1.5" className="fill-current" opacity="0.4">
+        <animate attributeName="r" values="1;2;1" dur="2s" repeatCount="indefinite" begin="0.3s" />
+      </circle>
+      <circle cx="30" cy="24" r="1.5" className="fill-current" opacity="0.4">
+        <animate attributeName="r" values="1;2;1" dur="2s" repeatCount="indefinite" begin="0.6s" />
+      </circle>
+      <circle cx="20" cy="30" r="2" className="fill-current" opacity="0.6">
+        <animate attributeName="r" values="1.5;2.5;1.5" dur="2s" repeatCount="indefinite" begin="0.9s" />
+      </circle>
+      <circle cx="10" cy="24" r="1.5" className="fill-current" opacity="0.4">
+        <animate attributeName="r" values="1;2;1" dur="2s" repeatCount="indefinite" begin="1.2s" />
+      </circle>
+      <circle cx="10" cy="12" r="1.5" className="fill-current" opacity="0.4">
+        <animate attributeName="r" values="1;2;1" dur="2s" repeatCount="indefinite" begin="1.5s" />
+      </circle>
+      <circle cx="20" cy="18" r="3" className="stroke-current" strokeWidth="1" fill="none" opacity="0.5">
+        <animate attributeName="r" values="2;4;2" dur="3s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.5;0.2;0.5" dur="3s" repeatCount="indefinite" />
+      </circle>
+    </svg>
+  )
+}
+
+// AI & Robotics - Neural network / branching tree
+function NeuralIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" className={className} aria-hidden="true">
+      <circle cx="20" cy="8" r="3" className="fill-current" opacity="0.7">
+        <animate attributeName="r" values="2.5;3.5;2.5" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <line x1="20" y1="11" x2="12" y2="20" className="stroke-current" strokeWidth="1.5" opacity="0.6" />
+      <line x1="20" y1="11" x2="28" y2="20" className="stroke-current" strokeWidth="1.5" opacity="0.6" />
+      <circle cx="12" cy="20" r="2.5" className="fill-current" opacity="0.5">
+        <animate attributeName="opacity" values="0.4;0.7;0.4" dur="2s" repeatCount="indefinite" begin="0.3s" />
+      </circle>
+      <circle cx="28" cy="20" r="2.5" className="fill-current" opacity="0.5">
+        <animate attributeName="opacity" values="0.4;0.7;0.4" dur="2s" repeatCount="indefinite" begin="0.6s" />
+      </circle>
+      <line x1="12" y1="22.5" x2="8" y2="30" className="stroke-current" strokeWidth="1" opacity="0.5" />
+      <line x1="12" y1="22.5" x2="16" y2="30" className="stroke-current" strokeWidth="1" opacity="0.5" />
+      <line x1="28" y1="22.5" x2="24" y2="30" className="stroke-current" strokeWidth="1" opacity="0.5" />
+      <line x1="28" y1="22.5" x2="32" y2="30" className="stroke-current" strokeWidth="1" opacity="0.5" />
+      <circle cx="8" cy="30" r="2" className="fill-current" opacity="0.4">
+        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite" begin="0.9s" />
+      </circle>
+      <circle cx="16" cy="30" r="2" className="fill-current" opacity="0.4">
+        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite" begin="1.2s" />
+      </circle>
+      <circle cx="24" cy="30" r="2" className="fill-current" opacity="0.4">
+        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite" begin="1.5s" />
+      </circle>
+      <circle cx="32" cy="30" r="2" className="fill-current" opacity="0.4">
+        <animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite" begin="1.8s" />
+      </circle>
+    </svg>
+  )
+}
+
+// Neurotechnology - Brain waves / neural connections
+function BrainIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" className={className} aria-hidden="true">
+      <ellipse cx="20" cy="18" rx="14" ry="12" className="stroke-current" strokeWidth="1.5" fill="none" opacity="0.6">
+        <animate attributeName="ry" values="11;13;11" dur="4s" repeatCount="indefinite" />
+      </ellipse>
+      <path d="M10 18 Q 15 14, 20 18 T 30 18" className="stroke-current" strokeWidth="1" fill="none" opacity="0.5">
+        <animate attributeName="d" values="M10 18 Q 15 14, 20 18 T 30 18;M10 18 Q 15 22, 20 18 T 30 18;M10 18 Q 15 14, 20 18 T 30 18" dur="3s" repeatCount="indefinite" />
+      </path>
+      <path d="M12 14 Q 17 10, 22 14 T 28 14" className="stroke-current" strokeWidth="1" fill="none" opacity="0.4">
+        <animate attributeName="d" values="M12 14 Q 17 10, 22 14 T 28 14;M12 14 Q 17 18, 22 14 T 28 14;M12 14 Q 17 10, 22 14 T 28 14" dur="3s" repeatCount="indefinite" begin="0.5s" />
+      </path>
+      <path d="M12 22 Q 17 26, 22 22 T 28 22" className="stroke-current" strokeWidth="1" fill="none" opacity="0.4">
+        <animate attributeName="d" values="M12 22 Q 17 26, 22 22 T 28 22;M12 22 Q 17 18, 22 22 T 28 22;M12 22 Q 17 26, 22 22 T 28 22" dur="3s" repeatCount="indefinite" begin="1s" />
+      </path>
+      <circle cx="14" cy="18" r="1.5" className="fill-current" opacity="0.6">
+        <animate attributeName="cx" values="14;26;14" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite" />
+      </circle>
+      <line x1="20" y1="30" x2="20" y2="36" className="stroke-current" strokeWidth="1.5" opacity="0.5" />
+      <circle cx="20" cy="36" r="2" className="fill-current" opacity="0.4">
+        <animate attributeName="r" values="1.5;2.5;1.5" dur="2s" repeatCount="indefinite" />
+      </circle>
+    </svg>
   )
 }
 

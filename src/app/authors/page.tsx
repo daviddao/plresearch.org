@@ -1,13 +1,15 @@
 import Link from 'next/link'
 import { authors } from '@/lib/content'
+import Breadcrumb from '@/components/Breadcrumb'
 
 export const metadata = { title: 'Team' }
 
 export default function AuthorsPage() {
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+      <Breadcrumb items={[{ label: 'Team' }]} />
       {/* Hero */}
-      <div className="relative pt-12 pb-10 mb-10 overflow-hidden">
+      <div className="relative pt-6 pb-10 mb-10 overflow-hidden">
         <PageGeo />
         <h1 className="relative z-10 text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4 max-w-lg">
           Team

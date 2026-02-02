@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { authors, publications, talks } from '@/lib/content'
+import Breadcrumb from '@/components/Breadcrumb'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -26,8 +27,9 @@ export default async function AuthorPage({ params }: Props) {
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+      <Breadcrumb items={[{ label: 'Team', href: '/authors/' }, { label: author.name }]} />
       {/* Hero */}
-      <div className="relative pt-12 pb-10 mb-10 overflow-hidden">
+      <div className="relative pt-6 pb-10 mb-10 overflow-hidden">
         <PageGeo />
 
         <div className="relative z-10 flex flex-col md:flex-row gap-6 items-start">

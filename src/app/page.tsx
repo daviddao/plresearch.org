@@ -63,7 +63,7 @@ export default function HomePage() {
       </div>
 
       <div className="pb-20 lg:pb-28">
-        <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Focus Areas</h2>
+        <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-8">Focus Areas</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-gray-200">
           <AreaCard 
             title="Digital Human Rights" 
@@ -93,32 +93,32 @@ export default function HomePage() {
       </div>
 
       <div className="pb-20 lg:pb-28">
-        <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Recent</h2>
+        <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-8">Recent</h2>
         <div className="divide-y divide-gray-200">
           {updates.map((item) => (
-            <div key={item.permalink} className="py-4 flex flex-col md:flex-row md:items-baseline gap-1 md:gap-6">
-              <div className="flex items-baseline gap-3 shrink-0">
-                <span className="text-sm text-gray-400 w-[100px]">{formatDate(item.date)}</span>
-                <span className="text-sm text-gray-400 w-[80px]">{item.type}</span>
+            <div key={item.permalink} className="py-5 flex flex-col md:flex-row md:items-baseline gap-2 md:gap-8">
+              <div className="flex items-baseline gap-4 shrink-0">
+                <span className="text-base text-gray-400 w-[110px]">{formatDate(item.date)}</span>
+                <span className="text-base text-gray-400 w-[90px]">{item.type}</span>
               </div>
-              <Link href={item.permalink} className="text-black hover:text-blue leading-snug">
+              <Link href={item.permalink} className="text-lg text-black hover:text-blue leading-snug">
                 {item.title}
               </Link>
             </div>
           ))}
         </div>
-        <div className="mt-6 flex gap-6">
-          <Link href="/publications" className="text-sm text-blue hover:underline">Publications</Link>
-          <Link href="/talks" className="text-sm text-blue hover:underline">Talks</Link>
+        <div className="mt-8 flex gap-8">
+          <Link href="/publications" className="text-base text-blue hover:underline">Publications →</Link>
+          <Link href="/talks" className="text-base text-blue hover:underline">Talks →</Link>
         </div>
       </div>
 
       <div className="pb-20 lg:pb-28">
         <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Team</h2>
-        <p className="text-gray-700 leading-relaxed max-w-xl mb-4">
+        <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mb-6">
           A fully remote team distributed across the globe, working with talented and intellectually curious people who share a passion for improving technology for humanity.
         </p>
-        <Link href="/authors" className="text-blue hover:underline">Meet the team</Link>
+        <Link href="/authors" className="text-base text-blue hover:underline">Meet the team →</Link>
       </div>
     </div>
   )
@@ -128,12 +128,12 @@ type AreaIconType = 'shield' | 'hexagon' | 'neural' | 'brain'
 
 function AreaCard({ title, href, description, icon }: { title: string; href: string; description: string; icon: AreaIconType }) {
   return (
-    <Link href={href} className="bg-white p-6 hover:bg-gray-50 transition-colors relative overflow-hidden group">
-      <div className="flex items-start gap-4">
+    <Link href={href} className="bg-white p-8 hover:bg-gray-50 transition-colors relative overflow-hidden group">
+      <div className="flex items-start gap-5">
         <AreaIcon type={icon} />
         <div className="flex-1">
-          <h3 className="font-medium mb-1 group-hover:text-blue transition-colors">{title}</h3>
-          <p className="text-sm text-gray-600">{description}</p>
+          <h3 className="text-lg font-medium mb-2 group-hover:text-blue transition-colors">{title}</h3>
+          <p className="text-base text-gray-600">{description}</p>
         </div>
       </div>
     </Link>
@@ -141,7 +141,7 @@ function AreaCard({ title, href, description, icon }: { title: string; href: str
 }
 
 function AreaIcon({ type }: { type: AreaIconType }) {
-  const baseClass = "w-10 h-10 shrink-0 text-blue/60 group-hover:text-blue transition-colors duration-300"
+  const baseClass = "w-12 h-12 shrink-0 text-blue/60 group-hover:text-blue transition-colors duration-300"
   
   switch (type) {
     case 'shield':

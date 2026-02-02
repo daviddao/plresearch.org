@@ -3,6 +3,7 @@
 import { useAuth } from '@/lib/atproto'
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
+import Breadcrumb from '@/components/Breadcrumb'
 import type { CuratedListEntry } from '@/lib/lexicons'
 
 export default function AdminPage() {
@@ -145,6 +146,7 @@ export default function AdminPage() {
   if (isLoading) {
     return (
       <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+        <Breadcrumb items={[{ label: 'Admin' }]} />
         <div className="relative pt-20 pb-16 overflow-hidden">
           <AdminGeo />
           <h1 className="relative z-10 text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight">
@@ -158,6 +160,7 @@ export default function AdminPage() {
   if (!isAuthenticated) {
     return (
       <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+        <Breadcrumb items={[{ label: 'Admin' }]} />
         <div className="relative pt-20 pb-16 overflow-hidden">
           <AdminGeo />
           <h1 className="relative z-10 text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4">
@@ -193,6 +196,7 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+      <Breadcrumb items={[{ label: 'Admin' }]} />
       <div className="relative pt-20 pb-16 overflow-hidden">
         <AdminGeo />
         <div className="relative z-10 flex items-center gap-4 mb-4">

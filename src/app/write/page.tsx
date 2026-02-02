@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/atproto'
+import Breadcrumb from '@/components/Breadcrumb'
 import MarkdownEditor from '@/components/MarkdownEditor'
 import type { PostType } from '@/lib/lexicons'
 
@@ -66,6 +67,7 @@ export default function WritePage() {
   if (isLoading) {
     return (
       <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+        <Breadcrumb items={[{ label: 'Write' }]} />
         <div className="pt-12 pb-10">
           <h1 className="text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight">
             Write
@@ -78,6 +80,7 @@ export default function WritePage() {
   if (!isAuthenticated) {
     return (
       <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+        <Breadcrumb items={[{ label: 'Write' }]} />
         <div className="pt-12 pb-10">
           <h1 className="text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4">
             Write
@@ -92,6 +95,7 @@ export default function WritePage() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+      <Breadcrumb items={[{ label: 'Write' }]} />
       <div className="pt-12 pb-10">
         <h1 className="text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4">
           New Entry
