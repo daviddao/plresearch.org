@@ -21,7 +21,7 @@ export default async function TutorialPage({ params }: Props) {
   if (!tutorial) notFound()
 
   return (
-    <div className="max-w-4xl mx-auto px-6 pt-8 pb-16">
+    <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
       <h1 className="text-lg md:text-larger mb-4 leading-tight font-semibold">{tutorial.title || slug}</h1>
       {tutorial.html && <div className="page-content" dangerouslySetInnerHTML={{ __html: tutorial.html }} />}
     </div>

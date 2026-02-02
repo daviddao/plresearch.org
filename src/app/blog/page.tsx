@@ -28,7 +28,7 @@ export default function BlogPage() {
   }, [])
 
   return (
-    <div className="max-w-4xl mx-auto px-6 pt-8 pb-16">
+    <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
       {/* Hero */}
       <div className="relative pt-12 pb-10 mb-10 overflow-hidden">
         <PageGeo />

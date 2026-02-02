@@ -29,7 +29,7 @@ export default async function TalkPage({ params }: Props) {
   const youtubeId = talk.html ? extractYoutubeId(talk.html) : null
 
   return (
-    <div className="max-w-4xl mx-auto px-6 pt-8 pb-16">
+    <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
       <div className="mb-2 text-sm text-gray-500">
         {talk.venue}
         {talk.venue_location && <> &middot; {talk.venue_location}</>}

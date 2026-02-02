@@ -65,7 +65,7 @@ export default function WritePage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-4xl mx-auto px-6 pt-8 pb-16">
+      <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
         <div className="pt-12 pb-10">
           <h1 className="text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight">
             Write
@@ -77,7 +77,7 @@ export default function WritePage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="max-w-4xl mx-auto px-6 pt-8 pb-16">
+      <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
         <div className="pt-12 pb-10">
           <h1 className="text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4">
             Write
@@ -91,7 +91,7 @@ export default function WritePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 pt-8 pb-16">
+    <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
       <div className="pt-12 pb-10">
         <h1 className="text-xl lg:text-[40px] font-semibold leading-[1.15] tracking-tight mb-4">
           New Entry

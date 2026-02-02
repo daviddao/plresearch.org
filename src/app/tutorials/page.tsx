@@ -5,7 +5,7 @@ export const metadata = { title: 'Tutorials' }
 
 export default function TutorialsPage() {
   return (
-    <div className="max-w-4xl mx-auto px-6 pt-8 pb-16">
+    <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
       {/* Hero */}
       <div className="relative pt-12 pb-10 mb-10 overflow-hidden">
         <PageGeo />

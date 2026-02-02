@@ -10,7 +10,7 @@ export default function AboutPage() {
   return (
     <div>
       {/* Hero */}
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-6">
         <div className="relative pt-20 pb-16 lg:pt-28 lg:pb-20 overflow-hidden">
           {/* Subtle background image on the right */}
           <img
@@ -36,7 +36,7 @@ export default function AboutPage() {
       </div>
 
       {/* Focus Areas */}
-      <div className="max-w-4xl mx-auto px-6 mb-28">
+      <div className="max-w-6xl mx-auto px-6 mb-28">
         <h2 className="font-semibold text-md mb-8">Our Four Focus Areas</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FocusCard
@@ -85,7 +85,7 @@ export default function AboutPage() {
       </Section>
 
       {/* Quote */}
-      <div className="max-w-4xl mx-auto px-6 py-16 flex flex-col items-center text-center">
+      <div className="max-w-6xl mx-auto px-6 py-16 flex flex-col items-center text-center">
         <img className="mb-6 opacity-30 w-8" src="/images/about-page/quote-icon.svg" alt="" />
         <h3 className="font-semibold text-md lg:text-lg leading-relaxed mb-6">
           More innovation faster
@@ -106,7 +106,7 @@ export default function AboutPage() {
       </Section>
 
       {/* Will Scott quote */}
-      <div className="max-w-4xl mx-auto px-6 pb-24">
+      <div className="max-w-6xl mx-auto px-6 pb-24">
         <div className="border-l-2 border-pink pl-6 py-2">
           <p className="text-gray-700 leading-relaxed mb-4 italic">
             &ldquo;We consistently bet, not only that the future could be a fantastic and wonderful place, but that it&apos;s worthwhile for us, as an organization, to work toward that future.&rdquo;
@@ -120,7 +120,7 @@ export default function AboutPage() {
 
 function Section({ label, title, children }: { label: string; title: string; children: React.ReactNode }) {
   return (
-    <div className="max-w-4xl mx-auto px-6 mb-24">
+    <div className="max-w-6xl mx-auto px-6 mb-24">
       <p className="text-pink text-sm tracking-wide mb-2">{label}</p>
       <h2 className="font-semibold text-md leading-relaxed mb-6 max-w-2xl">{title}</h2>
       {children}
