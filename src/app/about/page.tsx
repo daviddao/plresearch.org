@@ -186,36 +186,4 @@ function FocusCard({ slug, title, description }: { slug: string; title: string; 
   )
 }
 
-function AboutGeometry() {
-  return (
-    <svg
-      className="absolute top-4 right-0 w-[320px] h-[280px] lg:w-[420px] lg:h-[340px] opacity-[0.4] pointer-events-none select-none"
-      viewBox="0 0 700 500"
-      fill="none"
-      aria-hidden="true"
-    >
-      {/* Network pattern */}
-      <circle cx="480" cy="100" r="70" stroke="#C3E1FF" strokeWidth="1" />
-      <circle cx="580" cy="220" r="50" stroke="#C3E1FF" strokeWidth="1" />
-      <circle cx="400" cy="220" r="90" stroke="#C3E1FF" strokeWidth="0.75" />
-      <circle cx="550" cy="370" r="60" stroke="#C3E1FF" strokeWidth="1" />
-      <circle cx="420" cy="400" r="45" stroke="#C3E1FF" strokeWidth="0.75" />
-      <circle cx="340" cy="320" r="35" stroke="#C3E1FF" strokeWidth="1" />
-      {/* Connections */}
-      <line x1="480" y1="100" x2="580" y2="220" stroke="#C3E1FF" strokeWidth="0.5" />
-      <line x1="580" y1="220" x2="550" y2="370" stroke="#C3E1FF" strokeWidth="0.5" />
-      <line x1="400" y1="220" x2="420" y2="400" stroke="#C3E1FF" strokeWidth="0.5" />
-      <line x1="480" y1="100" x2="400" y2="220" stroke="#C3E1FF" strokeWidth="0.5" />
-      <line x1="550" y1="370" x2="420" y2="400" stroke="#C3E1FF" strokeWidth="0.5" />
-      <line x1="340" y1="320" x2="400" y2="220" stroke="#C3E1FF" strokeWidth="0.5" />
-      <line x1="340" y1="320" x2="420" y2="400" stroke="#C3E1FF" strokeWidth="0.5" />
-      {/* Nodes */}
-      <circle cx="480" cy="100" r="3" fill="#C3E1FF" />
-      <circle cx="580" cy="220" r="3" fill="#C3E1FF" />
-      <circle cx="400" cy="220" r="3" fill="#C3E1FF" />
-      <circle cx="550" cy="370" r="3" fill="#C3E1FF" />
-      <circle cx="420" cy="400" r="3" fill="#C3E1FF" />
-      <circle cx="340" cy="320" r="3" fill="#C3E1FF" />
-    </svg>
-  )
-}
+

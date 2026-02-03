@@ -1,8 +1,9 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { talks } from '@/lib/content'
 import Breadcrumb from '@/components/Breadcrumb'
 
-export const metadata = { title: 'Talks' }
+export const metadata: Metadata = { title: 'Talks' }
 
 export default function TalksPage() {
   return (

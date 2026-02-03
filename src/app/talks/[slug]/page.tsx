@@ -40,8 +40,8 @@ export default async function TalkPage({ params }: Props) {
       <h1 className="text-lg md:text-larger mb-4 leading-tight font-semibold">{talk.title}</h1>
       {talk.authors.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-6">
-          {talk.authors.map((slug) => (
-            <AuthorCard key={slug} slug={slug} />
+          {talk.authors.map((authorSlug) => (
+            <AuthorCard key={authorSlug} slug={authorSlug} />
           ))}
         </div>
       )}

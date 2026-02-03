@@ -1,1 +1,40 @@
-[{"slug":"ai-robotics","title":"AI & Robotics","date":"2024-03-15T00:00:00.000Z","summary":"Developing Advanced Technologies: Ensuring responsible advancement in AI, Robotics, AR, VR, and other nascent tech breakthroughs.","leads":["molly-mackinlay"],"html":"<p>This focus area encompasses AI, Robotics, and other nascent technological breakthroughs. We are exploring diverse areas of computing that promise radical transformations in how we interact with the world, including Artificial General Intelligence (AGI), Augmented Reality (AR), and Virtual Reality (VR).</p>\n<p>Our goal is to ensure responsible advancement in these fields by fostering effective resource allocation and a robust R&#x26;D pipeline. By accelerating the innovation network, we aim to overcome challenges faster than conventional systems and shape a future where these transformative technologies empower humanity.</p>\n"},{"slug":"digital-human-rights","title":"Digital Human Rights","date":"2024-03-15T00:00:00.000Z","summary":"Securing Digital Human Rights: Building a foundation of freedom and safety in the digital age through Web3 networks and decentralized infrastructure.","leads":["will-scott"],"html":"<p>Digital Human Rights is centered on building a foundation of freedom and safety in the digital age. Our mission is to improve the internet by developing web3 networks, infrastructure, and new primitives that promote human agency.</p>\n<p>By making the internet more decentralized, verifiable, and secure, we aim to protect against digital totalitarianism and create better infrastructure that enshrines human rights through mathematics, incentives, and robust global governance. This involves constructing an underlying infrastructure layer with public internet digital utilities that ensure universal access and consistent connectivity for all humans worldwide.</p>\n"},{"slug":"neurotech","title":"Neurotech","date":"2024-03-15T00:00:00.000Z","summary":"Accelerate neurotechnologies to benefit humanity, focusing on breakthroughs in brain-computer interfaces (BCI).","leads":["sean-escola"],"html":"<p>Neurotech is dedicated to accelerating neurotechnologies for the benefit of humanity. A critical focus of this area is the development and responsible advancement of brain-computer interfaces (BCI), which represent one of the most profound frontiers in computing today.</p>\n<p>As part of our mission to drive breakthroughs that push humanity forward, we aim to steer collective energy toward ensuring positive outcomes in these transformative areas. By navigating potential pitfalls and harnessing the full potential of neurotech, we can shape a future where technology deeply integrated with human cognition empowers society.</p>\n"},{"slug":"upgrade-economies-governance","title":"Upgrade Economies & Governance Systems","date":"2024-03-15T00:00:00.000Z","summary":"Upgrading Economies and Governance Systems: Creating more efficient and equitable structures for global progress through crypto-native infrastructure.","leads":[],"html":"<p>This focus area is building the field of crypto-native economic and governance infrastructure, aiming to rectify the inadequacies of current macro systems which often struggle to coordinate and solve monumental challenges like climate change.</p>\n<p>By leveraging cryptoeconomics and improved governance tools, we are rethinking how capital is formed and deployed (e.g., Public Goods Funding). This movement harnesses mechanism design to align millions of people worldwide toward shared goals, creating more efficient and equitable structures that can allocate resources at the scale of nation-states for the benefit of all humanity.</p>\n"}]
+[
+  {
+    "slug": "ai-robotics",
+    "title": "AI & Robotics",
+    "date": "2024-03-15T00:00:00.000Z",
+    "summary": "Developing Advanced Technologies: Ensuring responsible advancement in AI, Robotics, AR, VR, and other nascent tech breakthroughs.",
+    "leads": [
+      "molly-mackinlay"
+    ],
+    "html": "<p>This focus area encompasses AI, Robotics, and other nascent technological breakthroughs. We are exploring diverse areas of computing that promise radical transformations in how we interact with the world, including Artificial General Intelligence (AGI), Augmented Reality (AR), and Virtual Reality (VR).</p>\n<p>Our goal is to ensure responsible advancement in these fields by fostering effective resource allocation and a robust R&#x26;D pipeline. By accelerating the innovation network, we aim to overcome challenges faster than conventional systems and shape a future where these transformative technologies empower humanity.</p>\n"
+  },
+  {
+    "slug": "digital-human-rights",
+    "title": "Digital Human Rights",
+    "date": "2024-03-15T00:00:00.000Z",
+    "summary": "Securing Digital Human Rights: Building a foundation of freedom and safety in the digital age through Web3 networks and decentralized infrastructure.",
+    "leads": [
+      "will-scott"
+    ],
+    "html": "<p>Digital Human Rights is centered on building a foundation of freedom and safety in the digital age. Our mission is to improve the internet by developing web3 networks, infrastructure, and new primitives that promote human agency.</p>\n<p>By making the internet more decentralized, verifiable, and secure, we aim to protect against digital totalitarianism and create better infrastructure that enshrines human rights through mathematics, incentives, and robust global governance. This involves constructing an underlying infrastructure layer with public internet digital utilities that ensure universal access and consistent connectivity for all humans worldwide.</p>\n"
+  },
+  {
+    "slug": "neurotech",
+    "title": "Neurotech",
+    "date": "2024-03-15T00:00:00.000Z",
+    "summary": "Accelerate neurotechnologies to benefit humanity, focusing on breakthroughs in brain-computer interfaces (BCI).",
+    "leads": [
+      "sean-escola"
+    ],
+    "html": "<p>Neurotech is dedicated to accelerating neurotechnologies for the benefit of humanity. A critical focus of this area is the development and responsible advancement of brain-computer interfaces (BCI), which represent one of the most profound frontiers in computing today.</p>\n<p>As part of our mission to drive breakthroughs that push humanity forward, we aim to steer collective energy toward ensuring positive outcomes in these transformative areas. By navigating potential pitfalls and harnessing the full potential of neurotech, we can shape a future where technology deeply integrated with human cognition empowers society.</p>\n"
+  },
+  {
+    "slug": "upgrade-economies-governance",
+    "title": "Upgrade Economies & Governance Systems",
+    "date": "2024-03-15T00:00:00.000Z",
+    "summary": "Upgrading Economies and Governance Systems: Creating more efficient and equitable structures for global progress through crypto-native infrastructure.",
+    "leads": [],
+    "html": "<p>This focus area is building the field of crypto-native economic and governance infrastructure, aiming to rectify the inadequacies of current macro systems which often struggle to coordinate and solve monumental challenges like climate change.</p>\n<p>By leveraging cryptoeconomics and improved governance tools, we are rethinking how capital is formed and deployed (e.g., Public Goods Funding). This movement harnesses mechanism design to align millions of people worldwide toward shared goals, creating more efficient and equitable structures that can allocate resources at the scale of nation-states for the benefit of all humanity.</p>\n"
+  }
+]

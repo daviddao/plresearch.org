@@ -3,12 +3,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/lib/atproto'
+import { formatDate } from '@/lib/format'
 import type { PostEntry } from '@/lib/lexicons'
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
 
 export default function AtprotoFeed() {
   const { isAuthenticated } = useAuth()

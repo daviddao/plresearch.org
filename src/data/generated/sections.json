@@ -1,1 +1,14 @@
-{"research":{"title":"Research","html":""},"contact":{"title":"Contact","html":""},"outreach":{"title":"Outreach","html":""}}
+{
+  "research": {
+    "title": "Research",
+    "html": ""
+  },
+  "contact": {
+    "title": "Contact",
+    "html": ""
+  },
+  "outreach": {
+    "title": "Outreach",
+    "html": ""
+  }
+}

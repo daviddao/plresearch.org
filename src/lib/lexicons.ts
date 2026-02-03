@@ -9,7 +9,8 @@ export const POST_COLLECTION = 'org.plresearch.post'
 export const CURATEDLIST_COLLECTION = 'org.plresearch.curatedlist'
 
 // Admin DID - the only user who can manage the curated list
-export const ADMIN_DID = 'did:plc:qc42fmqqlsmdq7jiypiiigww' // daviddao.org
+// Uses NEXT_PUBLIC_ prefix so it's available in both server and client code
+export const ADMIN_DID = process.env.NEXT_PUBLIC_ADMIN_DID || 'did:plc:qc42fmqqlsmdq7jiypiiigww'
 
 // Post types
 export type PostType = 'blog' | 'publication' | 'talk' | 'tutorial'

@@ -256,18 +256,18 @@ const sections = buildSections()
 
 fs.mkdirSync(OUT_DIR, { recursive: true })
 
-fs.writeFileSync(path.join(OUT_DIR, 'publications.json'), JSON.stringify(publications))
-fs.writeFileSync(path.join(OUT_DIR, 'authors.json'), JSON.stringify(authors))
-fs.writeFileSync(path.join(OUT_DIR, 'talks.json'), JSON.stringify(talks))
-fs.writeFileSync(path.join(OUT_DIR, 'tutorials.json'), JSON.stringify(tutorials))
-fs.writeFileSync(path.join(OUT_DIR, 'outreach.json'), JSON.stringify(outreach))
-fs.writeFileSync(path.join(OUT_DIR, 'blog.json'), JSON.stringify(blog))
-fs.writeFileSync(path.join(OUT_DIR, 'areas.json'), JSON.stringify(areas))
-fs.writeFileSync(path.join(OUT_DIR, 'sections.json'), JSON.stringify(sections))
+fs.writeFileSync(path.join(OUT_DIR, 'publications.json'), JSON.stringify(publications, null, 2))
+fs.writeFileSync(path.join(OUT_DIR, 'authors.json'), JSON.stringify(authors, null, 2))
+fs.writeFileSync(path.join(OUT_DIR, 'talks.json'), JSON.stringify(talks, null, 2))
+fs.writeFileSync(path.join(OUT_DIR, 'tutorials.json'), JSON.stringify(tutorials, null, 2))
+fs.writeFileSync(path.join(OUT_DIR, 'outreach.json'), JSON.stringify(outreach, null, 2))
+fs.writeFileSync(path.join(OUT_DIR, 'blog.json'), JSON.stringify(blog, null, 2))
+fs.writeFileSync(path.join(OUT_DIR, 'areas.json'), JSON.stringify(areas, null, 2))
+fs.writeFileSync(path.join(OUT_DIR, 'sections.json'), JSON.stringify(sections, null, 2))
 
 // Static files
 fs.writeFileSync(path.join(PUBLIC_DIR, 'feed.xml'), buildFeed(publications, talks))
-fs.writeFileSync(path.join(PUBLIC_DIR, 'search-index.json'), JSON.stringify(buildSearchIndex(publications, talks)))
+fs.writeFileSync(path.join(PUBLIC_DIR, 'search-index.json'), JSON.stringify(buildSearchIndex(publications, talks), null, 2))
 
 console.log(`  ${publications.length} publications`)
 console.log(`  ${authors.length} authors`)

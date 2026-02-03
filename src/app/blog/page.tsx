@@ -1,12 +1,8 @@
 import Link from 'next/link'
 import { blogPosts } from '@/lib/content'
+import { formatDate } from '@/lib/format'
 import Breadcrumb from '@/components/Breadcrumb'
 import AtprotoFeed from './AtprotoFeed'
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
 
 export default function BlogPage() {
   return (

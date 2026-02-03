@@ -1,14 +1,14 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { publications, authors } from '@/lib/content'
+import { slugToName } from '@/lib/format'
 import Breadcrumb from '@/components/Breadcrumb'
 
 function resolveAuthorName(slug: string): string {
-  const author = authors.find((a) => a.slug === slug)
-  if (author) return author.name
-  return slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  return authors.find((a) => a.slug === slug)?.name || slugToName(slug)
 }
 
-export const metadata = { title: 'Publications' }
+export const metadata: Metadata = { title: 'Publications' }
 
 export default function PublicationsPage() {
   return (

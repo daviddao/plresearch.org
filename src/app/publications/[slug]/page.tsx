@@ -32,8 +32,8 @@ export default async function PublicationPage({ params }: Props) {
       <h1 className="text-lg md:text-larger mb-4 leading-tight font-semibold">{pub.title}</h1>
       {pub.authors.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-6">
-          {pub.authors.map((slug) => (
-            <AuthorCard key={slug} slug={slug} />
+          {pub.authors.map((authorSlug) => (
+            <AuthorCard key={authorSlug} slug={authorSlug} />
           ))}
         </div>
       )}

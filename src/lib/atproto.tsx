@@ -1,8 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, createContext, useContext } from 'react'
-
-const ADMIN_DID = 'did:plc:qc42fmqqlsmdq7jiypiiigww' // daviddao.org
+import { ADMIN_DID } from './lexicons'
 
 // Session type
 export interface Session {

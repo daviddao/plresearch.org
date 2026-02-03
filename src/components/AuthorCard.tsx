@@ -1,9 +1,6 @@
 import Link from 'next/link'
 import { authors } from '@/lib/content'
-
-function slugToName(slug: string): string {
-  return slug.split('-').map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-}
+import { slugToName } from '@/lib/format'
 
 type AuthorCardProps = {
   slug: string

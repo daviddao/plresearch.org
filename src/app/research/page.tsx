@@ -1,8 +1,9 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { sections, publications, talks, tutorials } from '@/lib/content'
 import Breadcrumb from '@/components/Breadcrumb'
 
-export const metadata = { title: 'Research' }
+export const metadata: Metadata = { title: 'Research' }
 
 export default function ResearchPage() {
   const section = sections.research

@@ -1,8 +1,9 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { tutorials } from '@/lib/content'
 import Breadcrumb from '@/components/Breadcrumb'
 
-export const metadata = { title: 'Tutorials' }
+export const metadata: Metadata = { title: 'Tutorials' }
 
 export default function TutorialsPage() {
   return (
