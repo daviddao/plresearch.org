@@ -329,12 +329,12 @@ function NavItemComponent({ item, pathname, isActive, onMouseEnter, onMouseLeave
         {item.name}
         {hasChildren && (
           <svg
-            className={`w-4 h-4 transition-transform ${isActive ? 'rotate-180' : ''}`}
+            className={`w-4 h-4 transition-transform duration-200 ${isActive ? 'rotate-90' : ''}`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         )}
       </Link>

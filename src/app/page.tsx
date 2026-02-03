@@ -129,9 +129,25 @@ export default function HomePage() {
             </div>
           ))}
         </div>
-        <div className="mt-8 flex gap-8">
-          <Link href="/publications" className="text-base text-blue hover:underline">Publications →</Link>
-          <Link href="/talks" className="text-base text-blue hover:underline">Talks →</Link>
+        <div className="mt-10 flex flex-wrap gap-4">
+          <Link 
+            href="/publications" 
+            className="inline-flex items-center gap-2 px-5 py-2.5 border border-blue/30 text-blue rounded-full hover:bg-blue hover:text-white hover:border-blue transition-all font-medium"
+          >
+            All publications
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
+          <Link 
+            href="/talks" 
+            className="inline-flex items-center gap-2 px-5 py-2.5 border border-blue/30 text-blue rounded-full hover:bg-blue hover:text-white hover:border-blue transition-all font-medium"
+          >
+            All talks
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
         </div>
       </div>
 
@@ -140,7 +156,15 @@ export default function HomePage() {
         <p className="text-lg text-gray-700 leading-relaxed max-w-2xl mb-6">
           A fully remote team distributed across the globe, working with talented and intellectually curious people who share a passion for improving technology for humanity.
         </p>
-        <Link href="/authors" className="text-base text-blue hover:underline">Meet the team →</Link>
+        <Link 
+          href="/authors" 
+          className="inline-flex items-center gap-2 px-5 py-2.5 border border-blue/30 text-blue rounded-full hover:bg-blue hover:text-white hover:border-blue transition-all font-medium"
+        >
+          Meet the team
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </Link>
       </div>
     </div>
   )
@@ -150,11 +174,16 @@ type AreaIconType = 'shield' | 'hexagon' | 'neural' | 'brain'
 
 function AreaCard({ title, href, description, icon }: { title: string; href: string; description: string; icon: AreaIconType }) {
   return (
-    <Link href={href} className="bg-white p-8 hover:bg-gray-50 transition-colors relative overflow-hidden group">
+    <Link href={href} className="bg-white p-8 hover:bg-blue/[0.02] border border-transparent hover:border-blue/20 hover:shadow-lg transition-all duration-200 relative overflow-hidden group">
       <div className="flex items-start gap-5">
         <AreaIcon type={icon} />
         <div className="flex-1">
-          <h3 className="text-lg font-medium mb-2 group-hover:text-blue transition-colors">{title}</h3>
+          <h3 className="text-lg font-medium mb-2 group-hover:text-blue transition-colors flex items-center gap-2">
+            {title}
+            <svg className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200 text-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </h3>
           <p className="text-base text-gray-600">{description}</p>
         </div>
       </div>
