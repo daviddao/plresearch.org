@@ -1,33 +1,14 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useAuth } from '@/lib/atproto'
-import type { PostEntry } from '@/lib/lexicons'
+import { blogPosts } from '@/lib/content'
 import Breadcrumb from '@/components/Breadcrumb'
+import AtprotoFeed from './AtprotoFeed'
+
+function formatDate(dateStr: string): string {
+  const d = new Date(dateStr)
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+}
 
 export default function BlogPage() {
-  const { isAuthenticated } = useAuth()
-  const [posts, setPosts] = useState<PostEntry[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const response = await fetch('/api/feed')
-        if (response.ok) {
-          const data = await response.json()
-          setPosts(data.posts || [])
-        }
-      } catch {
-        // Ignore
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchPosts()
-  }, [])
-
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
       <Breadcrumb items={[{ label: 'Blog' }]} />
@@ -40,58 +21,32 @@ export default function BlogPage() {
         <p className="relative z-10 text-gray-600 leading-relaxed max-w-xl">
           Updates, insights, and reflections from the Protocol Labs R&D team.
         </p>
-        {isAuthenticated && (
-          <Link href="/write" className="relative z-10 inline-block mt-4 text-sm text-blue hover:underline">
-            New entry →
-          </Link>
-        )}
       </div>
 
-      {/* Posts */}
-      {isLoading ? (
-        <p className="text-sm text-gray-400">Loading posts...</p>
-      ) : posts.length === 0 ? (
-        <p className="text-sm text-gray-500">No posts yet.</p>
-      ) : (
+      {/* Markdown blog posts */}
+      {blogPosts.length > 0 && (
         <div className="divide-y divide-gray-200">
-          {posts.map((post) => (
-            <div key={post.uri} className="py-4">
+          {blogPosts.map((post) => (
+            <div key={post.slug} className="py-4">
               <div className="flex items-baseline gap-3 mb-1">
-                <span className="text-xs text-gray-400 uppercase tracking-wide">
-                  {post.record.postType}
-                </span>
-                <span className="text-xs text-gray-400">
-                  {formatDate(post.record.createdAt)}
-                </span>
+                <span className="text-xs text-gray-400">Blog</span>
+                <span className="text-xs text-gray-400">{formatDate(post.date)}</span>
               </div>
-              <h3 className="text-black font-medium leading-snug mb-1">
-                {post.record.title}
-              </h3>
-              {post.record.summary && (
-                <p className="text-sm text-gray-600 mb-1">{post.record.summary}</p>
+              <Link href={`/blog/${post.slug}/`} className="text-black font-medium leading-snug hover:text-blue transition-colors">
+                {post.title}
+              </Link>
+              {post.summary && (
+                <p className="text-sm text-gray-600 mt-1">{post.summary}</p>
               )}
-              <div className="flex items-center gap-3 mt-2">
-                {post.author.avatar && (
-                  <img src={post.author.avatar} alt="" className="w-5 h-5 rounded-full" />
-                )}
-                <span className="text-xs text-gray-400">
-                  {post.author.displayName || post.author.handle}
-                </span>
-                {post.record.venue && (
-                  <span className="text-xs text-gray-400">· {post.record.venue}</span>
-                )}
-              </div>
             </div>
           ))}
         </div>
       )}
+
+      {/* ATProto feed (loads client-side when available) */}
+      <AtprotoFeed />
     </div>
   )
-}
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 function PageGeo() {

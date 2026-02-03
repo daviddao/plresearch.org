@@ -1,7 +1,7 @@
 export const siteConfig = {
   title: 'Protocol Labs R&D',
   description: 'Driving Breakthroughs in Computing to Push Humanity Forward.',
-  baseUrl: 'https://research.protocol.ai',
+  baseUrl: 'https://plresearch.org',
   author: 'Protocol Labs R&D',
   locale: 'en_US',
   twitterUser: '@ProtoResearch',

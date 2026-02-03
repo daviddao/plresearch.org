@@ -1,12 +1,9 @@
 ---
 title: "Neurotech"
 date: 2024-03-15
-archived: true
 summary: "Accelerate neurotechnologies to benefit humanity, focusing on breakthroughs in brain-computer interfaces (BCI)."
-menu:
-  main:
-    parent: focus-areas
-    weight: 4
+leads:
+  - sean-escola
 ---
 Neurotech is dedicated to accelerating neurotechnologies for the benefit of humanity. A critical focus of this area is the development and responsible advancement of brain-computer interfaces (BCI), which represent one of the most profound frontiers in computing today.
 

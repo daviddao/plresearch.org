@@ -9,11 +9,8 @@ type Props = { params: Promise<{ slug: string }> }
 
 const HARDCODED_AREA_SLUGS = ['upgrade-economies-governance']
 
-const AREA_LEADS: Record<string, string[]> = {
-  'digital-human-rights': ['will-scott'],
-  'ai-robotics': ['molly-mackinlay'],
-  'neurotech': ['sean-escola'],
-}
+// Leads are now defined in each area's Markdown frontmatter (leads: [...])
+// and flow through the build pipeline into area.leads
 
 function stripFaPrefix(title: string): string {
   return title.replace(/^FA\d+:\s*/, '')
@@ -57,9 +54,9 @@ export default async function AreaPage({ params }: Props) {
             {area.summary}
           </p>
         )}
-        {AREA_LEADS[slug] && (
+        {area.leads.length > 0 && (
           <div className="relative z-10 flex flex-wrap gap-4">
-            {AREA_LEADS[slug].map((authorSlug) => (
+            {area.leads.map((authorSlug) => (
               <AuthorCard key={authorSlug} slug={authorSlug} variant="lead" />
             ))}
           </div>

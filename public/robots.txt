@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: https://research.protocol.ai/sitemap.xml
+Sitemap: https://plresearch.org/sitemap.xml

@@ -2,6 +2,7 @@ import publicationsData from '@/data/generated/publications.json'
 import authorsData from '@/data/generated/authors.json'
 import talksData from '@/data/generated/talks.json'
 import tutorialsData from '@/data/generated/tutorials.json'
+import blogData from '@/data/generated/blog.json'
 import areasData from '@/data/generated/areas.json'
 import sectionsData from '@/data/generated/sections.json'
 
@@ -55,12 +56,21 @@ export type Tutorial = {
   html: string
 }
 
+export type BlogPost = {
+  slug: string
+  title: string
+  date: string
+  summary: string
+  authors: string[]
+  html: string
+}
+
 export type Area = {
   slug: string
   title: string
   date: string
-  archived: boolean
   summary: string
+  leads: string[]
   html: string
 }
 
@@ -73,5 +83,6 @@ export const publications = publicationsData as Publication[]
 export const authors = authorsData as Author[]
 export const talks = talksData as Talk[]
 export const tutorials = tutorialsData as Tutorial[]
+export const blogPosts = blogData as BlogPost[]
 export const areas = areasData as Area[]
 export const sections = sectionsData as Record<string, Section>

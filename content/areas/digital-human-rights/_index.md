@@ -1,12 +1,9 @@
 ---
 title: "Digital Human Rights"
 date: 2024-03-15
-archived: true
 summary: "Securing Digital Human Rights: Building a foundation of freedom and safety in the digital age through Web3 networks and decentralized infrastructure."
-menu:
-  main:
-    parent: focus-areas
-    weight: 1
+leads:
+  - will-scott
 ---
 Digital Human Rights is centered on building a foundation of freedom and safety in the digital age. Our mission is to improve the internet by developing web3 networks, infrastructure, and new primitives that promote human agency.
 

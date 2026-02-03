@@ -143,14 +143,27 @@ function buildOutreach() {
   return items
 }
 
+// Blog posts
+function buildBlog() {
+  const items = readDir('blog').map((b) => ({
+    slug: b.slug,
+    title: b.title || '',
+    date: b.date || '',
+    summary: b.summary || '',
+    authors: b.authors || [],
+    html: renderMd(b.content),
+  })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  return items
+}
+
 // Areas
 function buildAreas() {
   const items = readDir('areas').map((a) => ({
     slug: a.slug,
     title: a.title || '',
     date: a.date || '',
-    archived: a.archived || false,
     summary: a.summary || '',
+    leads: a.leads || [],
     html: renderMd(a.content),
   }))
   return items
@@ -170,7 +183,7 @@ function buildSections() {
 
 // Feed XML
 function buildFeed(publications, talks) {
-  const baseUrl = 'https://research.protocol.ai'
+  const baseUrl = 'https://plresearch.org'
   const items = [
     ...publications.slice(0, 20).map((p) => ({
       title: p.title,
@@ -237,6 +250,7 @@ const authors = buildAuthors()
 const talks = buildTalks()
 const tutorials = buildTutorials()
 const outreach = buildOutreach()
+const blog = buildBlog()
 const areas = buildAreas()
 const sections = buildSections()
 
@@ -247,6 +261,7 @@ fs.writeFileSync(path.join(OUT_DIR, 'authors.json'), JSON.stringify(authors))
 fs.writeFileSync(path.join(OUT_DIR, 'talks.json'), JSON.stringify(talks))
 fs.writeFileSync(path.join(OUT_DIR, 'tutorials.json'), JSON.stringify(tutorials))
 fs.writeFileSync(path.join(OUT_DIR, 'outreach.json'), JSON.stringify(outreach))
+fs.writeFileSync(path.join(OUT_DIR, 'blog.json'), JSON.stringify(blog))
 fs.writeFileSync(path.join(OUT_DIR, 'areas.json'), JSON.stringify(areas))
 fs.writeFileSync(path.join(OUT_DIR, 'sections.json'), JSON.stringify(sections))
 
@@ -259,5 +274,6 @@ console.log(`  ${authors.length} authors`)
 console.log(`  ${talks.length} talks`)
 console.log(`  ${tutorials.length} tutorials`)
 console.log(`  ${outreach.length} outreach`)
+console.log(`  ${blog.length} blog posts`)
 console.log(`  ${areas.length} areas`)
 console.log('Done.')

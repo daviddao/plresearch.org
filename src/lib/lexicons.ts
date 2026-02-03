@@ -3,10 +3,10 @@
  */
 
 // Post collection - markdown articles (blog posts, publications, talks, tutorials)
-export const POST_COLLECTION = 'ai.plresearch.post'
+export const POST_COLLECTION = 'org.plresearch.post'
 
 // Curated list collection - admin-managed list of users whose posts to display
-export const CURATEDLIST_COLLECTION = 'ai.plresearch.curatedlist'
+export const CURATEDLIST_COLLECTION = 'org.plresearch.curatedlist'
 
 // Admin DID - the only user who can manage the curated list
 export const ADMIN_DID = 'did:plc:qc42fmqqlsmdq7jiypiiigww' // daviddao.org
