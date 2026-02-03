@@ -14,15 +14,46 @@ export default function FA2MainPage() {
       <Breadcrumb items={[{ label: 'Focus Areas', href: '/areas/' }, { label: 'Economies & Governance' }]} />
       {/* Hero */}
       <div className="relative pt-8 pb-12 mb-12 overflow-hidden">
-        {/* Background image */}
-        <img
-          src="/images/banners/people-banner-desktop@2x.jpg"
-          alt=""
+        {/* Background image - rotated hexagon clip */}
+        <div 
+          className="absolute right-[0%] top-1/2 -translate-y-1/2 w-[280px] h-[280px] md:w-[380px] md:h-[380px] lg:w-[460px] lg:h-[460px] pointer-events-none select-none"
           aria-hidden="true"
-          className="absolute right-0 top-0 h-full w-auto max-w-[55%] object-contain object-right opacity-[0.12] pointer-events-none select-none hidden md:block"
-        />
-        {/* Geometric decoration */}
-        <AreaGeo />
+        >
+          <svg viewBox="0 0 400 400" className="w-full h-full">
+            <defs>
+              <clipPath id="hexClip">
+                <polygon 
+                  points="200,40 330,110 330,290 200,360 70,290 70,110" 
+                >
+                  <animateTransform 
+                    attributeName="transform" 
+                    type="rotate" 
+                    from="45 200 200" 
+                    to="405 200 200" 
+                    dur="60s" 
+                    repeatCount="indefinite"
+                  />
+                </polygon>
+              </clipPath>
+              <mask id="hexFade">
+                <radialGradient id="fadeGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="50%" stopColor="white" />
+                  <stop offset="100%" stopColor="black" />
+                </radialGradient>
+                <circle cx="200" cy="200" r="200" fill="url(#fadeGrad)" />
+              </mask>
+            </defs>
+            <image 
+              href="/images/fa2/fa2.webp" 
+              x="0" y="0" 
+              width="400" height="400" 
+              preserveAspectRatio="xMidYMid slice"
+              clipPath="url(#hexClip)"
+              mask="url(#hexFade)"
+              opacity="0.35"
+            />
+          </svg>
+        </div>
 
         <div className="flex items-start gap-5 mb-6">
           <HexagonIcon className="w-14 h-14 lg:w-16 lg:h-16 shrink-0 text-blue/70" />
@@ -33,11 +64,16 @@ export default function FA2MainPage() {
         <p className="relative z-10 text-lg text-gray-600 leading-relaxed max-w-2xl mb-8">
           Building crypto-native economic and governance infrastructure to create more efficient, equitable structures that coordinate at the scale of nation-states.
         </p>
-        <div className="relative z-10 flex flex-wrap gap-3 mb-10">
-          <NavPill href="/areas/upgrade-economies-governance/subareas/" label="Subareas" description="9 domains" />
-          <NavPill href="/areas/upgrade-economies-governance/opportunity-spaces/" label="Opportunity Spaces" description="4 zones" />
-          <NavPill href="/areas/upgrade-economies-governance/impact/" label="Impact" description="Metrics" />
-          <NavPill href="/areas/upgrade-economies-governance/projects/" label="Projects" description="242+ teams" />
+        <div className="relative z-10 flex flex-wrap gap-4 mb-10">
+          <Link 
+            href="/areas/upgrade-economies-governance/opportunity-spaces/" 
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue text-white rounded-full hover:bg-blue/90 transition-colors font-medium"
+          >
+            Opportunity Spaces
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </Link>
         </div>
         <div className="relative z-10 flex flex-wrap gap-4">
           <AuthorCard slug="david-dao" variant="lead" />
@@ -156,11 +192,16 @@ function ExploreCard({ href, label, title, description }: { href: string; label:
   return (
     <Link
       href={href}
-      className="group block py-5 border-l-2 border-gray-200 pl-5 hover:border-blue transition-colors no-underline"
+      className="group flex items-center justify-between p-5 bg-gray-50 border border-gray-100 rounded-xl hover:bg-white hover:border-blue/30 hover:shadow-md transition-all no-underline"
     >
-      <div className="text-xs text-gray-400 uppercase tracking-widest mb-1">{label}</div>
-      <h3 className="text-base font-medium text-black group-hover:text-blue transition-colors mb-1">{title}</h3>
-      <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
+      <div>
+        <div className="text-xs text-gray-400 uppercase tracking-widest mb-1">{label}</div>
+        <h3 className="text-base font-medium text-black group-hover:text-blue transition-colors mb-1">{title}</h3>
+        <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
+      </div>
+      <svg className="w-5 h-5 text-gray-300 group-hover:text-blue group-hover:translate-x-1 transition-all shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+      </svg>
     </Link>
   )
 }

@@ -39,21 +39,27 @@ export default function HomePage() {
 
   return (
     <div className="max-w-6xl mx-auto px-6">
-      <div className="relative pt-20 pb-16 lg:pt-32 lg:pb-24 overflow-hidden">
-        {/* Hero image on the right */}
-        <img
-          src="/images/banners/lady-using-whiteboard@2x.jpg"
-          alt=""
+      <div className="relative pt-12 pb-14 md:pt-20 md:pb-16 lg:pt-32 lg:pb-24" style={{ clipPath: 'inset(0 -100vw 0 0)' }}>
+        {/* Hero banner image - extends to screen edge */}
+        <div 
+          className="absolute top-1/2 -translate-y-[60%] h-[140%] pointer-events-none select-none"
+          style={{
+            right: 'calc(-50vw + 50%)',
+            width: '70vw',
+            backgroundImage: 'url(/images/hero.webp)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'right center',
+            opacity: 0.35,
+            maskImage: 'linear-gradient(to left, black 40%, transparent 80%)',
+            WebkitMaskImage: 'linear-gradient(to left, black 40%, transparent 80%)',
+          }}
           aria-hidden="true"
-          className="absolute right-0 top-0 h-full w-auto max-w-[60%] object-contain object-right opacity-[0.15] pointer-events-none select-none hidden md:block"
         />
-        {/* Geometric decoration */}
-        <HeroGeometry />
 
-        <h1 className="relative z-10 text-xl lg:text-[56px] font-semibold leading-[1.1] tracking-tight mb-6">
+        <h1 className="relative z-10 text-[32px] md:text-[44px] lg:text-[56px] font-semibold leading-[1.1] tracking-tight mb-6">
           Driving breakthroughs in computing to push humanity forward.
         </h1>
-        <p className="relative z-10 text-gray-600 text-big lg:text-bigger leading-relaxed max-w-2xl mb-8">
+        <p className="relative z-10 text-gray-600 text-lg md:text-xl lg:text-[22px] leading-relaxed max-w-2xl mb-8">
           Protocol Labs R&D explores the frontiers of computing, networking, and knowledge systems to build infrastructure that empowers humanity.
         </p>
         <div className="relative z-10 flex flex-wrap gap-4">

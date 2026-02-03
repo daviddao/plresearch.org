@@ -14,20 +14,51 @@ export default function AboutPage() {
       <div className="max-w-6xl mx-auto px-6 pt-8">
         <Breadcrumb items={[{ label: 'About' }]} />
         <div className="relative pt-4 pb-16 lg:pt-8 lg:pb-20 overflow-hidden">
-          {/* Subtle background image on the right */}
-          <img
-            src="/images/about-page/about-header@2x.jpg"
-            alt=""
+          {/* Background image - rotated hexagon clip */}
+          <div 
+            className="absolute right-[-5%] top-1/2 -translate-y-1/2 w-[320px] h-[320px] md:w-[480px] md:h-[480px] lg:w-[580px] lg:h-[580px] pointer-events-none select-none"
             aria-hidden="true"
-            className="absolute right-0 top-0 h-full w-auto max-w-[60%] object-contain object-right opacity-[0.15] pointer-events-none select-none hidden md:block"
-          />
-          {/* Geometric decoration */}
-          <AboutGeometry />
+          >
+            <svg viewBox="0 0 400 400" className="w-full h-full">
+              <defs>
+                <clipPath id="aboutHexClip">
+                  <polygon 
+                    points="200,40 330,110 330,290 200,360 70,290 70,110" 
+                  >
+                    <animateTransform 
+                      attributeName="transform" 
+                      type="rotate" 
+                      from="45 200 200" 
+                      to="405 200 200" 
+                      dur="60s" 
+                      repeatCount="indefinite"
+                    />
+                  </polygon>
+                </clipPath>
+                <mask id="aboutHexFade">
+                  <radialGradient id="aboutFadeGrad" cx="50%" cy="50%" r="50%">
+                    <stop offset="50%" stopColor="white" />
+                    <stop offset="100%" stopColor="black" />
+                  </radialGradient>
+                  <circle cx="200" cy="200" r="200" fill="url(#aboutFadeGrad)" />
+                </mask>
+              </defs>
+              <image 
+                href="/images/banners/about-banner.jpg" 
+                x="0" y="0" 
+                width="400" height="400" 
+                preserveAspectRatio="xMaxYMid slice"
+                clipPath="url(#aboutHexClip)"
+                mask="url(#aboutHexFade)"
+                opacity="0.35"
+              />
+            </svg>
+          </div>
 
-          <h1 className="relative z-10 font-semibold text-xl lg:text-[48px] leading-[1.1] tracking-tight mb-6 max-w-xl">
+          <h1 className="relative z-10 font-semibold text-[28px] md:text-[40px] lg:text-[48px] leading-[1.1] tracking-tight mb-6 max-w-xl">
             Our research is driven by beliefs about how technology should serve humanity.
           </h1>
-          <p className="relative z-10 text-gray-600 text-big lg:text-bigger leading-relaxed max-w-2xl mb-6">
+          <p className="relative z-10 text-gray-600 text-lg md:text-xl lg:text-[22px] leading-relaxed max-w-2xl mb-6">
             Substantial engineering efforts are necessary to turn ideas into real and useful tools that people can use. Our longest-term vision-driven innovation takes place in Protocol Labs R&amp;D.
           </p>
           <div className="relative z-10 flex flex-wrap gap-4">
