@@ -182,6 +182,10 @@ function buildSections() {
 }
 
 // Feed XML
+function escapeXml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+}
+
 function buildFeed(publications, talks) {
   const baseUrl = 'https://plresearch.org'
   const items = [
@@ -210,9 +214,9 @@ function buildFeed(publications, talks) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Protocol Labs R&D</title>
+    <title>${escapeXml('Protocol Labs R&D')}</title>
     <link>${baseUrl}</link>
-    <description>Driving Breakthroughs in Computing to Push Humanity Forward.</description>
+    <description>${escapeXml('Driving Breakthroughs in Computing to Push Humanity Forward.')}</description>
     <atom:link href="${baseUrl}/feed.xml" rel="self" type="application/rss+xml"/>
     ${rssItems}
   </channel>
