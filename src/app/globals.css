@@ -293,3 +293,13 @@ ul li li {
   display: -webkit-box;
   white-space: normal;
 }
+
+/* ===== Scroll indicator animation ===== */
+@keyframes handSlide {
+  0%, 100% { transform: translateX(-10px); }
+  50% { transform: translateX(10px); }
+}
+
+.scroll-hand-slide {
+  animation: handSlide 2s ease-in-out infinite;
+}

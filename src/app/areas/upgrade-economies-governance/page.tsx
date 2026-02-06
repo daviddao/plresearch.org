@@ -118,6 +118,12 @@ export default function FA2MainPage() {
           title="Project Explorer"
           description="242+ teams building public goods infrastructure."
         />
+        <ExploreCard
+          href="/areas/upgrade-economies-governance/dependency-graph/"
+          label="Architecture"
+          title="Dependency Graph"
+          description="Strategic dependency trees across 4 inflection points."
+        />
       </div>
 
       {/* How to Engage */}
