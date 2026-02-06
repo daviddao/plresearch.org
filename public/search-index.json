@@ -4,1504 +4,1602 @@
     "summary": "",
     "date": "2024-02-01T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/goren2024/",
-    "authors": [
-      "guy-goren",
-      "jorge-soares"
-    ]
+    "relpermalink": "/publications/goren2024/"
   },
   {
     "title": "Filecoin Proof of Useful Space",
     "summary": "",
     "date": "2023-08-30T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/giacomelli2023/",
-    "authors": [
-      "irene-giacomelli",
-      "luca-nizzardo"
-    ]
+    "relpermalink": "/publications/giacomelli2023/"
   },
   {
     "title": "Security analysis of Filecoin's Expected Consensus in the Byzantine vs honest model",
     "summary": "",
     "date": "2023-08-14T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/wang2023/",
-    "authors": [
-      "xuechao-wang",
-      "sarah-azouvi",
-      "marko-vukolic"
-    ]
+    "relpermalink": "/publications/wang2023/"
   },
   {
     "title": "Base fee manipulation in Ethereum's EIP-1559 transaction fee mechanism",
     "summary": "",
     "date": "2023-04-22T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/azouvi2023/",
-    "authors": [
-      "sarah-azouvi",
-      "guy-goren",
-      "Lioba Heimbach",
-      "Alexander Hicks"
-    ]
+    "relpermalink": "/publications/azouvi2023/"
   },
   {
     "title": "SpaceVDF: Verifiable delay functions using cryptographic satellites",
     "summary": "",
     "date": "2023-03-21T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/winetraub2023/",
-    "authors": [
-      "Yonatan Winetraub",
-      "Elad Sagi",
-      "Yan Michalevsky",
-      "chhimed-kunzang",
-      "jonathan-gross"
-    ]
+    "relpermalink": "/publications/winetraub2023/"
   },
   {
     "title": "LURK: Lambda, the ultimate recursive knowledge",
     "summary": "",
     "date": "2023-03-16T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/amin2023/",
-    "authors": [
-      "Nada Amin",
-      "John Burnham",
-      "François Garillot",
-      "rosario-gennaro",
-      "chhimed-kunzang",
-      "Daniel Rogozin",
-      "Cameron Wong"
-    ]
+    "relpermalink": "/publications/amin2023/"
   },
   {
     "title": "tlock: Practical timelock encryption from threshold BLS",
     "summary": "",
     "date": "2023-02-13T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/gailly2023/",
-    "authors": [
-      "nicolas-gailly",
-      "Kelsey Melissaris",
-      "yolan-romailler"
-    ]
+    "relpermalink": "/publications/gailly2023/"
   },
   {
     "title": "Generalized Impact Evaluators",
     "summary": "",
     "date": "2023-01-10T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/plnetworkgoods2023/",
-    "authors": []
+    "relpermalink": "/publications/plnetworkgoods2023/"
   },
   {
     "title": "Pikachu: Securing PoS blockchains from long-range attacks by checkpointing into Bitcoin PoW using Taproot",
     "summary": "",
     "date": "2022-12-13T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/azouvi2022b/",
-    "authors": [
-      "sarah-azouvi",
-      "marko-vukolic"
-    ]
+    "relpermalink": "/publications/azouvi2022b/"
   },
   {
     "title": "Enriching Kademlia by partitioning",
     "summary": "",
     "date": "2022-12-13T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/monteiro2022/",
-    "authors": [
-      "João Monteiro",
-      "Pedro Ákos Costa",
-      "João Leitão",
-      "alfonso-delarocha",
-      "yiannis-psaras"
-    ]
+    "relpermalink": "/publications/monteiro2022/"
   },
   {
     "title": "To the InterPlanetary File System – and beyond!: Peer-to-peer file sharing would make the Internet far more efficient",
     "summary": "",
     "date": "2022-11-07T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/psaras2022/",
-    "authors": [
-      "yiannis-psaras",
-      "jorge-soares",
-      "david-dias"
-    ]
+    "relpermalink": "/publications/psaras2022/"
   },
   {
     "title": "Structure-preserving compilers from new notions of obfuscations",
     "summary": "",
     "date": "2022-11-01T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/campanelli2022f/",
-    "authors": [
-      "matteo-campanelli",
-      "Danilo Francati",
-      "Claudio Orlandi"
-    ]
+    "relpermalink": "/publications/campanelli2022f/"
   },
   {
     "title": "Mir-BFT: Scalable and robust BFT for decentralized networks",
     "summary": "",
     "date": "2022-10-24T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/vukolic2022/",
-    "authors": [
-      "Chrysoula Stathakopoulou",
-      "David Tudor",
-      "matej-pavlovic",
-      "marko-vukolic"
-    ]
+    "relpermalink": "/publications/vukolic2022/"
   },
   {
     "title": "Decentralized hole punching",
     "summary": "",
     "date": "2022-09-28T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/seemann2022/",
-    "authors": [
-      "marten-seemann",
-      "Max Inden",
-      "Dimitris Vyzovitis"
-    ]
+    "relpermalink": "/publications/seemann2022/"
   },
   {
     "title": "Impossibilities in succinct arguments: Black-box extraction and more",
     "summary": "",
     "date": "2022-09-09T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/campanelli2022e/",
-    "authors": [
-      "matteo-campanelli",
-      "Chaya Ganesh",
-      "Hamidreza Khoshakhlagh",
-      "Janno Siim"
-    ]
+    "relpermalink": "/publications/campanelli2022e/"
   },
   {
     "title": "Curve trees: Practical and transparent zero-knowledge accumulators",
     "summary": "",
     "date": "2022-09-08T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/campanelli2022d/",
-    "authors": [
-      "matteo-campanelli",
-      "Mathias Hall-Andersen"
-    ]
+    "relpermalink": "/publications/campanelli2022d/"
   },
   {
     "title": "Encryption to the future: A paradigm for sending secret messages to future (anonymous) committees",
     "summary": "",
     "date": "2022-08-30T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/campanelli2022c/",
-    "authors": [
-      "matteo-campanelli",
-      "Bernardo David",
-      "Hamidreza Khoshakhlagh",
-      "Anders Konring",
-      "Jesper Buus Nielsen"
-    ]
+    "relpermalink": "/publications/campanelli2022c/"
   },
   {
     "title": "Design and evaluation of IPFS: A storage layer for the decentralized web",
     "summary": "",
     "date": "2022-07-26T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/trautwein2022/",
-    "authors": [
-      "Dennis Trautwein",
-      "Aravindh Raman",
-      "Gareth Tyson",
-      "Ignacio Castro",
-      "will-scott",
-      "Moritz Schubotz",
-      "Bela Gipp",
-      "yiannis-psaras"
-    ]
+    "relpermalink": "/publications/trautwein2022/"
   },
   {
     "title": "Linear-map vector commitments and their practical applications",
     "summary": "",
     "date": "2022-07-06T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/campanelli2022b/",
-    "authors": [
-      "matteo-campanelli",
-      "anca-nitulescu",
-      "Carla Ràfols",
-      "Alexandros Zacharakis",
-      "Arantxa Zapico"
-    ]
+    "relpermalink": "/publications/campanelli2022b/"
   },
   {
     "title": "What makes Fiat–Shamir zkSNARKs (updatable SRS) simulation extractable?",
     "summary": "",
     "date": "2022-07-06T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/ganesh2022/",
-    "authors": [
-      "Chaya Ganeshe",
-      "Hamidreza Khoshakhlagh",
-      "Markulf Kohlweiss",
-      "anca-nitulescu",
-      "Michal Zajac"
-    ]
+    "relpermalink": "/publications/ganesh2022/"
   },
   {
     "title": "Caulk: Lookup arguments in sublinear time",
     "summary": "",
     "date": "2022-07-06T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/zapico2022/",
-    "authors": [
-      "Arantxa Zapico",
-      "Vitalik Buterin",
-      "Dmitry Khovratovich",
-      "Mary Maller",
-      "anca-nitulescu",
-      "Mark Simkin"
-    ]
+    "relpermalink": "/publications/zapico2022/"
   },
   {
     "title": "Influencing NFT pricing on secondary markets: A case study of Vpunks",
     "summary": "",
     "date": "2022-06-15T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/davis2022/",
-    "authors": [
-      "trent-davis"
-    ]
+    "relpermalink": "/publications/davis2022/"
   },
   {
     "title": "On the impossibility of algebraic vector commitments in pairing-free groups",
     "summary": "",
     "date": "2022-06-02T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/catalano2022/",
-    "authors": [
-      "dario-catalano",
-      "Dario Fiore",
-      "rosario-gennaro",
-      "Emmanuele Giunta"
-    ]
+    "relpermalink": "/publications/catalano2022/"
   },
   {
     "title": "State machine replication scalability made simple",
     "summary": "",
     "date": "2022-04-20T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/stathakopoulou2022/",
-    "authors": [
-      "Chrysoula Stathakopoulou",
-      "matej-pavlovic",
-      "marko-vukolic"
-    ]
+    "relpermalink": "/publications/stathakopoulou2022/"
   },
   {
     "title": "Witness-authenticated key exchange revisited: Improved models, simpler constructions, extensions to groups",
     "summary": "",
     "date": "2022-04-08T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/campanelli2022/",
-    "authors": [
-      "matteo-campanelli",
-      "rosario-gennaro",
-      "Kelsey Melissaris",
-      "luca-nizzardo"
-    ]
+    "relpermalink": "/publications/campanelli2022/"
   },
   {
     "title": "Hierarchical consensus: A horizontal scaling framework for blockchains",
     "summary": "",
     "date": "2022-03-11T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/delarocha2022/",
-    "authors": [
-      "alfonso-delarocha",
-      "Lefteris Kokoris-Kogias",
-      "jorge-soares",
-      "marko-vukolic"
-    ]
+    "relpermalink": "/publications/delarocha2022/"
   },
   {
     "title": "Decentralisation conscious players and system reliability",
     "summary": "",
     "date": "2022-01-26T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/Azouvi2022a/",
-    "authors": [
-      "sarah-azouvi",
-      "Alexander Hicks"
-    ]
+    "relpermalink": "/publications/Azouvi2022a/"
   },
   {
     "title": "Sliding window challenge process for congestion detection",
     "summary": "",
     "date": "2022-01-24T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/Azouvi2022/",
-    "authors": [
-      "Ayelet Lotem",
-      "sarah-azouvi",
-      "Aviv Zohar",
-      "Patrick McCorry"
-    ]
+    "relpermalink": "/publications/Azouvi2022/"
   },
   {
     "title": "On the future of decentralized computing",
     "summary": "",
     "date": "2021-11-23T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/vukolic2021/",
-    "authors": [
-      "marko-vukolic"
-    ]
+    "relpermalink": "/publications/vukolic2021/"
   },
   {
     "title": "Private attacks in longest chain proof-of-stake protocols with single secret leader elections",
     "summary": "",
     "date": "2021-11-16T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/azouvi2021a/",
-    "authors": [
-      "sarah-azouvi",
-      "Daniele Cappelletti"
-    ]
+    "relpermalink": "/publications/azouvi2021a/"
   },
   {
     "title": "MyOPE: Malicious security for oblivious polynomial evaluation",
     "summary": "",
     "date": "2021-09-27T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/izabachene2021/",
-    "authors": [
-      "Malika Izabachène",
-      "anca-nitulescu",
-      "Paola de Perthuis",
-      "David Pointcheval"
-    ]
+    "relpermalink": "/publications/izabachene2021/"
   },
   {
     "title": "Count me in! Extendability for threshold ring signatures",
     "summary": "",
     "date": "2021-09-21T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/aranha2021/",
-    "authors": [
-      "Diego Aranha",
-      "Mathias Hall-Anderson",
-      "anca-nitulescu",
-      "Elena Pagnin",
-      "Sophia Yakoubov"
-    ]
+    "relpermalink": "/publications/aranha2021/"
   },
   {
     "title": "Pulsarcast: Scalable, reliable pub-sub over P2P nets",
     "summary": "",
     "date": "2021-06-21T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/antunes2021/",
-    "authors": [
-      "Joao Antunes",
-      "david-dias",
-      "Luis Veiga"
-    ]
+    "relpermalink": "/publications/antunes2021/"
   },
   {
     "title": "The case for AI based Web3 reputation systems",
     "summary": "",
     "date": "2021-06-21T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/psaras2021/",
-    "authors": [
-      "Navin V. Keizer",
-      "Fan Yang",
-      "yiannis-psaras",
-      "George Pavlou"
-    ]
+    "relpermalink": "/publications/psaras2021/"
   },
   {
     "title": "IPFS-FAN: A function-addressable computation network",
     "summary": "",
     "date": "2021-06-11T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/delarocha2021a/",
-    "authors": [
-      "alfonso-delarocha",
-      "yiannis-psaras",
-      "david-dias"
-    ]
+    "relpermalink": "/publications/delarocha2021a/"
   },
   {
     "title": "SnarkPack: Practical SNARK aggregation",
     "summary": "",
     "date": "2021-05-13T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/gailly2021/",
-    "authors": [
-      "nicolas-gailly",
-      "Mary Maller",
-      "anca-nitulescu"
-    ]
+    "relpermalink": "/publications/gailly2021/"
   },
   {
     "title": "Rinocchio: SNARKs for ring arithmetic",
     "summary": "",
     "date": "2021-03-18T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/ganesh2021/",
-    "authors": [
-      "Chaya Ganesh",
-      "anca-nitulescu",
-      "Eduardo Soria-Vazquez"
-    ]
+    "relpermalink": "/publications/ganesh2021/"
   },
   {
     "title": "Accelerating content routing with Bitswap: A multi-path file transfer protocol in IPFS and Filecoin",
     "summary": "",
     "date": "2021-01-14T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/delarocha2021/",
-    "authors": [
-      "alfonso-delarocha",
-      "david-dias",
-      "yiannis-psaras"
-    ]
+    "relpermalink": "/publications/delarocha2021/"
   },
   {
     "title": "Improving system resilience through formal verification of transactive energy controls",
     "summary": "",
     "date": "2020-12-09T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/ransil2020/",
-    "authors": [
-      "michael-hammersley",
-      "Francis M. O'Sullivan",
-      "alan-ransil"
-    ]
+    "relpermalink": "/publications/ransil2020/"
   },
   {
     "title": "PASTRAMI: Privacy-preserving, auditable, scalable & trustworthy auctions for multiple items",
     "summary": "",
     "date": "2020-12-07T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/psaras2020b/",
-    "authors": [
-      "Michał Król",
-      "Alberto Sonnino",
-      "Argyrios Tasiopoulos",
-      "yiannis-psaras",
-      "Etienne Rivière"
-    ]
+    "relpermalink": "/publications/psaras2020b/"
   },
   {
     "title": "Incrementally aggregatable vector commitment techniques and applications to verifiable decentralized storage",
     "summary": "",
     "date": "2020-12-05T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/campanelli2020/",
-    "authors": [
-      "Matteo Campanelli",
-      "Dario Fiore",
-      "nicola-greco",
-      "Dimitris Kolonelos",
-      "luca-nizzardo"
-    ]
+    "relpermalink": "/publications/campanelli2020/"
   },
   {
     "title": "Subversion-resilient enhanced privacy ID",
     "summary": "",
     "date": "2020-11-17T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/faonio2020/",
-    "authors": [
-      "Antonio Faonio",
-      "Dario Fiore",
-      "luca-nizzardo",
-      "Claudio Soriente"
-    ]
+    "relpermalink": "/publications/faonio2020/"
   },
   {
     "title": "Winkle: foiling long-range attacks in proof-of-stake systems",
     "summary": "",
     "date": "2020-10-21T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/azouvi2021/",
-    "authors": [
-      "sarah-azouvi",
-      "George Danezis",
-      "Valeria Nikolaenko"
-    ]
+    "relpermalink": "/publications/azouvi2021/"
   },
   {
     "title": "Rewarding relays for decentralised NAT traversal using smart contracts",
     "summary": "",
     "date": "2020-10-11T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/psaras2020a/",
-    "authors": [
-      "Navin V. Keizer",
-      "Onur Ascigil",
-      "yiannis-psaras",
-      "George Pavlou"
-    ]
+    "relpermalink": "/publications/psaras2020a/"
   },
   {
     "title": "Engineering Filecoin’s economy",
     "summary": "",
     "date": "2020-08-27T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/protocol2020/",
-    "authors": [
-      "Protocol Labs"
-    ]
+    "relpermalink": "/publications/protocol2020/"
   },
   {
     "title": "GossipSub: Attack-resilient message propagation in the Filecoin and ETH2.0 networks",
     "summary": "",
     "date": "2020-07-06T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/vyzovitis2020a/",
-    "authors": [
-      "Dimitris Vyzovitis",
-      "Yusef Napora",
-      "Dirk McCormick",
-      "david-dias",
-      "yiannis-psaras"
-    ]
+    "relpermalink": "/publications/vyzovitis2020a/"
   },
   {
     "title": "Automating QUIC interoperability testing",
     "summary": "",
     "date": "2020-06-12T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/seemann2020/",
-    "authors": [
-      "marten-seemann",
-      "Jana Iyengar"
-    ]
+    "relpermalink": "/publications/seemann2020/"
   },
   {
     "title": "Merkle-CRDTs: Merkle-DAGs meet CRDTs",
     "summary": "",
     "date": "2020-04-27T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/psaras2020/",
-    "authors": [
-      "Hector Sanjuan",
-      "Samuli Poyhtari",
-      "Pedro Teixeira",
-      "yiannis-psaras"
-    ]
+    "relpermalink": "/publications/psaras2020/"
   },
   {
     "title": "Gossipsub-v1.1 evaluation report",
     "summary": "",
     "date": "2020-04-18T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/vyzovitis2020/",
-    "authors": [
-      "Dimitris Vyzovitis",
-      "Yusef Napora",
-      "Dirk McCormick",
-      "david-dias",
-      "yiannis-psaras"
-    ]
+    "relpermalink": "/publications/vyzovitis2020/"
   },
   {
     "title": "MonZa: Fast maliciously secure two party computation on Z_{2^k}",
     "summary": "",
     "date": "2020-04-08T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/catalano2019/",
-    "authors": [
-      "Dario Catalano",
-      "Mario Di Raimondo",
-      "Dario Fiore",
-      "irene-giacomelli"
-    ]
+    "relpermalink": "/publications/catalano2019/"
   },
   {
     "title": "Censorship-resistant web annotations based on Ethereum and IPFS",
     "summary": "",
     "date": "2020-03-30T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/santos2019/",
-    "authors": [
-      "João Santos",
-      "Nuno Santos",
-      "david-dias"
-    ]
+    "relpermalink": "/publications/santos2019/"
   },
   {
     "title": "SoK: Tools for game theoretic models of security for cryptocurrencies",
     "summary": "",
     "date": "2020-03-03T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/azouvi2020/",
-    "authors": [
-      "sarah-azouvi",
-      "Alexander Hicks"
-    ]
+    "relpermalink": "/publications/azouvi2020/"
   },
   {
     "title": "Single secret leader election",
     "summary": "",
     "date": "2020-01-15T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/boneh2020/",
-    "authors": [
-      "Dan Boneh",
-      "Saba Eskandarian",
-      "Lucjan Hanzlik",
-      "nicola-greco"
-    ]
+    "relpermalink": "/publications/boneh2020/"
   },
   {
     "title": "Exploring connections between active learning and model extraction",
     "summary": "",
     "date": "2019-11-20T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/chandrasekaran2019/",
-    "authors": [
-      "Varun Chandrasekaran",
-      "Kamalika Chaudhuri",
-      "irene-giacomelli",
-      "Somesh Jha",
-      "Songbai Yan"
-    ]
+    "relpermalink": "/publications/chandrasekaran2019/"
   },
   {
     "title": "Efficient UC commitment extension with homomorphism for free (and applications)",
     "summary": "",
     "date": "2019-10-02T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/giacomelli2019/",
-    "authors": [
-      "Ignacio Cascudo",
-      "Ivan Damgård",
-      " Bernardo David",
-      "Nico Döttling",
-      "Rafael Dowsley",
-      "irene-giacomelli"
-    ]
+    "relpermalink": "/publications/giacomelli2019/"
   },
   {
     "title": "Dioptics: A common generalization of open games and gradient-based learners",
     "summary": "",
     "date": "2019-09-05T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/dalrymple2019/",
-    "authors": [
-      "david-dalrymple"
-    ]
+    "relpermalink": "/publications/dalrymple2019/"
   },
   {
     "title": "A dual-process approach for automated knowledge creation",
     "summary": "",
     "date": "2019-09-05T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/ransil2019a/",
-    "authors": [
-      "alan-ransil",
-      "chhimed-kunzang"
-    ]
+    "relpermalink": "/publications/ransil2019a/"
   },
   {
     "title": "U.S. energy policy and market design",
     "summary": "",
     "date": "2019-09-03T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/hammersley2018/",
-    "authors": [
-      "michael-hammersley"
-    ]
+    "relpermalink": "/publications/hammersley2018/"
   },
   {
     "title": "PLONK: Permutations over Lagrange-bases for oecumenical noninteractive arguments of knowledge",
     "summary": "",
     "date": "2019-08-24T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/gabizon2019a/",
-    "authors": [
-      "ariel-gabizon",
-      "Zachary J Williamson",
-      "Oana Ciobotaru"
-    ]
+    "relpermalink": "/publications/gabizon2019a/"
   },
   {
     "title": "A computable multilayer system stack for future-proof interoperability",
     "summary": "",
     "date": "2019-07-09T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/ransil2019/",
-    "authors": [
-      "alan-ransil",
-      "Edwin Fonkwe Fongang",
-      "michael-hammersley",
-      "Ivan Celanovic",
-      "Francis O'Sullivan"
-    ]
+    "relpermalink": "/publications/ransil2019/"
   },
   {
     "title": "AuroraLight: Improved prover efficiency and SRS size in a Sonic-like system",
     "summary": "",
     "date": "2019-05-29T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/gabizon2019/",
-    "authors": [
-      "ariel-gabizon"
-    ]
+    "relpermalink": "/publications/gabizon2019/"
   },
   {
     "title": "Microgrids",
     "summary": "",
     "date": "2018-12-21T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/ransil2018c/",
-    "authors": [
-      "alan-ransil"
-    ]
+    "relpermalink": "/publications/ransil2018c/"
   },
   {
     "title": "Scaling proof-of-replication for Filecoin mining",
     "summary": "",
     "date": "2018-10-15T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/fisch2018/",
-    "authors": [
-      "ben-fisch",
-      "joseph-bonneau",
-      "nicola-greco",
-      "juan-benet"
-    ]
+    "relpermalink": "/publications/fisch2018/"
   },
   {
     "title": "Smart grid pilot projects",
     "summary": "",
     "date": "2018-10-15T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/hammersley2018b/",
-    "authors": [
-      "michael-hammersley"
-    ]
+    "relpermalink": "/publications/hammersley2018b/"
   },
   {
     "title": "Price signals and demand-side management in the electric distribution and retail system",
     "summary": "",
     "date": "2018-09-27T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/ransil2018b/",
-    "authors": [
-      "alan-ransil"
-    ]
+    "relpermalink": "/publications/ransil2018b/"
   },
   {
     "title": "Energy pricing",
     "summary": "",
     "date": "2018-08-23T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/ransil2018a/",
-    "authors": [
-      "alan-ransil"
-    ]
+    "relpermalink": "/publications/ransil2018a/"
   },
   {
     "title": "PoReps: Proofs of space on useful data",
     "summary": "",
     "date": "2018-07-14T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/fisch2018a/",
-    "authors": [
-      "ben-fisch"
-    ]
+    "relpermalink": "/publications/fisch2018a/"
   },
   {
     "title": "Proof of replication",
     "summary": "",
     "date": "2017-07-27T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/benet2017/",
-    "authors": [
-      "juan-benet",
-      "david-dalrymple",
-      "nicola-greco"
-    ]
+    "relpermalink": "/publications/benet2017/"
   },
   {
     "title": "Power fault tolerance",
     "summary": "",
     "date": "2017-07-27T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/protocollabs2017/",
-    "authors": [
-      "Protocol Labs"
-    ]
+    "relpermalink": "/publications/protocollabs2017/"
   },
   {
     "title": "Filecoin: A decentralized storage network",
     "summary": "",
     "date": "2017-07-19T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/protocollabs2017a/",
-    "authors": [
-      "Protocol Labs"
-    ]
+    "relpermalink": "/publications/protocollabs2017a/"
   },
   {
     "title": "Distributed web applications with IPFS",
     "summary": "",
     "date": "2016-05-25T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/dias2016/",
-    "authors": [
-      "david-dias",
-      "juan-benet"
-    ]
+    "relpermalink": "/publications/dias2016/"
   },
   {
     "title": "Filecoin: A cryptocurrency operated file storage network",
     "summary": "",
     "date": "2014-07-15T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/protocollabs2014/",
-    "authors": [
-      "Protocol Labs"
-    ]
+    "relpermalink": "/publications/protocollabs2014/"
   },
   {
     "title": "IPFS - Content addressed, versioned, P2P file system",
     "summary": "",
     "date": "2014-07-14T00:00:00.000Z",
     "type": "publication",
-    "relpermalink": "/publications/benet2014/",
-    "authors": [
-      "juan-benet"
-    ]
+    "relpermalink": "/publications/benet2014/"
   },
   {
     "title": "F3 and GossipBFT: Fast finality on longest-chain protocols",
     "summary": "We present F3, a finality component designed to bring fast finality to Filecoin. F3 leverages a novel consensus protocol, GossiPBFT,  that runs on the side and finalizes tipsets in tens of seconds instead of hours, while laying the basis for verifiable cross-chain bridging.",
     "date": "2024-02-27T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/ethdenver24-alejandro/",
-    "authors": [
-      "alejandro-ranchalpedrosa"
-    ]
+    "relpermalink": "/talks/ethdenver24-alejandro/"
   },
   {
     "title": "Janus and Granite",
     "summary": "Henrique presents Janus and Granite, a consensus framework and algorithm to bring fast finality to the Filecoin network.",
     "date": "2023-07-17T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr23-henrique/",
-    "authors": [
-      "henrique-moniz"
-    ]
+    "relpermalink": "/talks/plr23-henrique/"
   },
   {
     "title": "Scalable asynchronous randomized byzantine agreement",
     "summary": "Most algorithms solving Byzantine agreement that are implemented and used in practice today rely on some form of synchrony assumptions. Especially when used in blockchain systems, where scalability is of great importance, purely asynchronous solutions suffer from high message complexity or strong assumptions that weaken the adversary. In particular, an adaptive adversary (roughly translating to DoS attacks in practice) is difficult to overcome without any synchrony assumptions while also keeping",
     "date": "2023-03-30T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/randomnesssummit23-matej/",
-    "authors": [
-      "henrique-moniz",
-      "matej-pavlovic"
-    ]
+    "relpermalink": "/talks/randomnesssummit23-matej/"
   },
   {
     "title": "tlock: Practical timelock encryption based on threshold BLS",
     "summary": "We present a practical construction and implementation of timelock encryption, in which a ciphertext is guaranteed to be decryptable only after some specified time has passed. We employ an existing threshold network, the League of Entropy, implementing threshold BLS in the context of Boneh and Franklin's identity-based encryption (IBE) At present this threshold network broadcasts BLS signatures over each round number, equivalent to the current time interval, and as such can be considered a decen",
     "date": "2023-03-29T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/rwc23-yolan/",
-    "authors": [
-      "yolan-romailler"
-    ]
+    "relpermalink": "/talks/rwc23-yolan/"
   },
   {
     "title": "A metaverse of walled gardens?",
     "summary": "The way in which the development and commercialisation of the metaverse unfold may result in an open architecture for collaborative innovation and participation, or in a series of silos tightly controlled by a small number of commercial entities. But does the outcome even matter? And, if so, how can we shape it? We will briefly go over the implications for users, developers, and regulators, and the role that emerging standards might play.",
     "date": "2023-03-29T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/wipo23-jorge/",
-    "authors": [
-      "jorge-soares"
-    ]
+    "relpermalink": "/talks/wipo23-jorge/"
   },
   {
     "title": "Interplanetary Consensus: Now playing in Eudico near you",
     "summary": "Alfonso de la Rocha, Research Engineer at ConsensusLab, describes the technical details of interplanetary consensus.",
     "date": "2022-11-21T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensuslabsummit22-alfonso/",
-    "authors": [
-      "alfonso-delarocha"
-    ]
+    "relpermalink": "/talks/consensuslabsummit22-alfonso/"
   },
   {
     "title": "Interplanetary Consensus: Scaling blockchains with subnets in an easy-to-trust model",
     "summary": "Guy Goren, Research Scientist at ConsensusLab, presents a simplified subnet model for blockchain scaling.",
     "date": "2022-11-21T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensuslabsummit22-guy/",
-    "authors": [
-      "guy-goren"
-    ]
+    "relpermalink": "/talks/consensuslabsummit22-guy/"
   },
   {
     "title": "Applications of Interplanetary Consensus",
     "summary": "Juan Benet, CEO of Protocol Labs, outlines the scaling requirements of web3 and the many applications of IPC.",
     "date": "2022-11-21T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensuslabsummit22-juan/",
-    "authors": [
-      "juan-benet"
-    ]
+    "relpermalink": "/talks/consensuslabsummit22-juan/"
   },
   {
     "title": "Realising web3: 15 months of ConsensusLab",
     "summary": "Marko Vukolic, ConsensusLab lead at Protocol Labs, reviews the work done by ConsensusLab since its creation and its future directions.",
     "date": "2022-11-21T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensuslabsummit22-marko/",
-    "authors": [
-      "marko-vukolic"
-    ]
+    "relpermalink": "/talks/consensuslabsummit22-marko/"
   },
   {
     "title": "Building modular and scalable BFT consensus using the Mir framework",
     "summary": "Matej Pavlovic, Research Scientist at ConsensusLab, introduces the Mir framework and the work being done at ConsensusLab implementing performant BFT consensus.",
     "date": "2022-11-21T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensuslabsummit22-matej/",
-    "authors": [
-      "matej-pavlovic"
-    ]
+    "relpermalink": "/talks/consensuslabsummit22-matej/"
   },
   {
     "title": "Unexpected consensus? The possible futures of the Filecoin network",
     "summary": "Sarah Azouvi, Research Scientist at ConsensusLab, discusses the directions being explored for the future of Filecoin mainnet consensus.",
     "date": "2022-11-21T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensuslabsummit22-sarah/",
-    "authors": [
-      "sarah-azouvi"
-    ]
+    "relpermalink": "/talks/consensuslabsummit22-sarah/"
   },
   {
     "title": "dOnlyFans",
     "summary": "Is decentralising OnlyFans the killer application for web3? Sarah Azouvi, Research Scientist at ConsensusLab, explains why it is.",
     "date": "2022-11-21T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensuslabsummit22-sarah2/",
-    "authors": [
-      "sarah-azouvi"
-    ]
+    "relpermalink": "/talks/consensuslabsummit22-sarah2/"
   },
   {
     "title": "Blockchain meets concurrency: Scaling FVM with multi-threaded execution",
     "summary": "Vivien Quéma, Research Adviser to ConsensusLab, and Yann Vonlanthen, Summer Fellow at ConsensusLab, explore directions for multi-threaded execution in FVM.",
     "date": "2022-11-21T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensuslabsummit22-vivien/",
-    "authors": [
-      "vivien-quema",
-      "yann-vonlanthen"
-    ]
+    "relpermalink": "/talks/consensuslabsummit22-vivien/"
   },
   {
     "title": "Timelock encryption based on drand",
     "summary": "The notion of timelock encryption was first introduced on the Cypherpunks mailing list in 1993 by the founder of the crypto-anarchist movement, Tim May, and to date, while there have been numerous attempts to tackle it, none have been deployed at scale, nor made available to be used in any practical way. We have recently changed this status-quo by releasing a free, open-source tool that can finally achieve the lofty goal of encrypting things that cannot be decrypted until a given time has come i",
     "date": "2022-09-14T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr22-yolan/",
-    "authors": [
-      "yolan-romailler"
-    ]
+    "relpermalink": "/talks/plr22-yolan/"
   },
   {
     "title": "A dead man’s full-yet-responsible-disclosure system",
     "summary": "Do you  worry about responsible disclosure because they could instead exploit the time-to-patch to find you and remove you from the equation? Dead man switches exist for a reason...  In this talk we present a new form of vulnerability disclosure relying on timelock encryption of content: where you encrypt a message that cannot be decrypted until a given (future) time. This notion of timelock encryption first surfaced on the Cypherpunks mailing list in 1993 by the crypto-anarchist founder, Tim Ma",
     "date": "2022-08-11T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/defcon30-yolan/",
-    "authors": [
-      "yolan-romailler"
-    ]
+    "relpermalink": "/talks/defcon30-yolan/"
   },
   {
     "title": "IPFS network measurements and improvement opportunities",
     "summary": "We will introduce a set of measurement methodologies that allow us to uncover the characteristics and interactions in the public IPFS network. After a big measurement campaign, we reveal presence of IPFS peers in more than 2700 Autonomous Systems and 152 countries, the majority of which operate outside large central cloud providers like Amazon or Azure. We further evaluate IPFS performance, showing that both publication and retrieval delays are acceptable for a wide range of use cases.",
     "date": "2022-07-26T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/paris22-yiannis/",
-    "authors": [
-      "yiannis-psaras"
-    ]
+    "relpermalink": "/talks/paris22-yiannis/"
   },
   {
     "title": "drand: Publicly verifiable randomness explained",
     "summary": "drand is an opensource project allowing anybody to run a “randomness beacon”. Its goal? Providing a trustable, verifiable source of public randomness that would enable full transparency in online lotteries, leader election or blockchain smart contracts. This talk is about what distributed randomness is, what it means for developers, and users, and why you’d want to use it. I will also present to you the current ecosystem around drand, and what it enables you to do differently and why it is desir",
     "date": "2022-07-25T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/mch22-yolan/",
-    "authors": [
-      "yolan-romailler"
-    ]
+    "relpermalink": "/talks/mch22-yolan/"
   },
   {
     "title": "Private access to decentralized data",
     "summary": "Will Scott talks about the options and opportunities for private access to decentralized data, and announces Protocol Labs private data retrieval fund.  Targeted at research and prototyping projects, this funds aims to develop additional protocol-compatible primitives allowing users to interact privately with Web3 content.\nCheck out related posts on our blog.",
     "date": "2022-07-21T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/ethcc-will-scott/",
-    "authors": [
-      "will-scott"
-    ]
+    "relpermalink": "/talks/ethcc-will-scott/"
   },
   {
     "title": "Hierarchical consensus: A horizontal scaling framework for blockchains",
     "summary": "We present the Filecoin Hierarchical Consensus framework, which aims to overcome the throughput challenges of blockchain consensus by horizontally scaling the network. Unlike traditional sharding designs, based on partitioning the state of the network, our solution centers on the concept of subnets –which are organized hierarchically– and can be spawned on-demand to manage new state. Child subnets are firewalled from parent subnets, have their own specific policies, and run a different consensus",
     "date": "2022-06-24T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensusfactory-alfonso/",
-    "authors": [
-      "alfonso-delarocha"
-    ]
+    "relpermalink": "/talks/consensusfactory-alfonso/"
   },
   {
     "title": "Hierarchical consensus project update",
     "summary": "Alfonso de la Rocha provides the latest updates on ConsensusLab's project B1, focused on hierarchical consensus.",
     "date": "2022-03-11T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/cl22q2-alfonso/",
-    "authors": [
-      "alfonso-delarocha"
-    ]
+    "relpermalink": "/talks/cl22q2-alfonso/"
   },
   {
     "title": "Tendermint subnet consensus project update",
     "summary": "Denis Kolegov provides the latest updates on ConsensusLab's project Y5, focused on implementing Tendermint as a subnet consensus mechanism.",
     "date": "2022-03-11T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/cl22q2-denis/",
-    "authors": [
-      "denis-kolegov"
-    ]
+    "relpermalink": "/talks/cl22q2-denis/"
   },
   {
     "title": "Bitcoin checkpointing project update",
     "summary": "Sarah Azouvi provides the latest updates on ConsensusLab's project B2, focused on preventing long-range attacks by checkpointing state onto the Bitcoin chain.",
     "date": "2022-03-11T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/cl22q2-sarah/",
-    "authors": [
-      "sarah-azouvi"
-    ]
+    "relpermalink": "/talks/cl22q2-sarah/"
   },
   {
     "title": "Parallel execution project update",
     "summary": "Vivien Quéma provides the latest updates on ConsensusLab's project G1, focused on the parallelisation of execution in WASM order-execute models.",
     "date": "2022-03-11T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/cl22q2-vivien/",
-    "authors": [
-      "vivien-quema"
-    ]
+    "relpermalink": "/talks/cl22q2-vivien/"
   },
   {
     "title": "Filecoin hierarchical consensus",
     "summary": "Alfonso de la Rocha presents his work on Hierarchical Consensus, whose goal is to develop a framework to enable on-demand horizontal scalability of Filecoin (and other blockchain networks) through an alternative sharding/side-chain scheme that supports heterogeneous consensus algorithms in each subnetwork.",
     "date": "2022-02-23T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr22-alfonso/",
-    "authors": [
-      "alfonso-delarocha"
-    ]
+    "relpermalink": "/talks/plr22-alfonso/"
   },
   {
     "title": "The importance of consensus R&D breakthroughs",
     "summary": "Juan Benet, founder of Protocol Labs, talks about the importance of consensus research, some of the challenges ahead, and what PL is doing to address them.",
     "date": "2021-12-14T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensusdays21-juan/",
-    "authors": [
-      "juan-benet"
-    ]
+    "relpermalink": "/talks/consensusdays21-juan/"
   },
   {
     "title": "A vision for ConsensusLab and decentralized computing ",
     "summary": "Marko Vukolic, ConsensusLab lead at Protocol Labs, discusses the vision for the lab and some key challenges for decentralization.",
     "date": "2021-12-14T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensusdays21-marko/",
-    "authors": [
-      "marko-vukolic"
-    ]
+    "relpermalink": "/talks/consensusdays21-marko/"
   },
   {
     "title": "Securing membership and state checkpoints of BFT and PoS blockchains by anchoring onto the Bitcoin blockchain",
     "summary": "Long-range attacks on PoS blockchains and the related “I still work here” attack in BFT-based blockchains are among the major security issues in these systems. Recently, an approach has been proposed to deal with these attacks by anchoring BFT/PoS membership into Ethereum’s proof-of-work blockchain. As Ethereum is abandoning PoW, this approach is no longer viable. This project aims at achieving the same goals using Bitcoin’s PoW.",
     "date": "2021-12-14T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/consensusdays21-sarah/",
-    "authors": [
-      "sarah-azouvi"
-    ]
+    "relpermalink": "/talks/consensusdays21-sarah/"
   },
   {
     "title": "Private attacks in longest chain PoS protocols with single secret leader election",
     "summary": "Single Secret Leader Elections have recently been proposed as an improved leader election mechanism for proof-of-stake blockchains. However, the security gain they provide has not been quantified. In this talk, Protocol Labs research Sarah Azouvi presents a comparison of proof-of-stake longest-chain protocols that are based on Single Secret Leader Elections (SSLE)– that elect exactly one leader per round – versus those based on Probabilistic Leader Elections (PLE) – where one leader is elected o",
     "date": "2021-09-07T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr21-sarah3/",
-    "authors": [
-      "sarah-azouvi"
-    ]
+    "relpermalink": "/talks/plr21-sarah3/"
   },
   {
     "title": "IPFS-FAN: A function addressible computation network",
     "summary": "Protocol Labs R&D Engineer Alfonso de la Rocha discusses  IPFS-FAN, a general architecture of a decentralised network for  general-purpose and permissionless computation based on content-addressing.",
     "date": "2021-08-02T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/di2f21-alfonso/",
-    "authors": [
-      "alfonso-delarocha"
-    ]
+    "relpermalink": "/talks/di2f21-alfonso/"
   },
   {
     "title": "Protocol Labs: First principles thinking - history of finance & Filecoin",
     "summary": "Research scientist Zixuan (ZX) Zhang gives a workshop on first principles thinking and the history of finance and Filecoin as part of ETHGlobal's HackMoney 2021.",
     "date": "2021-08-02T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/hackmoney21-zx/",
-    "authors": [
-      "zixuan-zhang"
-    ]
+    "relpermalink": "/talks/hackmoney21-zx/"
   },
   {
     "title": "HyperDrive deep dive",
     "summary": "Research Scientist Zixuan (ZX) Zhang does a deep dive  to highlight what the Filecoin HyperDrive upgrade enables and how to  tactically take advantage of the new change in different chain utilization  scenarios.",
     "date": "2021-08-02T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/hyperdrive21-zx/",
-    "authors": [
-      "zixuan-zhang"
-    ]
+    "relpermalink": "/talks/hyperdrive21-zx/"
   },
   {
     "title": "Scaling zkSNARKs to meet the demands of Filecoin",
     "summary": "Protocol Labs R&D Engineer Friedel Ziegelmayer explains the technical accomplishments for solving scaling issues with the rising use of Filecoin.",
     "date": "2021-06-03T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/scaling-via-zk-summit/",
-    "authors": [
-      "friedel-ziegelmayer"
-    ]
+    "relpermalink": "/talks/scaling-via-zk-summit/"
   },
   {
     "title": "More than just storage: Business opportunities on Filecoin",
     "summary": "",
     "date": "2021-05-28T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/web3wknd21-zx/",
-    "authors": [
-      "zixuan-zhang"
-    ]
+    "relpermalink": "/talks/web3wknd21-zx/"
   },
   {
     "title": "SoK: Tools for game theoretic models of security for cryptocurrencies",
     "summary": "Protocol Labs R&Der Sarah Azouvi presents her work on game theoretic models of security for cryptocurrencies. This work was originally presented at the Cryptoeconomic Systems Conference at MIT in March 2020.",
     "date": "2021-05-03T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr21-sarah2/",
-    "authors": [
-      "sarah-azouvi"
-    ]
+    "relpermalink": "/talks/plr21-sarah2/"
   },
   {
     "title": "Beyond swapping bits",
     "summary": "ResNetLab Research Engineer Alfonso de la Rocha discusses his 'Beyond Bitswap' project. Check out related posts on our blog.",
     "date": "2021-02-23T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr21-alfonso/",
-    "authors": [
-      "alfonso-delarocha"
-    ]
+    "relpermalink": "/talks/plr21-alfonso/"
   },
   {
     "title": "Winkle: a decentralized checkpointing for proof-of-stake systems",
     "summary": "Protocol Labs R&Der Sarah Azouvi presents her research on Winkle, which protects any validator-based byzantine fault tolerant consensus mechanisms, such as those used in modern Proof-of-Stake blockchains, against long-range attacks where old validators’ signature keys get compromised.",
     "date": "2021-02-09T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr21-sarah/",
-    "authors": [
-      "sarah-azouvi"
-    ]
+    "relpermalink": "/talks/plr21-sarah/"
   },
   {
     "title": "Verifiable computation on encrypted data",
     "summary": "Protocol Labs cryptography researcher Anca Nitulescu discusses her work on verifiable computation on encrypted data.",
     "date": "2021-01-26T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr21-anca/",
-    "authors": [
-      "anca-nitulescu"
-    ]
+    "relpermalink": "/talks/plr21-anca/"
   },
   {
     "title": "The Underlay: A distributed public knowledge graph",
     "summary": "Joel Gustafson talks about what knowledge graphs are, generally,  with special attention to his research project, The Underlay, which is a distributed public knowledge graph.",
     "date": "2021-01-19T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr21-joel/",
-    "authors": [
-      "joel-gustafson"
-    ]
+    "relpermalink": "/talks/plr21-joel/"
   },
   {
     "title": "The Inter-Cranial Abstraction System (ICAS)",
     "summary": "Alan Ransil discusses the Inter-Cranial Abstraction system (ICAS), a ‘Merkle Forest’ of content-addressed types and programs.",
     "date": "2021-01-12T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr21-alan/",
-    "authors": [
-      "alan-ransil"
-    ]
+    "relpermalink": "/talks/plr21-alan/"
   },
   {
     "title": "Filecoin  Circulating Supply",
     "summary": "Colin Evran and Zixuan Zhang discuss  a model of Filecoin circulating supply. ",
     "date": "2020-12-17T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/storagemarket-zx01/",
-    "authors": [
-      "Colin Evran",
-      "zixuan zhang"
-    ]
+    "relpermalink": "/talks/storagemarket-zx01/"
   },
   {
     "title": "Filecoin Economy Deep Dive",
     "summary": "CryptoEconLab researcher ZX leads viewers on a deep dive into the Filecoin economy.",
     "date": "2020-12-17T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/storagemarket-zx02/",
-    "authors": [
-      "zixuan-zhang"
-    ]
+    "relpermalink": "/talks/storagemarket-zx02/"
   },
   {
     "title": "Enabling plug and play transactive energy on legacy power grids",
     "summary": "Michael Hammersley talks about enabling transactive energy on legacy power grids. This work was done in conjunction with Alan Ransil, who is associated with both Protocol Labs and the MIT Energy Initiative, as well as Frank O’Sullivan, who is also at the MIT Energy Initative.",
     "date": "2020-12-09T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/tesc20-michael/",
-    "authors": [
-      "michael-hammersley"
-    ]
+    "relpermalink": "/talks/tesc20-michael/"
   },
   {
     "title": "A Technical Dive Into Filecoin’s Tokeneconomics",
     "summary": "Colin Evran and Zixuan Zhang lead Chain Reaction Podcast host Tom Shaughnessy on a technical deep dive into the cryptoeconomics of the Filecoin network.",
     "date": "2020-11-27T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/delphipodcast-zx01/",
-    "authors": [
-      "Colin Evran",
-      "zixuan zhang"
-    ]
+    "relpermalink": "/talks/delphipodcast-zx01/"
   },
   {
     "title": "The Filecoin Storage Economy",
     "summary": "CryptoEconLab research scientist ZX  discusses the mechanisms and models presented in the report \"Engineering Filecoin's Economy\".",
     "date": "2020-10-22T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/liftoff-zx/",
-    "authors": [
-      "zixuan-zhang"
-    ]
+    "relpermalink": "/talks/liftoff-zx/"
   },
   {
     "title": "Vector commitment techniques and applications to verifiable decentralized storage",
     "summary": "Vector commitments with subvector openings (SVC) allow one to open a committed vector at a set of positions with an opening of size independent of both the vector's length and the number of opened positions. We continue the study of SVC with two goals in mind: improving their efficiency and making them more suitable to decentralized settings. We address both problems by proposing a new notion for VC that we call incremental aggregation and that allows one to merge openings in a succinct way an u",
     "date": "2020-07-01T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/tpbc20-kolonelos/",
-    "authors": [
-      "Matteo Campanelli",
-      "Dario Fiore",
-      "nicola-greco",
-      "luca-nizzardo",
-      "Dimitris Kolonelos"
-    ]
+    "relpermalink": "/talks/tpbc20-kolonelos/"
   },
   {
     "title": "Decentralized energy grid: A Protocol Labs independent research project",
     "summary": "Protocol Labs researcher Michael Hammersley discusses the current state of his work on a decentralized energy grid, a shared project with Alan Ransil, another researcher at Protocol Labs.",
     "date": "2020-03-25T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr20-michael/",
-    "authors": [
-      "michael-hammersley",
-      "alan-ransil"
-    ]
+    "relpermalink": "/talks/plr20-michael/"
   },
   {
     "title": "Drand: Distributed, bias resistant, unpredictable and publicly verifiable randomness",
     "summary": "A talk by Nicolas Gailly, Research Scientist at Protocol Labs, March 4, 2020",
     "date": "2020-03-04T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/plr20-nicolas/",
-    "authors": [
-      "nicolas-gailly"
-    ]
+    "relpermalink": "/talks/plr20-nicolas/"
   },
   {
     "title": "Dioptics: A common generalization of open games and gradient-based learners",
     "summary": "David Dalrymple (Protocol Labs R&D) talks about Dioptics at SYCO 5.",
     "date": "2019-09-06 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/syco5-davidad/",
-    "authors": [
-      "david-dalrymple"
-    ]
+    "relpermalink": "/talks/syco5-davidad/"
   },
   {
     "title": "Single secret leader election",
     "summary": "Brian Vohaska (Filecoin Research) talks about SSLE at ConsensusDay 1.",
     "date": "2019-02-02 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/consensusday1-brian/",
-    "authors": [
-      "brian-vohaska"
-    ]
+    "relpermalink": "/talks/consensusday1-brian/"
   },
   {
     "title": "Mergeable consensus",
     "summary": "Evan Miyazono (Protocol Labs R&D) talks about mergeable consensus at ConsensusDay 1.",
     "date": "2019-02-02 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/consensusday1-evan/",
-    "authors": [
-      "evan-miyazono"
-    ]
+    "relpermalink": "/talks/consensusday1-evan/"
   },
   {
     "title": "Expected consensus",
     "summary": "Henri Stern (Filecoin Research) talks about expected consensus at ConsensusDay 1.",
     "date": "2019-02-02 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/consensusday1-henri/",
-    "authors": [
-      "henri-stern"
-    ]
+    "relpermalink": "/talks/consensusday1-henri/"
   },
   {
     "title": "Consensus hierarchies",
     "summary": "Juan Benet (Protocol Labs CEO) talks about consensus hierarchies at ConsensusDay 1.",
     "date": "2019-02-02 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/consensusday1-juan/",
-    "authors": [
-      "juan-benet"
-    ]
+    "relpermalink": "/talks/consensusday1-juan/"
   },
   {
     "title": "New directions in consensus",
     "summary": "Juan Benet (Protocol Labs CEO) talks about new directions in consensus at ConsensusDay 1.",
     "date": "2019-02-02 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/consensusday1-juan2/",
-    "authors": [
-      "juan-benet"
-    ]
+    "relpermalink": "/talks/consensusday1-juan2/"
   },
   {
     "title": "Developing an open source energy trading protocol",
     "summary": "In order to decarbonize the power grid, we will make increasing use of resources at the grid edge such as wind, solar and batteries. This implies some significant changes in the structure of the power grid, which will have to transform from its current radial structure into a more distributed one. This talk briefly summarizes the way that the grid is structured now and how electricity pricing is done in transmission networks, and describes how we might extend these mechanisms to support clean en",
     "date": "2018-10-23 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/labday18-alan/",
-    "authors": [
-      "alan-ransil"
-    ]
+    "relpermalink": "/talks/labday18-alan/"
   },
   {
     "title": "PoReps: Proof of space on real data",
     "summary": "Ben Fisch (Filecoin Research) talks about PoReps at Lab Day 2018.",
     "date": "2018-10-23 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/labday18-ben/",
-    "authors": [
-      "ben-fisch"
-    ]
+    "relpermalink": "/talks/labday18-ben/"
   },
   {
     "title": "IPLD research and future directions",
     "summary": "David Dalrymple (Protocol Labs R&D) talks about IPLD research at Lab Day 2018.",
     "date": "2018-10-23 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/labday18-davidad/",
-    "authors": [
-      "david-dalrymple"
-    ]
+    "relpermalink": "/talks/labday18-davidad/"
   },
   {
     "title": "The Underlay: The inevitable future of knowledge",
     "summary": "The Underlay is a global, distributed graph database of public knowledge, started at the MIT Knowledge Futures Group in collaboration with Protocol Labs. It aims to provide open access to the content and provenance of all structured data.",
     "date": "2018-10-23 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/labday18-joel/",
-    "authors": [
-      "joel-gustafson"
-    ]
+    "relpermalink": "/talks/labday18-joel/"
   },
   {
     "title": "Protocol Labs R&D Overview",
     "summary": "An overview of Protocol Labs R&D from team lead Evan Miyazono.",
     "date": "2018-07-09T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/developersmeetings18-evan/",
-    "authors": [
-      "evan-miyazono"
-    ]
+    "relpermalink": "/talks/developersmeetings18-evan/"
   },
   {
     "title": "Good SNARKs are here needed",
     "summary": "Nicola Greco (Filecoin Research) talks about SNARKs at Zcon0.",
     "date": "2018-06-28 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/zcon0-nicola/",
-    "authors": [
-      "nicola-greco"
-    ]
+    "relpermalink": "/talks/zcon0-nicola/"
   },
   {
     "title": "The Protocol Labs RFP Program",
     "summary": "Research team lead Evan Miyazono provides an overview of the PL approach to external research, and describes PL Research's Request For Proposals (RFP) program.",
     "date": "2018-05-22T00:00:00.000Z",
     "type": "talk",
-    "relpermalink": "/talks/lisbon18-evan/",
-    "authors": [
-      "evan-miyazono"
-    ]
+    "relpermalink": "/talks/lisbon18-evan/"
   },
   {
     "title": "VDFs and Filecoin",
     "summary": "Jeromy Johnson (Filecoin Research) talks about VDFs and Filecoin at VDF Day.",
     "date": "2018-02-03 14:19:14 +0100",
     "type": "talk",
-    "relpermalink": "/talks/vdfday-jeromy/",
-    "authors": [
-      "jeromy-johnson"
-    ]
+    "relpermalink": "/talks/vdfday-jeromy/"
+  },
+  {
+    "title": "Abby Silin",
+    "summary": "Research Administrator · Distributed power systems and knowledge engineering",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/abby-silin/"
+  },
+  {
+    "title": "Adam Marblestone",
+    "summary": "Research Advisor · Scientific organization design · Metascience · Biology",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/adam-marblestone/"
+  },
+  {
+    "title": "Adrian Lanzafame",
+    "summary": "Research Engineer · Distributed Systems · Software Measurement",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/adrian-lanzafame/"
+  },
+  {
+    "title": "Akosh Farkash",
+    "summary": "Research Engineer · Integrating Lurk and hierarchical consensus · Distributed computation on private data · Implementing programming languages and DSLs",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/akosh-farkash/"
+  },
+  {
+    "title": "Alan Ransil",
+    "summary": "Team Lead · Distributed Systems · Economics · Energy",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/alan-ransil/"
+  },
+  {
+    "title": "Alejandro Ranchal-Pedrosa",
+    "summary": "Research Scientist · Distributed Computing · Game Theory · Applied Cryptography · Tokenomics",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/alejandro-ranchalpedrosa/"
+  },
+  {
+    "title": "Alex Terrazas",
+    "summary": "Technical Program Manager · Neural models of decision making · Economic incentives and behavioral psychology · Artificial intelligence · Virtual and augmented reality · Brain-computer interfaces",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/alex-terrazas/"
+  },
+  {
+    "title": "Alfonso de la Rocha",
+    "summary": "Research Engineer · Distributed Systems · Networking · Cryptography",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/alfonso-delarocha/"
+  },
+  {
+    "title": "Anca Nitulescu",
+    "summary": "Research Scientist · Verifiable Computation · Proving systems (SNARKs, zero-knowledge proofs) · Authentication primitives",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/anca-nitulescu/"
+  },
+  {
+    "title": "Andrei Tonkikh",
+    "summary": "Summer Fellow · Consensus protocols · Asynchronous cryptocurrencies · Applied cryptography · Reconfiguration",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/andrei-tonkikh/"
+  },
+  {
+    "title": "Ariel Gabizon",
+    "summary": "Research Scientist · Cryptography",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/ariel-gabizon/"
+  },
+  {
+    "title": "Axel Cortés Cubero",
+    "summary": "Research Scientist · Dynamics of complex systems and emergent phenomena · Statistical and stochastic mechanics",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/axel-cortes-cubero/"
+  },
+  {
+    "title": "Ben Fisch",
+    "summary": "",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/ben-fisch/"
+  },
+  {
+    "title": "Brian Vohaska",
+    "summary": "Research Scientist · Cryptography · Distributed Systems",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/brian-vohaska/"
+  },
+  {
+    "title": "Britt Yazel",
+    "summary": "Research Program Manager · Cognitive Neuroscience · Neuroengineering",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/britt-yazel/"
+  },
+  {
+    "title": "Chhi'mèd Künzang",
+    "summary": "Research Engineer",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/chhimed-kunzang/"
+  },
+  {
+    "title": "Dandelion Mane",
+    "summary": "Research Engineer · Economics · Philosophy · Finance · Open Source",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/dandelion-mane/"
+  },
+  {
+    "title": "Dario Catalano",
+    "summary": "Research Advisor · Cryptography",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/dario-catalano/"
+  },
+  {
+    "title": "David Dalrymple",
+    "summary": "Research Scientist · Distributed Systems · Economics · Type Theory · Category Theory · AGI Ethics · Neuroinformatics",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/david-dalrymple/"
+  },
+  {
+    "title": "David Dao",
+    "summary": "Upgrade Economies & Governance System Lead · Artificial Intelligence · Data Valuation · AI for Conservation · AI for Public Goods",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/david-dao/"
+  },
+  {
+    "title": "David Dias",
+    "summary": "Research Director · Distributed Systems · Networking",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/david-dias/"
+  },
+  {
+    "title": "Denis Kolegov",
+    "summary": "Research Engineer · Computer security · Distributed systems",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/denis-kolegov/"
+  },
+  {
+    "title": "Dennis Trautwein",
+    "summary": "Research Engineer · Distributed Systems · Networking",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/dennis-trautwein/"
+  },
+  {
+    "title": "Evan Miyazono",
+    "summary": "Research Team Lead",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/evan-miyazono/"
+  },
+  {
+    "title": "Friedel Ziegelmayer",
+    "summary": "Research Engineer · Cryptography",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/friedel-ziegelmayer/"
+  },
+  {
+    "title": "Guillaume Michel",
+    "summary": "Research Engineer · Decentralized Systems · Computer Networking · Content Routing · Cryptography · Privacy · Linux · Open Source",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/guillaume-michel/"
+  },
+  {
+    "title": "Guy Goren",
+    "summary": "Research Scientist · Lower bounds for distributed computing · Faults models · Blockchains · Stochastic coordination",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/guy-goren/"
+  },
+  {
+    "title": "Guy Wuollet",
+    "summary": "Research Assistant · Networking · Distributed Systems · Cryptoeconomics",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/guy-wuollet/"
+  },
+  {
+    "title": "Henri Stern",
+    "summary": "Research Scientist · Distributed Systems · Marketplaces",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/henri-stern/"
+  },
+  {
+    "title": "Henrique Moniz",
+    "summary": "Research Engineer",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/henrique-moniz/"
+  },
+  {
+    "title": "Ioannis Caragiannis",
+    "summary": "Research Advisor · Algorithmic game theory",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/ioannis-caragiannis/"
+  },
+  {
+    "title": "Irene Giacomelli",
+    "summary": "Research Scientist · Cryptography",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/irene-giacomelli/"
+  },
+  {
+    "title": "James Tunningley",
+    "summary": "Upgrade Economies & Governance System Lead",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/james-tunningley/"
+  },
+  {
+    "title": "Jeromy Johnson",
+    "summary": "Research Engineer · Cryptography · Distributed systems · Networking · Economics",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/jeromy-johnson/"
+  },
+  {
+    "title": "Joe Zimmerman",
+    "summary": "Research Scientist · Cryptography · Programming Languages · Machine Learning",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/joe-zimmerman/"
+  },
+  {
+    "title": "Joel Gustafson",
+    "summary": "Research Scientist · Distributed Systems · Networking · Knowledge Representation",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/joel-gustafson/"
+  },
+  {
+    "title": "Jonathan Gross",
+    "summary": "Research Administrator",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/jonathan-gross/"
+  },
+  {
+    "title": "Jorge M. Soares",
+    "summary": "Technical Program Manager",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/jorge-soares/"
+  },
+  {
+    "title": "Joseph Bonneau",
+    "summary": "",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/joseph-bonneau/"
+  },
+  {
+    "title": "Juan Benet",
+    "summary": "Founder and CEO",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/juan-benet/"
+  },
+  {
+    "title": "Karola Kirsanow",
+    "summary": "Research Program Manager · Biological networks · Human genetics",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/karola-kirsanow/"
+  },
+  {
+    "title": "Liam O'Hagan",
+    "summary": "Social Media Manager",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/liam-ohagan/"
+  },
+  {
+    "title": "Luca Nizzardo",
+    "summary": "Research Scientist · Cryptography",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/luca-nizzardo/"
+  },
+  {
+    "title": "Marko Vukolić",
+    "summary": "Research Scientist · Decentralized Systems · Blockchain · Tradeoffs in Distributed Systems · Scalable Systems · Byzantine Fault Tolerance · Game Theory",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/marko-vukolic/"
+  },
+  {
+    "title": "Marten Seemann",
+    "summary": "Research Engineer",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/marten-seemann/"
+  },
+  {
+    "title": "Matej Pavlovic",
+    "summary": "Research Scientist · Large-scale, dynamic distributed systems · State machine replication · (Byzantine) fault tolerance · Blockchains · Distributed storage · Consistency",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/matej-pavlovic/"
+  },
+  {
+    "title": "Matteo Campanelli",
+    "summary": "Research Scientist · Cryptographic Proofs (SNARKs, zero-knowledge) · Authenticated Data Structures · Rational and Fine-grained Cryptography",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/matteo-campanelli/"
+  },
+  {
+    "title": "Michael Hammersley",
+    "summary": "Research Scientist · Materials Science",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/michael-hammersley/"
+  },
+  {
+    "title": "Molly Mackinlay",
+    "summary": "Engineering & Research Lead",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/molly-mackinlay/"
+  },
+  {
+    "title": "Nadia Eghbal",
+    "summary": "Research Scientist · Economics · Open source",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/nadia-eghbal/"
+  },
+  {
+    "title": "Nicola Greco",
+    "summary": "Research Scientist · Distributed Systems",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/nicola-greco/"
+  },
+  {
+    "title": "Nicolas Gailly",
+    "summary": "Research Scientist · Cryptography · Distributed Systems",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/nicolas-gailly/"
+  },
+  {
+    "title": "Patrick Woodhead",
+    "summary": "Technical Program Manager · Cryptography",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/patrick-woodhead/"
+  },
+  {
+    "title": "Petar Maymounkov",
+    "summary": "Research Scientist · Distributed Systems · Languages and Compilers · Spectral Methods in Computer Science",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/petar-maymounkov/"
+  },
+  {
+    "title": "Raymond Cheng",
+    "summary": "Startup Operator · Networking · Security · Privacy",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/raymond-cheng/"
+  },
+  {
+    "title": "Rosario Gennaro",
+    "summary": "Research Scientist · Cryptography · Network Security",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/rosario-gennaro/"
+  },
+  {
+    "title": "Samuel Tang",
+    "summary": "Associate Research Program Manager · Blockchain · Artifical Intelligence · Distributed Systems · Computer Networking · Humane Technology",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/samuel-tang/"
+  },
+  {
+    "title": "Sarah Azouvi",
+    "summary": "Research Scientist · Blockchain · Consensus",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/sarah-azouvi/"
+  },
+  {
+    "title": "Sean Escola",
+    "summary": "Neurotech Lead",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/sean-escola/"
+  },
+  {
+    "title": "Sergey Fedorov",
+    "summary": "Research Engineer · Distributed and decentralized systems · Byzantine fault tolerant replication · Blockchains",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/sergey-fedorov/"
+  },
+  {
+    "title": "Sílvia Bessa",
+    "summary": "Research Program Manager · Artificial Intelligence · Computer Vision · Open Source",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/silvia-bessa/"
+  },
+  {
+    "title": "Tom Mellan",
+    "summary": "Research Scientist · Complexity and emergence · Competition and cooperation dynamics · Bayesian inference · Quantification of uncertainty and decision theory · MCMC methods · Renewal/point/Gaussian processes · ODEs · Earth observation/deep learning · Time-series nowcasting/forecasting",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/tom-mellan/"
+  },
+  {
+    "title": "Trent Davis",
+    "summary": "Research Marketing Lead · Mechanisms for tokenomics and equitable wealth distribution · Consumer economics of blockchain integration in supply chains",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/trent-davis/"
+  },
+  {
+    "title": "Vasilis Giotsas",
+    "summary": "Research Engineer · Network measurements · Telemetry · Routing · Topology mapping",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/vasilis-giotsas/"
+  },
+  {
+    "title": "Vivien Quéma",
+    "summary": "Research Advisor · Byzantine fault tolerance · Multicore systems · P2P systems",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/vivien-quema/"
+  },
+  {
+    "title": "Volker Mische",
+    "summary": "Research Engineer",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/volker-mische/"
+  },
+  {
+    "title": "Will Scott",
+    "summary": "Digital Human Rights Lead · Networking · Security · Privacy",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/will-scott/"
+  },
+  {
+    "title": "Willes Lau",
+    "summary": "Research Engineer · Distributed Systems · Photography · Socialfi",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/willes-lau/"
+  },
+  {
+    "title": "Xuechao Wang",
+    "summary": "Visiting Researcher · Blockchain scalability · Proof of stake · Proof of work",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/xuechao-wang/"
+  },
+  {
+    "title": "Yann Vonlanthen",
+    "summary": "Summer Fellow · Scalable distributed systems and state machine replication · Current developments in the blockchain and web3 ecosystem · Advances in voting and governance theory · Proof-of-personhood and community currencies · Deliberation and digital democracy",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/yann-vonlanthen/"
+  },
+  {
+    "title": "Yiannis Psaras",
+    "summary": "Research Scientist · Networking",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/yiannis-psaras/"
+  },
+  {
+    "title": "Yolan Romailler",
+    "summary": "Research Engineer · Threshold Cryptography · Digital Signatures · Distributed Key Generation",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/yolan-romailler/"
+  },
+  {
+    "title": "Zixuan (ZX) Zhang",
+    "summary": "Research Scientist · Cryptoeconomics · Distributed Systems · Complex Systems",
+    "date": "",
+    "type": "author",
+    "relpermalink": "/authors/zixuan-zhang/"
+  },
+  {
+    "title": "Hello World",
+    "summary": "Welcome to the PL Research blog — our new home for updates, insights, and reflections from the team.",
+    "date": "2026-02-03T00:00:00.000Z",
+    "type": "blog",
+    "relpermalink": "/blog/hello-world/"
+  },
+  {
+    "title": "Distributed programming with Mir",
+    "summary": "Learn how to implement distributed systems using the Mir framework.",
+    "date": "2022-11-02T00:00:00.000Z",
+    "type": "tutorial",
+    "relpermalink": "/tutorials/mir/"
+  },
+  {
+    "title": "ResNetLab on Tour",
+    "summary": "Join us to learn everything about IPFS’s content addressing and content routing subsystems, its content exchange strategies, and how IPFS deals with dynamic, mutable content.",
+    "date": "2021-04-06T00:00:00.000Z",
+    "type": "tutorial",
+    "relpermalink": "/tutorials/resnetlab-on-tour/"
+  },
+  {
+    "title": "Scientific writing vault",
+    "summary": "Explore a suite of resources to aid researchers in creating and understanding scientific communications.",
+    "date": "2021-07-12T00:00:00.000Z",
+    "type": "tutorial",
+    "relpermalink": "/tutorials/scientific-writing-vault/"
+  },
+  {
+    "title": "AI & Robotics",
+    "summary": "Developing Advanced Technologies: Ensuring responsible advancement in AI, Robotics, AR, VR, and other nascent tech breakthroughs.",
+    "date": "",
+    "type": "area",
+    "relpermalink": "/areas/ai-robotics/"
+  },
+  {
+    "title": "Digital Human Rights",
+    "summary": "Securing Digital Human Rights: Building a foundation of freedom and safety in the digital age through Web3 networks and decentralized infrastructure.",
+    "date": "",
+    "type": "area",
+    "relpermalink": "/areas/digital-human-rights/"
+  },
+  {
+    "title": "Neurotech",
+    "summary": "Accelerate neurotechnologies to benefit humanity, focusing on breakthroughs in brain-computer interfaces (BCI).",
+    "date": "",
+    "type": "area",
+    "relpermalink": "/areas/neurotech/"
+  },
+  {
+    "title": "Upgrade Economies & Governance Systems",
+    "summary": "Upgrading Economies and Governance Systems: Creating more efficient and equitable structures for global progress through crypto-native infrastructure.",
+    "date": "",
+    "type": "area",
+    "relpermalink": "/areas/upgrade-economies-governance/"
+  },
+  {
+    "title": "About",
+    "summary": "About Protocol Labs Research & Development",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/about/"
+  },
+  {
+    "title": "Team",
+    "summary": "Meet the Protocol Labs R&D team",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/authors/"
+  },
+  {
+    "title": "Publications",
+    "summary": "Research papers and academic publications",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/publications/"
+  },
+  {
+    "title": "Talks",
+    "summary": "Conference talks and presentations",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/talks/"
+  },
+  {
+    "title": "Tutorials",
+    "summary": "Learning resources and technical tutorials",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/tutorials/"
+  },
+  {
+    "title": "Blog",
+    "summary": "Latest news and updates from PL R&D",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/blog/"
+  },
+  {
+    "title": "Collaborate",
+    "summary": "Work with Protocol Labs R&D on research",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/outreach/collaboration/"
+  },
+  {
+    "title": "Focus Areas",
+    "summary": "Research focus areas driving breakthroughs in computing",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/areas/"
+  },
+  {
+    "title": "Upgrade Economies & Governance",
+    "summary": "Building crypto-native economic and governance infrastructure",
+    "date": "",
+    "type": "area",
+    "relpermalink": "/areas/upgrade-economies-governance/"
+  },
+  {
+    "title": "Opportunity Spaces",
+    "summary": "Convergence zones for systemic change in economies and governance",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/areas/upgrade-economies-governance/opportunity-spaces/"
+  },
+  {
+    "title": "FA2 Subareas",
+    "summary": "Nine interconnected subfields for upgrading economies and governance",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/areas/upgrade-economies-governance/subareas/"
+  },
+  {
+    "title": "Impact Dashboard",
+    "summary": "Ecosystem impact metrics across villages and funding",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/areas/upgrade-economies-governance/impact/"
+  },
+  {
+    "title": "Project Explorer",
+    "summary": "242+ teams building decentralized coordination and public goods",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/areas/upgrade-economies-governance/projects/"
+  },
+  {
+    "title": "Dependency Graph",
+    "summary": "Strategic dependency trees across 4 inflection points",
+    "date": "",
+    "type": "page",
+    "relpermalink": "/areas/upgrade-economies-governance/dependency-graph/"
   }
 ]

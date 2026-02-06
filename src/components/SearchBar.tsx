@@ -13,6 +13,16 @@ type SearchItem = {
   relpermalink: string
 }
 
+const TYPE_META: Record<string, { label: string; icon: string }> = {
+  publication: { label: 'Publication', icon: '📄' },
+  talk: { label: 'Talk', icon: '🎤' },
+  author: { label: 'Team', icon: '👤' },
+  blog: { label: 'Blog', icon: '✏️' },
+  tutorial: { label: 'Tutorial', icon: '📚' },
+  area: { label: 'Focus Area', icon: '🔬' },
+  page: { label: 'Page', icon: '→' },
+}
+
 function useSearch() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [query, setQuery] = useState('')
@@ -32,12 +42,12 @@ function useSearch() {
       fuseRef.current = new Fuse(data, {
         shouldSort: true,
         ignoreLocation: true,
-        threshold: 0.7,
-        minMatchCharLength: 3,
+        threshold: 0.4,
+        minMatchCharLength: 2,
         findAllMatches: true,
         keys: [
           { name: 'title', weight: 1 },
-          { name: 'summary', weight: 0.6 },
+          { name: 'summary', weight: 0.5 },
         ],
       })
     } catch {
@@ -63,7 +73,7 @@ function useSearch() {
       setResults([])
       return
     }
-    const hits = fuseRef.current.search(term).slice(0, 6)
+    const hits = fuseRef.current.search(term).slice(0, 8)
     setResults(hits.map((h) => h.item))
   }
 
@@ -79,20 +89,27 @@ function SearchResults({ results, searchError, query, fuseLoaded, onSelect }: {
 }) {
   if (results.length > 0) {
     return (
-      <div className="bg-white rounded-xl shadow-xl border border-gray-100 py-2 overflow-hidden">
-        {results.map((item) => (
-          <Link
-            key={item.relpermalink}
-            href={item.relpermalink}
-            onClick={onSelect}
-            className="block px-4 py-3 hover:bg-gray-50 transition-colors"
-          >
-            <div className="text-sm font-medium text-black leading-snug">{item.title}</div>
-            <div className="text-xs text-gray-400 mt-1">
-              {item.type}{item.date && ` · ${new Date(item.date).getFullYear()}`}
-            </div>
-          </Link>
-        ))}
+      <div className="bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 overflow-hidden max-h-[420px] overflow-y-auto">
+        {results.map((item) => {
+          const meta = TYPE_META[item.type] || { label: item.type, icon: '·' }
+          return (
+            <Link
+              key={item.relpermalink}
+              href={item.relpermalink}
+              onClick={onSelect}
+              className="flex items-start gap-3 px-4 py-2.5 hover:bg-gray-50 transition-colors"
+            >
+              <span className="text-sm mt-0.5 w-5 text-center shrink-0 opacity-60">{meta.icon}</span>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-black leading-snug truncate">{item.title}</div>
+                <div className="text-xs text-gray-400 mt-0.5 flex items-center gap-1.5">
+                  <span>{meta.label}</span>
+                  {item.date && <span>· {new Date(item.date).getFullYear()}</span>}
+                </div>
+              </div>
+            </Link>
+          )
+        })}
       </div>
     )
   }
@@ -155,8 +172,8 @@ export default function SearchBar({ variant }: { variant: 'desktop' | 'mobile' }
               type="text"
               value={query}
               onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Search..."
-              className="w-full text-sm bg-gray-50 rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-violet/20"
+              placeholder="Search pages, people, publications..."
+              className="w-full text-sm bg-gray-50 rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-blue/20"
             />
             <div className="mt-2">
               <SearchResults results={results} searchError={searchError} query={query} fuseLoaded={!!fuseRef.current} onSelect={closeSearch} />
@@ -177,8 +194,8 @@ export default function SearchBar({ variant }: { variant: 'desktop' | 'mobile' }
             type="text"
             value={query}
             onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Search..."
-            className="w-56 text-sm bg-gray-50 rounded-full px-4 py-2 pr-8 outline-none focus:ring-2 focus:ring-violet/20 transition-all"
+            placeholder="Search pages, people, publications..."
+            className="w-72 text-sm bg-gray-50 rounded-full px-4 py-2 pr-8 outline-none focus:ring-2 focus:ring-blue/20 transition-all"
           />
           <button
             onClick={closeSearch}
@@ -202,7 +219,7 @@ export default function SearchBar({ variant }: { variant: 'desktop' | 'mobile' }
       )}
 
       {searchOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80">
+        <div className="absolute right-0 top-full mt-2 w-96">
           <SearchResults results={results} searchError={searchError} query={query} fuseLoaded={!!fuseRef.current} onSelect={closeSearch} />
         </div>
       )}

@@ -224,24 +224,72 @@ function buildFeed(publications, talks) {
 }
 
 // Search index
-function buildSearchIndex(publications, talks) {
+function buildSearchIndex(publications, talks, authors, blog, tutorials, areas) {
   const items = [
+    // Publications
     ...publications.map((p) => ({
       title: p.title,
       summary: (p.abstract || '').slice(0, 500),
       date: p.date,
       type: 'publication',
       relpermalink: `/publications/${p.slug}/`,
-      authors: p.authors,
     })),
+    // Talks
     ...talks.map((t) => ({
       title: t.title,
       summary: (t.abstract || '').slice(0, 500),
       date: t.date,
       type: 'talk',
       relpermalink: `/talks/${t.slug}/`,
-      authors: t.authors,
     })),
+    // Authors
+    ...authors.map((a) => ({
+      title: a.name,
+      summary: [a.role, ...(a.interests || [])].filter(Boolean).join(' · '),
+      date: '',
+      type: 'author',
+      relpermalink: `/authors/${a.slug}/`,
+    })),
+    // Blog posts
+    ...blog.map((b) => ({
+      title: b.title,
+      summary: (b.summary || '').slice(0, 500),
+      date: b.date,
+      type: 'blog',
+      relpermalink: `/blog/${b.slug}/`,
+    })),
+    // Tutorials
+    ...tutorials.map((t) => ({
+      title: t.title,
+      summary: (t.summary || '').slice(0, 500),
+      date: t.date,
+      type: 'tutorial',
+      relpermalink: `/tutorials/${t.slug}/`,
+    })),
+    // Focus areas (from markdown)
+    ...areas.map((a) => ({
+      title: a.title,
+      summary: (a.summary || '').slice(0, 500),
+      date: '',
+      type: 'area',
+      relpermalink: `/areas/${a.slug}/`,
+    })),
+    // Static site pages
+    { title: 'About', summary: 'About Protocol Labs Research & Development', date: '', type: 'page', relpermalink: '/about/' },
+    { title: 'Team', summary: 'Meet the Protocol Labs R&D team', date: '', type: 'page', relpermalink: '/authors/' },
+    { title: 'Publications', summary: 'Research papers and academic publications', date: '', type: 'page', relpermalink: '/publications/' },
+    { title: 'Talks', summary: 'Conference talks and presentations', date: '', type: 'page', relpermalink: '/talks/' },
+    { title: 'Tutorials', summary: 'Learning resources and technical tutorials', date: '', type: 'page', relpermalink: '/tutorials/' },
+    { title: 'Blog', summary: 'Latest news and updates from PL R&D', date: '', type: 'page', relpermalink: '/blog/' },
+    { title: 'Collaborate', summary: 'Work with Protocol Labs R&D on research', date: '', type: 'page', relpermalink: '/outreach/collaboration/' },
+    { title: 'Focus Areas', summary: 'Research focus areas driving breakthroughs in computing', date: '', type: 'page', relpermalink: '/areas/' },
+    // FA2 sub-pages
+    { title: 'Upgrade Economies & Governance', summary: 'Building crypto-native economic and governance infrastructure', date: '', type: 'area', relpermalink: '/areas/upgrade-economies-governance/' },
+    { title: 'Opportunity Spaces', summary: 'Convergence zones for systemic change in economies and governance', date: '', type: 'page', relpermalink: '/areas/upgrade-economies-governance/opportunity-spaces/' },
+    { title: 'FA2 Subareas', summary: 'Nine interconnected subfields for upgrading economies and governance', date: '', type: 'page', relpermalink: '/areas/upgrade-economies-governance/subareas/' },
+    { title: 'Impact Dashboard', summary: 'Ecosystem impact metrics across villages and funding', date: '', type: 'page', relpermalink: '/areas/upgrade-economies-governance/impact/' },
+    { title: 'Project Explorer', summary: '242+ teams building decentralized coordination and public goods', date: '', type: 'page', relpermalink: '/areas/upgrade-economies-governance/projects/' },
+    { title: 'Dependency Graph', summary: 'Strategic dependency trees across 4 inflection points', date: '', type: 'page', relpermalink: '/areas/upgrade-economies-governance/dependency-graph/' },
   ]
   return items
 }
@@ -271,7 +319,7 @@ fs.writeFileSync(path.join(OUT_DIR, 'sections.json'), JSON.stringify(sections, n
 
 // Static files
 fs.writeFileSync(path.join(PUBLIC_DIR, 'feed.xml'), buildFeed(publications, talks))
-fs.writeFileSync(path.join(PUBLIC_DIR, 'search-index.json'), JSON.stringify(buildSearchIndex(publications, talks), null, 2))
+fs.writeFileSync(path.join(PUBLIC_DIR, 'search-index.json'), JSON.stringify(buildSearchIndex(publications, talks, authors, blog, tutorials, areas), null, 2))
 
 console.log(`  ${publications.length} publications`)
 console.log(`  ${authors.length} authors`)
