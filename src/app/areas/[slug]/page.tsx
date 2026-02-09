@@ -9,7 +9,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 
 type Props = { params: Promise<{ slug: string }> }
 
-const HARDCODED_AREA_SLUGS = ['upgrade-economies-governance']
+const HARDCODED_AREA_SLUGS = ['economies-governance']
 
 // Leads are now defined in each area's Markdown frontmatter (leads: [...])
 // and flow through the build pipeline into area.leads

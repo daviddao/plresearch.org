@@ -97,8 +97,8 @@ export default function HomePage() {
           />
           <AreaCard 
             title="Economies & Governance" 
-            href="/areas/upgrade-economies-governance" 
-            description={getAreaDescription('upgrade-economies-governance')}
+            href="/areas/economies-governance" 
+            description={getAreaDescription('economies-governance')}
             icon="hexagon"
           />
           <AreaCard 

@@ -94,7 +94,7 @@ export default function AboutPage() {
             description="Securing freedom and safety in the digital age through improved internet infrastructure and Web3 technologies."
           />
           <FocusCard
-            slug="upgrade-economies-governance"
+            slug="economies-governance"
             title="Economies & Governance"
             description="Upgrading coordination systems through cryptoeconomics, mechanism design, and public goods funding."
           />

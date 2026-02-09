@@ -23,7 +23,7 @@ export const mainNav: NavItem[] = [
     url: '/areas/',
     children: [
       { name: 'Digital Human Rights', url: '/areas/digital-human-rights/' },
-      { name: 'Economies & Governance', url: '/areas/upgrade-economies-governance/' },
+      { name: 'Economies & Governance', url: '/areas/economies-governance/' },
       { name: 'AI & Robotics', url: '/areas/ai-robotics/' },
       { name: 'Neurotech', url: '/areas/neurotech/' },
     ],

@@ -1491,18 +1491,18 @@
     "relpermalink": "/areas/digital-human-rights/"
   },
   {
+    "title": "Economies & Governance",
+    "summary": "Creating more efficient and equitable structures for global progress through crypto-native infrastructure.",
+    "date": "",
+    "type": "area",
+    "relpermalink": "/areas/economies-governance/"
+  },
+  {
     "title": "Neurotech",
     "summary": "Accelerate neurotechnologies to benefit humanity, focusing on breakthroughs in brain-computer interfaces (BCI).",
     "date": "",
     "type": "area",
     "relpermalink": "/areas/neurotech/"
-  },
-  {
-    "title": "Economies & Governance",
-    "summary": "Creating more efficient and equitable structures for global progress through crypto-native infrastructure.",
-    "date": "",
-    "type": "area",
-    "relpermalink": "/areas/upgrade-economies-governance/"
   },
   {
     "title": "About",
@@ -1565,41 +1565,41 @@
     "summary": "Building crypto-native economic and governance infrastructure",
     "date": "",
     "type": "area",
-    "relpermalink": "/areas/upgrade-economies-governance/"
+    "relpermalink": "/areas/economies-governance/"
   },
   {
     "title": "Opportunity Spaces",
     "summary": "Convergence zones for systemic change in economies and governance",
     "date": "",
     "type": "page",
-    "relpermalink": "/areas/upgrade-economies-governance/opportunity-spaces/"
+    "relpermalink": "/areas/economies-governance/opportunity-spaces/"
   },
   {
     "title": "FA2 Subareas",
     "summary": "Nine interconnected subfields for economies and governance",
     "date": "",
     "type": "page",
-    "relpermalink": "/areas/upgrade-economies-governance/subareas/"
+    "relpermalink": "/areas/economies-governance/subareas/"
   },
   {
     "title": "Impact Dashboard",
     "summary": "Ecosystem impact metrics across villages and funding",
     "date": "",
     "type": "page",
-    "relpermalink": "/areas/upgrade-economies-governance/impact/"
+    "relpermalink": "/areas/economies-governance/impact/"
   },
   {
     "title": "Project Explorer",
     "summary": "242+ teams building decentralized coordination and public goods",
     "date": "",
     "type": "page",
-    "relpermalink": "/areas/upgrade-economies-governance/projects/"
+    "relpermalink": "/areas/economies-governance/projects/"
   },
   {
     "title": "Dependency Graph",
     "summary": "Strategic dependency trees across 4 inflection points",
     "date": "",
     "type": "page",
-    "relpermalink": "/areas/upgrade-economies-governance/dependency-graph/"
+    "relpermalink": "/areas/economies-governance/dependency-graph/"
   }
 ]

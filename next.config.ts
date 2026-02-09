@@ -6,6 +6,20 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true,
   },
+  async redirects() {
+    return [
+      {
+        source: '/areas/upgrade-economies-governance/:path*',
+        destination: '/areas/economies-governance/:path*',
+        permanent: true,
+      },
+      {
+        source: '/areas/upgrade-economies-governance/',
+        destination: '/areas/economies-governance/',
+        permanent: true,
+      },
+    ]
+  },
 }
 
 export default nextConfig

@@ -284,12 +284,12 @@ function buildSearchIndex(publications, talks, authors, blog, tutorials, areas) 
     { title: 'Collaborate', summary: 'Work with Protocol Labs R&D on research', date: '', type: 'page', relpermalink: '/outreach/collaboration/' },
     { title: 'Focus Areas', summary: 'Research focus areas driving breakthroughs in computing', date: '', type: 'page', relpermalink: '/areas/' },
     // FA2 sub-pages
-    { title: 'Economies & Governance', summary: 'Building crypto-native economic and governance infrastructure', date: '', type: 'area', relpermalink: '/areas/upgrade-economies-governance/' },
-    { title: 'Opportunity Spaces', summary: 'Convergence zones for systemic change in economies and governance', date: '', type: 'page', relpermalink: '/areas/upgrade-economies-governance/opportunity-spaces/' },
-    { title: 'FA2 Subareas', summary: 'Nine interconnected subfields for economies and governance', date: '', type: 'page', relpermalink: '/areas/upgrade-economies-governance/subareas/' },
-    { title: 'Impact Dashboard', summary: 'Ecosystem impact metrics across villages and funding', date: '', type: 'page', relpermalink: '/areas/upgrade-economies-governance/impact/' },
-    { title: 'Project Explorer', summary: '242+ teams building decentralized coordination and public goods', date: '', type: 'page', relpermalink: '/areas/upgrade-economies-governance/projects/' },
-    { title: 'Dependency Graph', summary: 'Strategic dependency trees across 4 inflection points', date: '', type: 'page', relpermalink: '/areas/upgrade-economies-governance/dependency-graph/' },
+    { title: 'Economies & Governance', summary: 'Building crypto-native economic and governance infrastructure', date: '', type: 'area', relpermalink: '/areas/economies-governance/' },
+    { title: 'Opportunity Spaces', summary: 'Convergence zones for systemic change in economies and governance', date: '', type: 'page', relpermalink: '/areas/economies-governance/opportunity-spaces/' },
+    { title: 'FA2 Subareas', summary: 'Nine interconnected subfields for economies and governance', date: '', type: 'page', relpermalink: '/areas/economies-governance/subareas/' },
+    { title: 'Impact Dashboard', summary: 'Ecosystem impact metrics across villages and funding', date: '', type: 'page', relpermalink: '/areas/economies-governance/impact/' },
+    { title: 'Project Explorer', summary: '242+ teams building decentralized coordination and public goods', date: '', type: 'page', relpermalink: '/areas/economies-governance/projects/' },
+    { title: 'Dependency Graph', summary: 'Strategic dependency trees across 4 inflection points', date: '', type: 'page', relpermalink: '/areas/economies-governance/dependency-graph/' },
   ]
   return items
 }

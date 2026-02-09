@@ -7,11 +7,11 @@ import Breadcrumb from '@/components/Breadcrumb'
 
 export const metadata: Metadata = { title: 'Focus Areas' }
 
-const AREA_ORDER = ['digital-human-rights', 'upgrade-economies-governance', 'ai-robotics', 'neurotech']
+const AREA_ORDER = ['digital-human-rights', 'economies-governance', 'ai-robotics', 'neurotech']
 
 const AREA_ICONS: Record<string, AreaIconType> = {
   'digital-human-rights': 'shield',
-  'upgrade-economies-governance': 'hexagon',
+  'economies-governance': 'hexagon',
   'ai-robotics': 'neural',
   'neurotech': 'brain',
 }

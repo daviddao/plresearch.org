@@ -80,7 +80,7 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for how to add and edit content.
 | `/about/` | About Protocol Labs R&D |
 | `/areas/` | Focus areas listing |
 | `/areas/[slug]/` | Individual focus area (Markdown-driven; leads defined in frontmatter) |
-| `/areas/upgrade-economies-governance/` | FA2 focus area with sub-pages (impact, projects, opportunity spaces) — hardcoded, not Markdown |
+| `/areas/economies-governance/` | FA2 focus area with sub-pages (impact, projects, opportunity spaces) — hardcoded, not Markdown |
 | `/research/` | Research hub |
 | `/publications/` | All publications, sorted by date |
 | `/publications/[slug]/` | Publication detail |
@@ -102,7 +102,7 @@ The FA2 (Upgrade Economies & Governance) focus area has hand-curated JSON data i
 - **`impact.json`** -- Impact dashboard data with headline metrics and initiative details
 - **`opportunityspaces.json`** -- 4 opportunity spaces with descriptions, assumptions, tipping signals
 
-These files are edited directly as JSON and consumed by hardcoded FA2 sub-pages under `/areas/upgrade-economies-governance/`.
+These files are edited directly as JSON and consumed by hardcoded FA2 sub-pages under `/areas/economies-governance/`.
 
 ## Environment Variables
 
