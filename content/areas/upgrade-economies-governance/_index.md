@@ -1,7 +1,7 @@
 ---
-title: "Upgrade Economies & Governance Systems"
+title: "Economies & Governance"
 date: 2024-03-15
-summary: "Upgrading Economies and Governance Systems: Creating more efficient and equitable structures for global progress through crypto-native infrastructure."
+summary: "Creating more efficient and equitable structures for global progress through crypto-native infrastructure."
 leads: []
 ---
 This focus area is building the field of crypto-native economic and governance infrastructure, aiming to rectify the inadequacies of current macro systems which often struggle to coordinate and solve monumental challenges like climate change.

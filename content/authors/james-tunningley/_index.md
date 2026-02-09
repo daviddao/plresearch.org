@@ -7,7 +7,7 @@ authors:
   - james-tunningley
 
 # Roles/positions
-role: Upgrade Economies & Governance System Lead
+role: Economies & Governance Lead
 
 groups:
   - 'Protocol Labs'

@@ -861,7 +861,7 @@
   {
     "slug": "david-dao",
     "name": "David Dao",
-    "role": "Upgrade Economies & Governance System Lead",
+    "role": "Economies & Governance Lead",
     "groups": [
       "Protocol Labs",
       "GainForest.Earth"
@@ -900,7 +900,7 @@
       ]
     },
     "avatarPath": "/images/authors/david-dao/avatar.jpg",
-    "html": "<p>David is the <strong>Upgrade Economies &#x26; Governance System Co-Lead</strong> at PL R&#x26;D and the Chief Scientist at <strong>GainForest.Earth</strong>. A pioneer in data valuation for machine learning, David holds a PhD in Computer Science from ETH Zurich.</p>\n<p>His work sits at the frontier of AI and decentralized systems, and has been globally recognized by the World Economic Forum, XPRIZE, and Ethereum. He has previously been an AI researcher at UC Berkeley, Stanford, and MIT.</p>\n"
+    "html": "<p>David is the <strong>Economies &#x26; Governance Co-Lead</strong> at PL R&#x26;D and the Chief Scientist at <strong>GainForest.Earth</strong>. A pioneer in data valuation for machine learning, David holds a PhD in Computer Science from ETH Zurich.</p>\n<p>His work sits at the frontier of AI and decentralized systems, and has been globally recognized by the World Economic Forum, XPRIZE, and Ethereum. He has previously been an AI researcher at UC Berkeley, Stanford, and MIT.</p>\n"
   },
   {
     "slug": "david-dias",
@@ -1478,7 +1478,7 @@
   {
     "slug": "james-tunningley",
     "name": "James Tunningley",
-    "role": "Upgrade Economies & Governance System Lead",
+    "role": "Economies & Governance Lead",
     "groups": [
       "Protocol Labs",
       "ARCHITECT"

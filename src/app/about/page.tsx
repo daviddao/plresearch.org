@@ -95,7 +95,7 @@ export default function AboutPage() {
           />
           <FocusCard
             slug="upgrade-economies-governance"
-            title="Economics & Governance"
+            title="Economies & Governance"
             description="Upgrading coordination systems through cryptoeconomics, mechanism design, and public goods funding."
           />
           <FocusCard

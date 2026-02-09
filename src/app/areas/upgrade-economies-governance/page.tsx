@@ -4,8 +4,8 @@ import AuthorCard from '@/components/AuthorCard'
 import Breadcrumb from '@/components/Breadcrumb'
 
 export const metadata: Metadata = {
-  title: 'Upgrade Economies & Governance Systems',
-  description: 'Upgrading Economies and Governance Systems through crypto-native infrastructure.',
+  title: 'Economies & Governance',
+  description: 'Creating more efficient and equitable structures for global progress through crypto-native infrastructure.',
 }
 
 export default function FA2MainPage() {
@@ -58,7 +58,7 @@ export default function FA2MainPage() {
         <div className="flex items-start gap-5 mb-6">
           <HexagonIcon className="w-14 h-14 lg:w-16 lg:h-16 shrink-0 text-blue/70" />
           <h1 className="relative z-10 text-2xl lg:text-[44px] font-semibold leading-[1.1] tracking-tight max-w-xl">
-            Upgrade Economies & Governance Systems
+            Economies & Governance
           </h1>
         </div>
         <p className="relative z-10 text-lg text-gray-600 leading-relaxed max-w-2xl mb-8">

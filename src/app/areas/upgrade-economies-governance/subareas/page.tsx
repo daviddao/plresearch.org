@@ -3,7 +3,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 
 export const metadata: Metadata = {
   title: 'Subareas',
-  description: 'Nine interconnected subfields for upgrading economies and governance systems.',
+  description: 'Nine interconnected subfields for economies and governance.',
 }
 
 type SubareaIconType = 'dpi' | 'desci' | 'depin' | 'pgf' | 'defi' | 'degov' | 'network-states' | 'nations' | 'refi'
@@ -80,7 +80,7 @@ export default function SubareasPage() {
       <div className="mb-12">
         <h1 className="text-2xl lg:text-[36px] font-semibold mb-3">Subareas</h1>
         <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">
-          Nine interconnected subfields, each representing a critical domain for upgrading economies and governance systems.
+          Nine interconnected subfields, each representing a critical domain for economies and governance.
         </p>
       </div>
 
