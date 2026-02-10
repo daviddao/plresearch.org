@@ -112,7 +112,7 @@ export default function AboutPage() {
       </div>
 
       {/* History */}
-      <Section label="OUR HISTORY" title="Protocol Labs itself began with the desire to make it easy to name, organize, and share data in a scalable way.">
+      <Section label="OUR HISTORY" title="Protocol Labs began with the desire to make it easy to name, organize, and share data in a scalable way.">
         <div className="lg:columns-2 lg:gap-14 text-base text-gray-700 leading-relaxed">
           <p className="pb-6 break-inside-avoid">
             Those efforts became IPFS, a free and open-source software project to allow users and applications to directly share information without needing a central server. Within IPFS, expertise in programming language theory led to Multiformats, an effort to make our technologies adaptable and upgradable in a future-proof way, and IPLD, our data model for content-addressed data.
@@ -121,7 +121,7 @@ export default function AboutPage() {
             In parallel with IPFS, where users voluntarily store data they find interesting, we designed and launched Filecoin, a protocol that allows users to pay others to store data they find interesting. Originally proposed in 2014, the Filecoin concept was further detailed in our 2017 whitepaper, with CryptoLab efforts supporting both the network launch and future improvements.
           </p>
           <p className="pb-6 break-inside-avoid">
-            As our work evolved, we expanded beyond internet infrastructure to address broader challenges in coordination, AI development, and human enhancement technologies. Our focus areas now span the full spectrum from securing digital rights to pioneering responsible advancement in AI, robotics, and neurotechnology.
+            Protocol Labs has evolved and expanded beyond internet infrastructure to address broader challenges in coordination, AI development, and human enhancement technologies. What was once the company behind IPFS and Filecoin is now an innovation network that supports field-building, grant-making, and investing across emerging technologies. PL&apos;s focus areas now span the full spectrum from securing digital rights to pioneering responsible advancement in AI, robotics, and neurotechnology. PL R&amp;D is the corner of the network that supports the early engineering and research efforts that will drive these focus areas forward.
           </p>
         </div>
       </Section>
