@@ -18,11 +18,11 @@ export type NavItem = {
 
 export const mainNav: NavItem[] = [
   {
-    name: 'About',
+    name: 'About us',
     url: '#',
     children: [
-      { name: 'About PL R&D', url: '/about/' },
-      { name: 'About Protocol Labs', url: 'https://protocol.ai' },
+      { name: 'About us', url: '/about/' },
+      { name: 'Protocol Labs', url: 'https://protocol.ai' },
     ],
   },
   {
