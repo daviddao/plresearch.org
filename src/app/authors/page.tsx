@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState, useRef } from 'react'
 import { authors } from '@/lib/content'
+import { GeoIllustration } from '@/components/GeoIllustration'
 
 const LEADS = ['juan-benet', 'molly-mackinlay', 'will-scott', 'sean-escola', 'david-dao', 'james-tunningley']
 const ADVISOR_ROLE_KEYWORD = 'advisor'
@@ -175,14 +176,18 @@ function AdvisorCarousel({ area, advisors }: { area: string; advisors: { name: s
         {advisors.map((advisor, i) => (
           <div
             key={i}
-            className="flex-none w-[200px] flex flex-col"
+            className="flex-none w-[220px] flex flex-col"
             style={{ scrollSnapAlign: 'start' }}
           >
-            {/* Square placeholder photo */}
-            <div className="aspect-square w-full rounded-xl bg-gray-100 mb-3 flex items-center justify-center">
-              <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+            {/* Animated geo placeholder */}
+            <div className="w-full aspect-square rounded-xl overflow-hidden mb-3">
+              <GeoIllustration
+                seed={`${area}-${advisor.name}-${i}`}
+                focusArea={area}
+                w={220}
+                h={220}
+                className="w-full h-full"
+              />
             </div>
             <div className="text-sm font-medium text-black leading-snug">{advisor.name}</div>
             <div className="text-xs text-gray-500 mt-0.5">{advisor.role}</div>

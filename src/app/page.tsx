@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { publications, talks } from '@/lib/content'
 import { formatDate } from '@/lib/format'
 import { AreaIcon } from '@/components/AreaIcons'
+import { GeoIllustration } from '@/components/GeoIllustration'
 
 type UpdateItem = {
   title: string
@@ -36,143 +37,8 @@ function getLatestUpdates(count: number): UpdateItem[] {
     .slice(0, count)
 }
 
-// Deterministic pseudo-random from a string seed
-function seededRand(seed: string) {
-  let h = 0
-  for (let i = 0; i < seed.length; i++) {
-    h = (Math.imul(31, h) + seed.charCodeAt(i)) | 0
-  }
-  return (n: number) => {
-    h = (Math.imul(h ^ (h >>> 16), 0x45d9f3b)) | 0
-    return (((h ^ (h >>> 16)) >>> 0) / 0xffffffff) * n
-  }
-}
-
-// Area → gradient pair (matches site palette)
-const AREA_GRADIENTS: Record<string, [string, string]> = {
-  'distributed-systems':  ['#1e40af', '#3b82f6'],
-  'cryptography':         ['#1d4ed8', '#60a5fa'],
-  'networking':           ['#1e3a8a', '#2563eb'],
-  'consensus':            ['#1e40af', '#7c3aed'],
-  'knowledge-systems':    ['#0f766e', '#0ea5e9'],
-  'ai-robotics':          ['#7c3aed', '#a78bfa'],
-  'neurotech':            ['#6d28d9', '#c084fc'],
-  'economies-governance': ['#0369a1', '#38bdf8'],
-  'digital-human-rights': ['#1e3a8a', '#6366f1'],
-}
-
-function getGradient(areas: string[]): [string, string] {
-  for (const a of areas) {
-    const key = Object.keys(AREA_GRADIENTS).find(k => a.toLowerCase().includes(k.replace(/-/g, '')) || k.includes(a.toLowerCase().replace(/\s/g, '-')))
-    if (key) return AREA_GRADIENTS[key]
-  }
-  return ['#1e3a8a', '#3b82f6']
-}
-
 function CardIllustration({ slug, areas }: { slug: string; areas: string[] }) {
-  const rand = seededRand(slug)
-  const [c1, c2] = getGradient(areas)
-  const id = `grad-${slug.replace(/[^a-z0-9]/g, '')}`
-
-  // Generate 2–3 shapes: polygon, circle, ellipse
-  const shapes = [
-    // Large background polygon (half-cropped off right edge like ARIA)
-    {
-      type: 'polygon' as const,
-      points: (() => {
-        const cx = 260 + rand(60)
-        const cy = 30 + rand(30)
-        const r = 90 + rand(40)
-        const sides = Math.floor(3 + rand(4)) // 3–6 sides
-        return Array.from({ length: sides }, (_, i) => {
-          const angle = (i / sides) * Math.PI * 2 - Math.PI / 2
-          return `${cx + Math.cos(angle) * r},${cy + Math.sin(angle) * r}`
-        }).join(' ')
-      })(),
-      opacity: 0.55,
-      dur: `${6 + rand(4)}s`,
-      dy: 8 + rand(6),
-    },
-    // Medium circle
-    {
-      type: 'circle' as const,
-      cx: 80 + rand(120),
-      cy: 40 + rand(50),
-      r: 30 + rand(30),
-      opacity: 0.35,
-      dur: `${5 + rand(5)}s`,
-      dy: 6 + rand(8),
-    },
-    // Small accent polygon
-    {
-      type: 'polygon' as const,
-      points: (() => {
-        const cx = 40 + rand(200)
-        const cy = 20 + rand(60)
-        const r = 15 + rand(20)
-        const sides = Math.floor(3 + rand(3))
-        return Array.from({ length: sides }, (_, i) => {
-          const angle = (i / sides) * Math.PI * 2 - Math.PI / 6
-          return `${cx + Math.cos(angle) * r},${cy + Math.sin(angle) * r}`
-        }).join(' ')
-      })(),
-      opacity: 0.25,
-      dur: `${4 + rand(4)}s`,
-      dy: 10 + rand(8),
-    },
-  ]
-
-  return (
-    <svg
-      viewBox="0 0 320 120"
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-full"
-      aria-hidden="true"
-      style={{ display: 'block' }}
-    >
-      <defs>
-        <linearGradient id={id} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor={c1} />
-          <stop offset="100%" stopColor={c2} />
-        </linearGradient>
-        <clipPath id={`clip-${id}`}>
-          <rect width="320" height="120" />
-        </clipPath>
-      </defs>
-      {/* Background */}
-      <rect width="320" height="120" fill={`url(#${id})`} />
-      {/* Shapes clipped to card */}
-      <g clipPath={`url(#clip-${id})`} fill="white">
-        {shapes.map((s, i) =>
-          s.type === 'circle' ? (
-            <circle key={i} cx={s.cx} cy={s.cy} r={s.r} fillOpacity={s.opacity}>
-              <animateTransform
-                attributeName="transform"
-                type="translate"
-                values={`0,0; 0,${-s.dy}; 0,0`}
-                dur={s.dur}
-                repeatCount="indefinite"
-                calcMode="spline"
-                keySplines="0.45 0 0.55 1; 0.45 0 0.55 1"
-              />
-            </circle>
-          ) : (
-            <polygon key={i} points={s.points} fillOpacity={s.opacity}>
-              <animateTransform
-                attributeName="transform"
-                type="translate"
-                values={`0,0; 0,${-s.dy}; 0,0`}
-                dur={s.dur}
-                repeatCount="indefinite"
-                calcMode="spline"
-                keySplines="0.45 0 0.55 1; 0.45 0 0.55 1"
-              />
-            </polygon>
-          )
-        )}
-      </g>
-    </svg>
-  )
+  return <GeoIllustration seed={slug} areas={areas} w={320} h={120} />
 }
 
 
