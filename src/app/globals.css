@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
+
 /* ===== Theme (Tailwind v4 CSS-first config) ===== */
 @theme {
   --font-body: var(--font-inter), sans-serif;

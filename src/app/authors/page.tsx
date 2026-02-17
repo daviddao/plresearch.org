@@ -1,31 +1,56 @@
 'use client'
 
-import type { Metadata } from 'next'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { authors } from '@/lib/content'
 
 const LEADS = ['juan-benet', 'molly-mackinlay', 'will-scott', 'sean-escola', 'david-dao', 'james-tunningley']
 const ADVISOR_ROLE_KEYWORD = 'advisor'
 
-// FA label by advisor slug
-const ADVISOR_FA: Record<string, string> = {
-  'adam-marblestone': 'AI & Robotics',
-  'dario-catalano':   'Digital Human Rights',
-  'ioannis-caragiannis': 'Economies & Governance',
-  'vivien-quema':     'Digital Human Rights',
-}
+// Placeholder advisors per focus area — replace with real data when available
+const FOCUS_AREA_ADVISORS: { area: string; advisors: { name: string; role: string; affiliation: string }[] }[] = [
+  {
+    area: 'Digital Human Rights',
+    advisors: [
+      { name: 'Placeholder Advisor', role: 'Professor of Cryptography', affiliation: 'MIT' },
+      { name: 'Placeholder Advisor', role: 'Security Researcher', affiliation: 'EFF' },
+      { name: 'Placeholder Advisor', role: 'Distributed Systems Lead', affiliation: 'Stanford' },
+    ],
+  },
+  {
+    area: 'Economies & Governance',
+    advisors: [
+      { name: 'Placeholder Advisor', role: 'Mechanism Design Researcher', affiliation: 'Harvard' },
+      { name: 'Placeholder Advisor', role: 'Cryptoeconomics Researcher', affiliation: 'Oxford' },
+      { name: 'Placeholder Advisor', role: 'Public Goods Theorist', affiliation: 'UCL' },
+    ],
+  },
+  {
+    area: 'AI & Robotics',
+    advisors: [
+      { name: 'Placeholder Advisor', role: 'AGI Safety Researcher', affiliation: 'DeepMind' },
+      { name: 'Placeholder Advisor', role: 'Robotics Lead', affiliation: 'CMU' },
+      { name: 'Placeholder Advisor', role: 'ML Systems Researcher', affiliation: 'Berkeley' },
+    ],
+  },
+  {
+    area: 'Neurotechnology',
+    advisors: [
+      { name: 'Placeholder Advisor', role: 'BCI Researcher', affiliation: 'Columbia University' },
+      { name: 'Placeholder Advisor', role: 'NeuroAI Lead', affiliation: 'Caltech' },
+      { name: 'Placeholder Advisor', role: 'Computational Neuroscientist', affiliation: 'NYU' },
+    ],
+  },
+]
 
 const leadership = LEADS.map(slug => authors.find(a => a.slug === slug)).filter(Boolean) as typeof authors
-const advisors   = authors.filter(a => a.role?.toLowerCase().includes(ADVISOR_ROLE_KEYWORD))
-const alumni     = authors.filter(a =>
+const alumni = authors.filter(a =>
   !LEADS.includes(a.slug) &&
   !a.role?.toLowerCase().includes(ADVISOR_ROLE_KEYWORD)
 )
 
 const TABS = [
   { id: 'leadership', label: 'Leadership' },
-  { id: 'advisors',   label: 'Advisors' },
   { id: 'alumni',     label: 'Alumni' },
 ]
 
@@ -69,24 +94,23 @@ export default function AuthorsPage() {
           <p className="text-sm text-gray-500 uppercase tracking-wide mb-12">
             R&amp;D Lead · Operations · Focus Area Leads
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 mb-24">
             {leadership.map(author => (
               <LeaderCard key={author.slug} author={author} />
             ))}
           </div>
-        </div>
-      )}
 
-      {/* Advisors */}
-      {activeTab === 'advisors' && (
-        <div>
-          <p className="text-sm text-gray-500 uppercase tracking-wide mb-12">
-            External advisors supporting our focus areas
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {advisors.map(author => (
-              <LeaderCard key={author.slug} author={author} fa={ADVISOR_FA[author.slug]} />
-            ))}
+          {/* Advisors by focus area */}
+          <div className="border-t border-gray-200 pt-16">
+            <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">Advisors</p>
+            <p className="text-gray-600 text-base mb-12 max-w-xl">
+              External advisors supporting each focus area — bringing deep domain expertise from academia and industry.
+            </p>
+            <div className="space-y-16">
+              {FOCUS_AREA_ADVISORS.map(fa => (
+                <AdvisorCarousel key={fa.area} area={fa.area} advisors={fa.advisors} />
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -108,9 +132,71 @@ export default function AuthorsPage() {
   )
 }
 
-// ── Large card for Leadership / Advisors / Researchers ──────────────────────
+// ── Advisor carousel per focus area ─────────────────────────────────────────
 
-function LeaderCard({ author, fa }: { author: typeof authors[number]; fa?: string }) {
+function AdvisorCarousel({ area, advisors }: { area: string; advisors: { name: string; role: string; affiliation: string }[] }) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  const scroll = (dir: 'left' | 'right') => {
+    if (!scrollRef.current) return
+    scrollRef.current.scrollBy({ left: dir === 'right' ? 280 : -280, behavior: 'smooth' })
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-base font-medium text-black">{area}</h3>
+        <div className="flex gap-2">
+          <button
+            onClick={() => scroll('left')}
+            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:border-blue hover:text-blue transition-colors"
+            aria-label="Scroll left"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            onClick={() => scroll('right')}
+            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:border-blue hover:text-blue transition-colors"
+            aria-label="Scroll right"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div
+        ref={scrollRef}
+        className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide"
+        style={{ scrollSnapType: 'x mandatory' }}
+      >
+        {advisors.map((advisor, i) => (
+          <div
+            key={i}
+            className="flex-none w-[200px] flex flex-col"
+            style={{ scrollSnapAlign: 'start' }}
+          >
+            {/* Square placeholder photo */}
+            <div className="aspect-square w-full rounded-xl bg-gray-100 mb-3 flex items-center justify-center">
+              <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <div className="text-sm font-medium text-black leading-snug">{advisor.name}</div>
+            <div className="text-xs text-gray-500 mt-0.5">{advisor.role}</div>
+            <div className="text-xs text-blue mt-0.5">{advisor.affiliation}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Large card for Leadership ────────────────────────────────────────────────
+
+function LeaderCard({ author }: { author: typeof authors[number] }) {
   const [expanded, setExpanded] = useState(false)
   const bioText = (author.html ?? '')
     .replace(/<[^>]+>/g, '')
@@ -126,7 +212,6 @@ function LeaderCard({ author, fa }: { author: typeof authors[number]; fa?: strin
 
   return (
     <div className="flex flex-col">
-      {/* Square photo */}
       <Link href={`/authors/${author.slug}`} className="block mb-4 group">
         <div className="aspect-square w-full overflow-hidden rounded-xl bg-gray-100">
           {author.avatarPath ? (
@@ -140,23 +225,12 @@ function LeaderCard({ author, fa }: { author: typeof authors[number]; fa?: strin
           )}
         </div>
       </Link>
-
-      {/* Name + role */}
       <Link href={`/authors/${author.slug}`} className="group">
         <h3 className="text-base font-medium text-black group-hover:text-blue transition-colors leading-snug">
           {author.name}
         </h3>
       </Link>
       <p className="text-sm text-gray-500 mt-0.5">{author.role}</p>
-
-      {/* FA tag for advisors */}
-      {fa && (
-        <span className="mt-2 inline-block text-xs px-2.5 py-1 rounded-full bg-blue/10 text-blue font-medium w-fit">
-          {fa}
-        </span>
-      )}
-
-      {/* Bio */}
       {bioText && (
         <div className="mt-3">
           <p className="text-sm text-gray-600 leading-relaxed">
