@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Instrument_Serif } from 'next/font/google'
 import { siteConfig } from '@/lib/site-config'
 import { AuthProvider } from '@/lib/atproto'
 import SiteShell from '@/components/SiteShell'
@@ -8,6 +8,12 @@ import './globals.css'
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
+})
+
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: '400',
+  variable: '--font-serif',
 })
 
 export const metadata: Metadata = {
@@ -44,7 +50,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} font-body min-w-[320px] text-base text-black leading-normal antialiased`}>
+      <body className={`${inter.variable} ${instrumentSerif.variable} font-body min-w-[320px] text-base text-black leading-normal antialiased`}>
         <AuthProvider>
           <SiteShell>{children}</SiteShell>
         </AuthProvider>
