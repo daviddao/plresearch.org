@@ -17,7 +17,14 @@ export type NavItem = {
 }
 
 export const mainNav: NavItem[] = [
-  { name: 'About', url: '/about/' },
+  {
+    name: 'About',
+    url: '#',
+    children: [
+      { name: 'About PL R&D', url: '/about/' },
+      { name: 'About Protocol Labs', url: 'https://protocol.ai' },
+    ],
+  },
   {
     name: 'Focus Areas',
     url: '#',
