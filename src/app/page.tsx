@@ -156,7 +156,7 @@ export default function HomePage() {
       {/* Latest from PL R&D — horizontal scroll cards */}
       <div className="pb-20 lg:pb-28">
         <div className="flex items-baseline justify-between mb-8">
-          <h2 className="text-sm text-gray-500 uppercase tracking-wide">Insights from PL R&amp;D</h2>
+          <h2 className="text-sm text-gray-500 uppercase tracking-wide">Latest insights from PL R&amp;D</h2>
           <div className="flex gap-4">
             <Link
               href="/publications"
