@@ -3,7 +3,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 
 export const metadata: Metadata = {
   title: 'Collaborate',
-  description: 'Partner with Protocol Labs R&D to advance the frontiers of computing and build infrastructure for humanity.',
+  description: 'Partner with PL R&D to advance the frontiers of computing and build infrastructure for humanity.',
 }
 
 export default function CollaborationPage() {
@@ -25,7 +25,7 @@ export default function CollaborationPage() {
       {/* Content */}
       <div className="mb-10 pb-10 border-b border-gray-100">
         <p className="text-sm text-gray-700 leading-relaxed mb-4">
-          Protocol Labs R&D works at the intersection of fundamental research and real-world impact. We're building the infrastructure for a better internet and exploring how technology can help humanity flourish.
+          PL R&D works at the intersection of fundamental research and real-world impact. We're building the infrastructure for a better internet and exploring how technology can help humanity flourish.
         </p>
         <p className="text-sm text-gray-700 leading-relaxed">
           Our collaborative approach brings together researchers, engineers, and institutions worldwide. We're always looking for partners who share our vision of open, decentralized, and human-centric technology.

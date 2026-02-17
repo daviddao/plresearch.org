@@ -59,7 +59,7 @@ export default function AboutPage() {
             Our research is driven by beliefs about how technology should serve humanity.
           </h1>
           <p className="relative z-10 text-gray-600 text-lg md:text-xl lg:text-[22px] leading-relaxed max-w-2xl mb-6">
-            Substantial engineering efforts are necessary to turn ideas into real and useful tools that people can use. Our longest-term vision-driven innovation takes place in Protocol Labs R&amp;D.
+            Substantial engineering efforts are necessary to turn ideas into real and useful tools that people can use. Our longest-term vision-driven innovation takes place in PL R&amp;D.
           </p>
           <div className="relative z-10 flex flex-wrap gap-4">
             <Link 

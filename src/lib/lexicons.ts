@@ -1,5 +1,5 @@
 /**
- * ATProto Lexicon Collection NSIDs for Protocol Labs R&D
+ * ATProto Lexicon Collection NSIDs for PL R&D
  */
 
 // Post collection - markdown articles (blog posts, publications, talks, tutorials)
