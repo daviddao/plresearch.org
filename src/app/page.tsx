@@ -41,7 +41,7 @@ export default function HomePage() {
 
   return (
     <div className="max-w-6xl mx-auto px-6">
-      <div className="relative pt-12 pb-14 md:pt-20 md:pb-16 lg:pt-32 lg:pb-24" style={{ clipPath: 'inset(0 -100vw 0 0)' }}>
+      <div className="relative pt-20 pb-20 md:pt-32 md:pb-28 lg:pt-44 lg:pb-36" style={{ clipPath: 'inset(0 -100vw 0 0)' }}>
         {/* Hero banner image - extends to screen edge */}
         <div 
           className="absolute top-1/2 -translate-y-[60%] h-[140%] pointer-events-none select-none"
@@ -58,12 +58,9 @@ export default function HomePage() {
           aria-hidden="true"
         />
 
-        <h1 className="relative z-10 text-[32px] md:text-[44px] lg:text-[56px] font-semibold leading-[1.1] tracking-tight mb-6">
-          Driving breakthroughs in computing to push humanity forward.
+        <h1 className="relative z-10 font-serif text-[36px] md:text-[52px] lg:text-[64px] font-normal leading-[1.1] tracking-tight mb-8">
+          Driving R&D breakthroughs to push humanity forward.
         </h1>
-        <p className="relative z-10 text-gray-600 text-lg md:text-xl lg:text-[22px] leading-relaxed max-w-2xl mb-8">
-          Protocol Labs R&D explores the frontiers of computing, networking, and knowledge systems to build infrastructure that empowers humanity.
-        </p>
         <div className="relative z-10 flex flex-wrap gap-4">
           <Link 
             href="/about" 
@@ -83,6 +80,11 @@ export default function HomePage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </Link>
+        </div>
+        <div className="relative z-10 mt-16 lg:mt-24">
+          <svg className="w-6 h-6 text-gray-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7" />
+          </svg>
         </div>
       </div>
 
