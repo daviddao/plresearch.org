@@ -18,20 +18,14 @@ const ADVISOR_FA: Record<string, string> = {
 
 const leadership = LEADS.map(slug => authors.find(a => a.slug === slug)).filter(Boolean) as typeof authors
 const advisors   = authors.filter(a => a.role?.toLowerCase().includes(ADVISOR_ROLE_KEYWORD))
-const researchers = authors.filter(a => a.user_groups?.includes('Researchers'))
-const alumni     = authors.filter(a => {
-  const ug = a.user_groups ?? []
-  return (
-    !LEADS.includes(a.slug) &&
-    !a.role?.toLowerCase().includes(ADVISOR_ROLE_KEYWORD) &&
-    !ug.includes('Researchers')
-  )
-})
+const alumni     = authors.filter(a =>
+  !LEADS.includes(a.slug) &&
+  !a.role?.toLowerCase().includes(ADVISOR_ROLE_KEYWORD)
+)
 
 const TABS = [
   { id: 'leadership', label: 'Leadership' },
   { id: 'advisors',   label: 'Advisors' },
-  { id: 'researchers',label: 'Researchers' },
   { id: 'alumni',     label: 'Alumni' },
 ]
 
@@ -92,20 +86,6 @@ export default function AuthorsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
             {advisors.map(author => (
               <LeaderCard key={author.slug} author={author} fa={ADVISOR_FA[author.slug]} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Researchers */}
-      {activeTab === 'researchers' && (
-        <div>
-          <p className="text-sm text-gray-500 uppercase tracking-wide mb-12">
-            Active research scientists
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-            {researchers.map(author => (
-              <LeaderCard key={author.slug} author={author} />
             ))}
           </div>
         </div>
