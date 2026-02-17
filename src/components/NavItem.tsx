@@ -12,8 +12,26 @@ type Props = {
 }
 
 export default function NavItem({ item, pathname, isActive, onMouseEnter, onMouseLeave }: Props) {
-  const isCurrentPath = pathname.startsWith(item.url)
+  const isCurrentPath = item.url !== '#' && pathname.startsWith(item.url)
   const hasChildren = item.children && item.children.length > 0
+  const isDropdownOnly = item.url === '#'
+
+  const triggerClass = `flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-full transition-colors ${
+    isCurrentPath
+      ? 'text-black bg-gray-100'
+      : 'text-gray-600 hover:text-black hover:bg-gray-50'
+  }`
+
+  const chevron = hasChildren && (
+    <svg
+      className={`w-4 h-4 transition-transform duration-200 ${isActive ? 'rotate-90' : ''}`}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  )
 
   return (
     <div
@@ -21,26 +39,17 @@ export default function NavItem({ item, pathname, isActive, onMouseEnter, onMous
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <Link
-        href={item.url}
-        className={`flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-full transition-colors ${
-          isCurrentPath
-            ? 'text-black bg-gray-100'
-            : 'text-gray-600 hover:text-black hover:bg-gray-50'
-        }`}
-      >
-        {item.name}
-        {hasChildren && (
-          <svg
-            className={`w-4 h-4 transition-transform duration-200 ${isActive ? 'rotate-90' : ''}`}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        )}
-      </Link>
+      {isDropdownOnly ? (
+        <button className={triggerClass}>
+          {item.name}
+          {chevron}
+        </button>
+      ) : (
+        <Link href={item.url} className={triggerClass}>
+          {item.name}
+          {chevron}
+        </Link>
+      )}
 
       {/* Dropdown Menu */}
       {hasChildren && isActive && (
