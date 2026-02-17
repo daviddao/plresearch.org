@@ -132,7 +132,16 @@ export default function AuthorsPage() {
 
 function LeaderCard({ author, fa }: { author: typeof authors[number]; fa?: string }) {
   const [expanded, setExpanded] = useState(false)
-  const bioText = author.html?.replace(/<[^>]+>/g, '').trim() ?? ''
+  const bioText = (author.html ?? '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#x26;/g, '&')
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .trim()
   const shortBio = bioText.length > 220 ? bioText.slice(0, 220).trimEnd() + '…' : bioText
 
   return (
