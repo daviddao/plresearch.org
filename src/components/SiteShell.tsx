@@ -8,7 +8,7 @@ import OffCanvasNav from './OffCanvasNav'
 
 // Routes that render full-screen (no footer, no bottom padding)
 const FULLSCREEN_PATTERNS = [
-  /^\/areas\/economies-governance\/dependency-graph\/[^/]+$/,
+  /^\/areas\/economies-governance\/dependency-graph\/[^/]+\/?$/,
 ]
 
 export default function SiteShell({ children }: { children: React.ReactNode }) {
