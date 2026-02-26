@@ -132,16 +132,6 @@ const NODE_DIMS: Record<NodeType, { w: number; h: number }> = {
   feedback: { w: 210, h: 48 },
 }
 
-// Column label names
-const COLUMN_LABELS: Array<{ type: NodeType; label: string }> = [
-  { type: 'ip', label: 'Inflection Point' },
-  { type: 'bottleneck', label: 'Bottlenecks' },
-  { type: 'gate', label: 'Q4 Gate' },
-  { type: 'feedback', label: 'Reinforcing Loops' },
-  { type: 'strand', label: 'Program Strands' },
-  { type: 'intervention', label: 'Interventions' },
-]
-
 // --- Tooltip content ---
 const tooltipData: Record<string, TooltipEntry> = {
   ip1: { title: 'Inflection Point 1: Sovereign Digital Public Infrastructure', body: 'A nation-state successfully runs core digital systems — identity, payments, registries — on open, verifiable crypto-rails and gains measurable advantages over centralized incumbents.', context: 'Proving grounds: Bhutan (780K pop.), Argentina/Crecimiento (10K+ builders), Edge City villages. Multilaterals have moved from skepticism to active engagement.' },
@@ -952,32 +942,6 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     ctx.restore()
   }, [])
 
-  // Keep layoutMode accessible in canvas callbacks without re-creating them
-  const layoutModeRef = useRef<LayoutMode>(layoutMode)
-  useEffect(() => { layoutModeRef.current = layoutMode }, [layoutMode])
-
-  // onRenderFramePost: draw column labels at top of viewport
-  const paintColumnLabels = useCallback((ctx: CanvasRenderingContext2D) => {
-    if (layoutModeRef.current !== 'force' && layoutModeRef.current !== 'spread') return
-    const transform = graphRef.current?.graph2ScreenCoords
-    if (!transform) return
-    const fontSize = 9
-    ctx.save()
-    ctx.font = `500 ${fontSize}px 'Inter', system-ui, sans-serif`
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'top'
-    COLUMN_LABELS.forEach(col => {
-      const screenPos = graphRef.current?.graph2ScreenCoords(LAYER_X[col.type], -300)
-      if (!screenPos) return
-      ctx.fillStyle = col.type === 'bottleneck' ? COLORS.bn
-        : col.type === 'feedback' ? COLORS.feedback
-        : COLORS.textDim
-      ctx.globalAlpha = 0.45
-      ctx.fillText(col.label.toUpperCase(), screenPos.x, 8)
-    })
-    ctx.restore()
-  }, [])
-
   // Node hover handler
   const handleNodeHover = useCallback((node: any, prevNode: any, event?: MouseEvent) => {
     if (!node) {
@@ -1028,67 +992,71 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
         </div>
       )}
 
-      {/* Graph container */}
-      <div
-        ref={containerRef}
-        style={{
-          width: '100%',
-          ...(isFullPage
-            ? { flex: 1, minHeight: 0 }
-            : { height: propHeight || 560 }),
-          background: COLORS.surface,
-          border: isFullPage ? 'none' : `1px solid ${COLORS.border}`,
-          borderRadius: isFullPage ? 0 : 8,
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        {ForceGraph2D ? (
-          <ForceGraph2D
-            ref={graphRef}
-            graphData={graphData}
-            width={dimensions.width}
-            height={dimensions.height}
-            // Node rendering
-            nodeCanvasObject={paintNode}
-            nodeCanvasObjectMode={REPLACE_MODE}
-            // Link rendering
-            linkCanvasObject={paintLink}
-            linkCanvasObjectMode={REPLACE_MODE}
-            // Column labels overlay
-            onRenderFramePost={paintColumnLabels}
-            // Forces
-            d3AlphaDecay={0.02}
-            d3VelocityDecay={0.3}
-            cooldownTicks={300}
-            warmupTicks={50}
-            // Interactions
-            onNodeHover={handleNodeHover}
-            onBackgroundClick={() => {
-              hoveredNodeRef.current = null
-              connectedIdsRef.current = new Set()
-              setTooltipState(null)
-            }}
-            // DAG mode
-            dagMode={layoutMode === 'dag' ? 'lr' : undefined}
-            dagLevelDistance={150}
-            onDagError={() => {}}
-            // Background
-            backgroundColor="transparent"
-            autoPauseRedraw={true}
-          />
-        ) : (
-          <div style={{
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            height: '100%', color: COLORS.textMuted, fontSize: 13,
-          }}>
-            Loading graph…
-          </div>
-        )}
+      {/* Graph area */}
+      <div style={{
+        width: '100%',
+        position: 'relative',
+        ...(isFullPage
+          ? { flex: 1, minHeight: 0 }
+          : { height: propHeight || 560 }),
+      }}>
+        {/* Canvas container */}
+        <div
+          ref={containerRef}
+          style={{
+            width: '100%',
+            height: '100%',
+            background: COLORS.surface,
+            border: isFullPage ? 'none' : `1px solid ${COLORS.border}`,
+            borderRadius: isFullPage ? 0 : 8,
+            overflow: 'hidden',
+          }}
+        >
+          {ForceGraph2D ? (
+            <ForceGraph2D
+              ref={graphRef}
+              graphData={graphData}
+              width={dimensions.width}
+              height={dimensions.height}
+              // Node rendering
+              nodeCanvasObject={paintNode}
+              nodeCanvasObjectMode={REPLACE_MODE}
+              // Link rendering
+              linkCanvasObject={paintLink}
+              linkCanvasObjectMode={REPLACE_MODE}
+              // Forces
+              d3AlphaDecay={0.02}
+              d3VelocityDecay={0.3}
+              cooldownTicks={300}
+              warmupTicks={50}
+              // Interactions
+              onNodeHover={handleNodeHover}
+              onBackgroundClick={() => {
+                hoveredNodeRef.current = null
+                connectedIdsRef.current = new Set()
+                setTooltipState(null)
+              }}
+              // DAG mode
+              dagMode={layoutMode === 'dag' ? 'lr' : undefined}
+              dagLevelDistance={150}
+              onDagError={() => {}}
+              // Background
+              backgroundColor="transparent"
+              autoPauseRedraw={true}
+            />
+          ) : (
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              height: '100%', color: COLORS.textMuted, fontSize: 13,
+            }}>
+              Loading graph…
+            </div>
+          )}
+        </div>
 
-        {/* Layout mode toolbar */}
+        {/* Layout toolbar - floats above canvas */}
         <div style={{
-          position: 'absolute', bottom: 12, left: 12, zIndex: 20,
+          position: 'absolute', bottom: 16, left: 16, zIndex: 50,
           display: 'flex', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
           borderRadius: 8, border: `1px solid ${COLORS.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
           overflow: 'hidden',
@@ -1169,7 +1137,7 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
           ))}
         </div>
 
-        {/* Tooltip */}
+        {/* Tooltip - floats above canvas */}
         {tooltipState && (
           <Tooltip
             node={tooltipState.node}
