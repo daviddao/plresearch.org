@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
-import { forceX, forceY, forceCollide } from 'd3-force'
+import { forceX, forceY, forceCollide, forceRadial } from 'd3-force'
 
 // --- Color palette adapted to site design language ---
 const COLORS = {
@@ -76,6 +76,8 @@ export type IPConfig = {
   interventions: InterventionConfig[]
   feedbackLoops?: FeedbackLoop[]
 }
+
+type LayoutMode = 'force' | 'dag' | 'radial' | 'cluster' | 'spread'
 
 // --- Graph node/link types ---
 type NodeType = 'ip' | 'bottleneck' | 'gate' | 'strand' | 'intervention' | 'feedback'
@@ -418,6 +420,9 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: propWidth || 800, height: propHeight || 560 })
 
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('dag')
+  const bootstrapped = useRef(false)
+
   // Lazy-load ForceGraph2D
   const [ForceGraph2D, setForceGraph2D] = useState<React.ComponentType<any> | null>(_ForceGraph2DModule)
   useEffect(() => {
@@ -521,6 +526,14 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     return { nodes, links }
   }, [config])
 
+  // Bootstrap: start in DAG for good initial positions, then switch to force
+  useEffect(() => {
+    if (bootstrapped.current || !ForceGraph2D || !graphData.nodes.length) return
+    bootstrapped.current = true
+    const timer = setTimeout(() => setLayoutMode('force'), 15)
+    return () => clearTimeout(timer)
+  }, [ForceGraph2D, graphData.nodes.length])
+
   // Build connected-ids set for a given node
   const buildConnectedIds = useCallback((nodeId: string): Set<string> => {
     const ids = new Set<string>([nodeId])
@@ -533,19 +546,148 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     return ids
   }, [graphData])
 
-  // Apply custom d3 forces after graph mounts / data changes
+  // Apply forces based on layout mode
   useEffect(() => {
     if (!graphRef.current) return
     const fg = graphRef.current
-    fg.d3Force('x', forceX<GraphNode>().x((n: GraphNode) => LAYER_X[n.nodeType] ?? 0).strength(0.8))
-    fg.d3Force('y', forceY<GraphNode>().y(0).strength(0.02))
-    fg.d3Force('collide', forceCollide<GraphNode>().radius(55).strength(0.7))
-    fg.d3Force('charge')?.strength(-200)
-    fg.d3Force('link')?.distance(100)
+
+    // Clear custom forces from previous mode
+    const clearCustomForces = () => {
+      fg.d3Force('x', null)
+      fg.d3Force('y', null)
+      fg.d3Force('radial', null)
+      fg.d3Force('collision', null)
+    }
+
+    // Clear fixed positions left from DAG mode
+    const clearFixedPositions = () => {
+      graphData.nodes.forEach((n: any) => { delete n.fx; delete n.fy })
+    }
+
+    if (layoutMode === 'dag') {
+      // DAG: top-down hierarchy, strong repulsion
+      clearCustomForces()
+      fg.d3Force('charge')?.strength(-250).distanceMax(500)
+      fg.d3Force('link')?.distance(120).strength(0.3)
+      fg.d3Force('center')?.strength(0.015)
+      fg.d3Force('collision',
+        forceCollide<GraphNode>().radius(55).strength(0.8)
+      )
+
+    } else if (layoutMode === 'radial') {
+      // Radial: concentric rings by dependency depth from IP node
+      clearCustomForces()
+      clearFixedPositions()
+
+      // BFS from IP node to compute depth
+      const depthMap = new Map<string, number>()
+      const queue: string[] = [config.id]
+      depthMap.set(config.id, 0)
+      let qi = 0
+      while (qi < queue.length) {
+        const id = queue[qi++]
+        const d = depthMap.get(id)!
+        graphData.links.forEach(link => {
+          const src = typeof link.source === 'object' ? (link.source as GraphNode).id : link.source as string
+          const tgt = typeof link.target === 'object' ? (link.target as GraphNode).id : link.target as string
+          if (src === id && !depthMap.has(tgt)) {
+            depthMap.set(tgt, d + 1)
+            queue.push(tgt)
+          }
+        })
+      }
+      // Store depth on nodes for radial force
+      graphData.nodes.forEach((n: any) => { n._depth = depthMap.get(n.id) ?? 0 })
+
+      const ringSpacing = Math.max(200, graphData.nodes.length * 8)
+
+      fg.d3Force('charge')?.strength(-300).distanceMax(800)
+      fg.d3Force('link')?.distance(150).strength(0.15)
+      fg.d3Force('center')?.strength(0)
+      fg.d3Force('radial',
+        forceRadial(
+          (node: any) => ((node as any)._depth || 0) * ringSpacing,
+          0, 0
+        ).strength(0.8)
+      )
+      fg.d3Force('collision',
+        forceCollide<GraphNode>().radius(55).strength(0.9)
+      )
+
+    } else if (layoutMode === 'cluster') {
+      // Cluster: group nodes by nodeType in a circle
+      clearCustomForces()
+      clearFixedPositions()
+
+      const types: NodeType[] = ['ip', 'bottleneck', 'gate', 'feedback', 'strand', 'intervention']
+      const radius = Math.max(400, graphData.nodes.length * 12)
+      const typeCenters = new Map<NodeType, { x: number; y: number }>()
+      types.forEach((t, i) => {
+        const angle = (2 * Math.PI * i) / types.length - Math.PI / 2
+        typeCenters.set(t, { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius })
+      })
+
+      fg.d3Force('charge')?.strength(-200).distanceMax(600)
+      fg.d3Force('link')?.distance(100).strength(0.15)
+      fg.d3Force('center')?.strength(0)
+      fg.d3Force('x',
+        forceX<GraphNode>().x((n: GraphNode) => typeCenters.get(n.nodeType)?.x || 0).strength(0.5)
+      )
+      fg.d3Force('y',
+        forceY<GraphNode>().y((n: GraphNode) => typeCenters.get(n.nodeType)?.y || 0).strength(0.5)
+      )
+      fg.d3Force('collision',
+        forceCollide<GraphNode>().radius(55).strength(0.9)
+      )
+
+    } else if (layoutMode === 'spread') {
+      // Spread: like force but maximally spaced, keep left-to-right layering
+      clearCustomForces()
+      clearFixedPositions()
+
+      fg.d3Force('charge')?.strength(-400).distanceMax(600)
+      fg.d3Force('link')?.distance(200).strength(0.3)
+      fg.d3Force('center')?.strength(0.01)
+      fg.d3Force('x',
+        forceX<GraphNode>().x((n: GraphNode) => LAYER_X[n.nodeType] ?? 0).strength(0.4)
+      )
+      fg.d3Force('y',
+        forceY<GraphNode>().y(0).strength(0.01)
+      )
+      fg.d3Force('collision',
+        forceCollide<GraphNode>().radius(60).strength(0.9)
+      )
+
+    } else {
+      // Force (default): full physics with left-to-right layer hints
+      clearCustomForces()
+      clearFixedPositions()
+
+      fg.d3Force('charge')?.strength(-200).distanceMax(400)
+      fg.d3Force('link')?.distance(100).strength(0.6)
+      fg.d3Force('center')?.strength(0.03)
+      fg.d3Force('x',
+        forceX<GraphNode>().x((n: GraphNode) => LAYER_X[n.nodeType] ?? 0).strength(0.8)
+      )
+      fg.d3Force('y',
+        forceY<GraphNode>().y(0).strength(0.02)
+      )
+      fg.d3Force('collision',
+        forceCollide<GraphNode>().radius(55).strength(0.7)
+      )
+    }
+
     fg.d3AlphaDecay(0.02)
     fg.d3VelocityDecay(0.3)
     fg.d3ReheatSimulation()
-  }, [graphData])
+
+    // Auto zoom-to-fit after layout settles
+    const timer = setTimeout(() => {
+      if (graphRef.current) graphRef.current.zoomToFit(400, 60)
+    }, 800)
+
+    return () => clearTimeout(timer)
+  }, [layoutMode, graphData, config.id])
 
   // paintNode: fully custom canvas rendering
   const paintNode = useCallback((node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
@@ -806,8 +948,13 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     ctx.restore()
   }, [])
 
+  // Keep layoutMode accessible in canvas callbacks without re-creating them
+  const layoutModeRef = useRef<LayoutMode>(layoutMode)
+  useEffect(() => { layoutModeRef.current = layoutMode }, [layoutMode])
+
   // onRenderFramePost: draw column labels at top of viewport
   const paintColumnLabels = useCallback((ctx: CanvasRenderingContext2D) => {
+    if (layoutModeRef.current !== 'force' && layoutModeRef.current !== 'spread') return
     const transform = graphRef.current?.graph2ScreenCoords
     if (!transform) return
     const fontSize = 9
@@ -918,6 +1065,10 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
               connectedIdsRef.current = new Set()
               setTooltipState(null)
             }}
+            // DAG mode
+            dagMode={layoutMode === 'dag' ? 'lr' : undefined}
+            dagLevelDistance={150}
+            onDagError={() => {}}
             // Background
             backgroundColor="transparent"
             autoPauseRedraw={true}
@@ -930,6 +1081,89 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
             Loading graph…
           </div>
         )}
+
+        {/* Layout mode toolbar */}
+        <div style={{
+          position: 'absolute', bottom: 12, left: 12, zIndex: 20,
+          display: 'flex', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
+          borderRadius: 8, border: `1px solid ${COLORS.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+          overflow: 'hidden',
+        }}>
+          {([
+            { mode: 'force' as LayoutMode, label: 'Force', icon: (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="4" cy="4" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="12" cy="3" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="13" cy="11" r="1.5" fill="currentColor" stroke="none" />
+                <line x1="4" y1="4" x2="8" y2="8" strokeOpacity="0.5" />
+                <line x1="12" y1="3" x2="8" y2="8" strokeOpacity="0.5" />
+                <line x1="3" y1="12" x2="8" y2="8" strokeOpacity="0.5" />
+                <line x1="13" y1="11" x2="8" y2="8" strokeOpacity="0.5" />
+              </svg>
+            )},
+            { mode: 'dag' as LayoutMode, label: 'DAG', icon: (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="8" cy="2.5" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="4" cy="8" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="12" cy="8" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="2" cy="13.5" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="6" cy="13.5" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="12" cy="13.5" r="1.5" fill="currentColor" stroke="none" />
+                <line x1="8" y1="4" x2="4" y2="6.5" strokeOpacity="0.5" />
+                <line x1="8" y1="4" x2="12" y2="6.5" strokeOpacity="0.5" />
+                <line x1="4" y1="9.5" x2="2" y2="12" strokeOpacity="0.5" />
+                <line x1="4" y1="9.5" x2="6" y2="12" strokeOpacity="0.5" />
+                <line x1="12" y1="9.5" x2="12" y2="12" strokeOpacity="0.5" />
+              </svg>
+            )},
+            { mode: 'radial' as LayoutMode, label: 'Radial', icon: (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="8" cy="8" r="2" fill="currentColor" stroke="none" />
+                <circle cx="8" cy="8" r="5" fill="none" strokeOpacity="0.5" />
+                <circle cx="8" cy="8" r="7.5" fill="none" strokeOpacity="0.3" />
+              </svg>
+            )},
+            { mode: 'cluster' as LayoutMode, label: 'Cluster', icon: (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="3.5" cy="4" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="6" cy="6" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="3" cy="7" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="11" cy="10" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="13.5" cy="11.5" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="11" cy="13" r="1.5" fill="currentColor" stroke="none" />
+              </svg>
+            )},
+            { mode: 'spread' as LayoutMode, label: 'Spread', icon: (
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <circle cx="2" cy="2" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="14" cy="3" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="3" cy="14" r="1.5" fill="currentColor" stroke="none" />
+                <circle cx="13" cy="13" r="1.5" fill="currentColor" stroke="none" />
+              </svg>
+            )},
+          ]).map((item, i) => (
+            <React.Fragment key={item.mode}>
+              {i > 0 && <div style={{ width: 1, background: COLORS.border }} />}
+              <button
+                onClick={() => setLayoutMode(item.mode)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '6px 12px', border: 'none', cursor: 'pointer',
+                  fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap',
+                  transition: 'all 0.15s ease',
+                  background: layoutMode === item.mode ? config.color : 'transparent',
+                  color: layoutMode === item.mode ? '#FFFFFF' : COLORS.textMuted,
+                }}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </button>
+            </React.Fragment>
+          ))}
+        </div>
 
         {/* Tooltip */}
         {tooltipState && (
