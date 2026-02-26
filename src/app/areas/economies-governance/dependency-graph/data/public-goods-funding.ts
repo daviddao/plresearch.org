@@ -33,9 +33,9 @@ export const publicGoodsFundingConfig: IPConfig = {
     { id: 'i5', label: 'Fellowship Cohort', sub: 'Policy professors — academic validation', strands: ['s2a'] },
   ],
   feedbackLoops: [
-    { id: 'fl2a', from: 's2b', to: 's2a', label: 'Funding experiments generate outcome data → improve AI evaluation models' },
-    { id: 'fl2b', from: 'i6', to: 's2b', label: 'Hypercerts adoption → more structured impact data → richer evaluation signal' },
-    { id: 'fl2c', from: 'i4', to: 'i8', label: 'Published benchmark results → institutional legitimacy → co-funding partners engage' },
+    { id: 'fl2a', from: 's2b', to: 'b2a', label: 'Funding experiments generate outcome data → AI learns to evaluate real impact' },
+    { id: 'fl2b', from: 's2a', to: 'b2c', label: 'Mechanism stress-testing addresses whether PGF scales beyond $10M' },
+    { id: 'fl2c', from: 's2b', to: 'b2b', label: 'Transparent on-chain experiments demonstrate institutional value of openness' },
   ],
 }
 

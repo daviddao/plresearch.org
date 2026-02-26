@@ -15,15 +15,18 @@
     "@atproto/jwk-jose": "^0.1.11",
     "@atproto/oauth-client-node": "^0.3.15",
     "@atproto/syntax": "^0.4.3",
+    "d3-force": "^3.0.0",
     "envalid": "^8.1.1",
     "fuse.js": "^7.0.0",
     "iron-session": "^8.0.4",
     "next": "15.5.9",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-force-graph-2d": "^1.29.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",
+    "@types/d3-force": "^3.0.10",
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

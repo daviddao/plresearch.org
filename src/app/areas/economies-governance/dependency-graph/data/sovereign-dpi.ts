@@ -32,8 +32,8 @@ export const sovereignDpiConfig: IPConfig = {
   ],
   feedbackLoops: [
     { id: 'fl1a', from: 's1c', to: 'b1b', label: 'Edge City prototypes surface sovereign-grade requirements → refine specs' },
-    { id: 'fl1b', from: 'i5', to: 's1b', label: 'Fellowship sovereign ministers → open new pilot jurisdictions → more proving grounds' },
-    { id: 'fl1c', from: 'i4', to: 'i8', label: 'Evidence Engine publications → demonstrate traction → attract co-funding partners' },
+    { id: 'fl1b', from: 's1b', to: 'b1c', label: 'Diversified sovereign relationships reduce single-champion fragility' },
+    { id: 'fl1c', from: 's1a', to: 'b1a', label: 'Competing teams produce evidence on open vs. centralized performance' },
   ],
 }
 

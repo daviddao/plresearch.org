@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useRef, useEffect, useCallback } from 'react'
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import { forceX, forceY, forceCollide } from 'd3-force'
 
 // --- Color palette adapted to site design language ---
 const COLORS = {
@@ -76,32 +77,68 @@ export type IPConfig = {
   feedbackLoops?: FeedbackLoop[]
 }
 
-type NodePosition = {
-  x: number
-  y: number
-  w: number
-  h: number
-}
+// --- Graph node/link types ---
+type NodeType = 'ip' | 'bottleneck' | 'gate' | 'strand' | 'intervention' | 'feedback'
 
-type BottleneckNode = BottleneckConfig & NodePosition
-type GateNode = GateConfig & NodePosition
-type StrandNode = StrandConfig & NodePosition
-type InterventionNode = InterventionConfig & NodePosition
-type FeedbackNode = FeedbackLoop & NodePosition
-
-type Edge = {
-  key: string
-  d: string
-  from: string
-  to: string
-}
-
-type TooltipState = {
-  data: TooltipEntry
-  x: number
-  y: number
+interface GraphNode {
+  id: string
+  label: string
+  sub?: string
+  nodeType: NodeType
   color: string
-} | null
+  quarter?: string
+  feedbackLabel?: string
+  feedbackFrom?: string
+  feedbackTo?: string
+  ipColor?: string
+  // force-graph injects these
+  x?: number
+  y?: number
+  vx?: number
+  vy?: number
+  [key: string]: any
+}
+
+interface GraphLink {
+  source: string | GraphNode
+  target: string | GraphNode
+  linkType: 'flow' | 'feedback-in' | 'feedback-out'
+}
+
+interface GraphData {
+  nodes: GraphNode[]
+  links: GraphLink[]
+}
+
+// Layer X positions for left-to-right layout
+const LAYER_X: Record<NodeType, number> = {
+  ip: -500,
+  bottleneck: -250,
+  gate: 0,
+  feedback: 150,
+  strand: 300,
+  intervention: 500,
+}
+
+// Node dimensions per type (width x height)
+const NODE_DIMS: Record<NodeType, { w: number; h: number }> = {
+  ip: { w: 180, h: 60 },
+  bottleneck: { w: 220, h: 48 },
+  gate: { w: 200, h: 42 },
+  strand: { w: 210, h: 48 },
+  intervention: { w: 190, h: 44 },
+  feedback: { w: 210, h: 48 },
+}
+
+// Column label names
+const COLUMN_LABELS: Array<{ type: NodeType; label: string }> = [
+  { type: 'ip', label: 'Inflection Point' },
+  { type: 'bottleneck', label: 'Bottlenecks' },
+  { type: 'gate', label: 'Q4 Gate' },
+  { type: 'feedback', label: 'Reinforcing Loops' },
+  { type: 'strand', label: 'Program Strands' },
+  { type: 'intervention', label: 'Interventions' },
+]
 
 // --- Tooltip content ---
 const tooltipData: Record<string, TooltipEntry> = {
@@ -245,12 +282,48 @@ export const ipConfigs: IPConfig[] = [
   },
 ]
 
+// --- Lazy-load ForceGraph2D (preserves ref forwarding, avoids next/dynamic wrapper) ---
+let _ForceGraph2DModule: React.ComponentType<any> | null = null
+
+// --- Helper: wrap text into lines ---
+function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
+  const words = text.split(' ')
+  const lines: string[] = []
+  let current = ''
+  for (const word of words) {
+    const test = current ? current + ' ' + word : word
+    if (ctx.measureText(test).width > maxWidth && current) {
+      lines.push(current)
+      current = word
+    } else {
+      current = test
+    }
+  }
+  if (current) lines.push(current)
+  return lines
+}
+
+// --- Helper: draw rounded rectangle path ---
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.lineTo(x + w - r, y)
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+  ctx.lineTo(x + w, y + h - r)
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+  ctx.lineTo(x + r, y + h)
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+  ctx.lineTo(x, y + r)
+  ctx.quadraticCurveTo(x, y, x + r, y)
+  ctx.closePath()
+}
+
 // --- Tooltip component ---
-function Tooltip({ data: td, x, y, color, containerRef }: {
-  data: TooltipEntry
+function Tooltip({ node, x, y, config, containerRef }: {
+  node: GraphNode
   x: number
   y: number
-  color: string
+  config: IPConfig
   containerRef: React.RefObject<HTMLDivElement | null>
 }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -267,6 +340,52 @@ function Tooltip({ data: td, x, y, color, containerRef }: {
     if (ny < 16) ny = y - ct.top + 28
     setPos({ x: nx, y: ny })
   }, [x, y, containerRef])
+
+  // Feedback node tooltip
+  if (node.nodeType === 'feedback') {
+    const fromLabel = config.strands.find(s => s.id === node.feedbackFrom)?.label
+      || config.interventions.find(i => i.id === node.feedbackFrom)?.label
+      || node.feedbackFrom
+    const toLabel = config.bottlenecks.find(b => b.id === node.feedbackTo)?.label
+      || config.gates.find(g => g.id === node.feedbackTo)?.label
+      || config.strands.find(s => s.id === node.feedbackTo)?.label
+      || node.feedbackTo
+
+    return (
+      <div ref={ref} className="dep-graph-tooltip" style={{
+        position: 'absolute', left: pos.x, top: pos.y, width: 300, zIndex: 100, pointerEvents: 'none',
+        background: COLORS.tooltipBg, border: `1px solid ${COLORS.tooltipBorder}`,
+        boxShadow: `0 8px 32px ${COLORS.tooltipShadow}, 0 2px 8px ${COLORS.tooltipShadow}`,
+        borderRadius: 8, padding: '16px 18px',
+      }}>
+        <div style={{ width: 24, height: 2, background: COLORS.feedback, opacity: 0.5, marginBottom: 10, borderRadius: 1 }} />
+        <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: COLORS.feedback, marginBottom: 6 }}>Reinforcing Loop</div>
+        <div style={{ fontSize: 13, fontWeight: 500, color: COLORS.text, lineHeight: 1.35, marginBottom: 10, fontStyle: 'italic' }}>{node.feedbackLabel}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: COLORS.textMuted }}>
+          <span style={{ background: `${COLORS.feedback}12`, border: `1px solid ${COLORS.feedback}30`, borderRadius: 4, padding: '2px 6px', color: COLORS.feedback, fontWeight: 500 }}>
+            {fromLabel}
+          </span>
+          <span style={{ color: COLORS.feedback, opacity: 0.5 }}>→</span>
+          <span style={{ background: `${COLORS.feedback}12`, border: `1px solid ${COLORS.feedback}30`, borderRadius: 4, padding: '2px 6px', color: COLORS.feedback, fontWeight: 500 }}>
+            Loop
+          </span>
+          <span style={{ color: COLORS.feedback, opacity: 0.5 }}>→</span>
+          <span style={{ background: `${COLORS.feedback}12`, border: `1px solid ${COLORS.feedback}30`, borderRadius: 4, padding: '2px 6px', color: COLORS.feedback, fontWeight: 500 }}>
+            {toLabel}
+          </span>
+        </div>
+      </div>
+    )
+  }
+
+  // Standard tooltip
+  const td = tooltipData[node.id]
+  if (!td) return null
+  const color = node.nodeType === 'ip' ? config.color
+    : node.nodeType === 'bottleneck' ? COLORS.bn
+    : node.nodeType === 'gate' ? COLORS.gate
+    : node.nodeType === 'intervention' ? COLORS.cross
+    : config.color
 
   return (
     <div ref={ref} className="dep-graph-tooltip" style={{
@@ -286,412 +405,567 @@ function Tooltip({ data: td, x, y, color, containerRef }: {
   )
 }
 
-// --- Single IP Figure ---
-export function IPFigure({ config }: { config: IPConfig }) {
-  const [hovered, setHovered] = useState<string | null>(null)
-  const [tooltip, setTooltip] = useState<TooltipState>(null)
-  const [feedbackTooltip, setFeedbackTooltip] = useState<{ label: string; x: number; y: number } | null>(null)
-  const containerRef = useRef<HTMLDivElement>(null)
+// Stable mode function (avoids re-init on re-render)
+const REPLACE_MODE = () => 'replace' as const
 
-  const handleTooltip = useCallback((id: string | null, cx: number, cy: number, color: string) => {
-    if (!id) { setTooltip(null); return }
-    const td = tooltipData[id]
-    if (td) setTooltip({ data: td, x: cx, y: cy, color })
+// --- IPFigure: force-graph based component ---
+export function IPFigure({ config, width: propWidth, height: propHeight }: {
+  config: IPConfig
+  width?: number
+  height?: number
+}) {
+  const graphRef = useRef<any>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [dimensions, setDimensions] = useState({ width: propWidth || 800, height: propHeight || 560 })
+
+  // Lazy-load ForceGraph2D
+  const [ForceGraph2D, setForceGraph2D] = useState<React.ComponentType<any> | null>(_ForceGraph2DModule)
+  useEffect(() => {
+    if (_ForceGraph2DModule) return
+    import('react-force-graph-2d').then(mod => {
+      _ForceGraph2DModule = mod.default || (mod as any)
+      setForceGraph2D(() => _ForceGraph2DModule)
+    })
   }, [])
 
-  const PAD = { left: 52, right: 40, top: 36, bottom: 40 }
-  const GAP = 52
-  const NW = { ip: 200, bn: 250, gate: 230, strand: 240, int: 210, fb: 240 }
-  const NH = { ip: 74, bn: 54, gate: 46, strand: 52, int: 48, fb: 52 }
+  // Resize observer — track container size for responsive canvas
+  useEffect(() => {
+    if (propWidth && propHeight) return
+    const update = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect()
+        setDimensions({
+          width: rect.width || 800,
+          height: rect.height || propHeight || 560,
+        })
+      }
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [propWidth, propHeight])
 
-  const COL = {
-    ip: PAD.left,
-    bn: PAD.left + NW.ip + GAP,
-    gate: PAD.left + NW.ip + GAP + NW.bn + GAP,
-    strand: PAD.left + NW.ip + GAP + NW.bn + GAP + NW.gate + GAP,
-    int: PAD.left + NW.ip + GAP + NW.bn + GAP + NW.gate + GAP + NW.strand + GAP,
-    fb: PAD.left + NW.ip + GAP + NW.bn + GAP + NW.gate + GAP + NW.strand + GAP + NW.int + GAP,
-  }
+  // Hover state via refs (avoids re-renders / simulation re-heat)
+  const hoveredNodeRef = useRef<GraphNode | null>(null)
+  const connectedIdsRef = useRef<Set<string>>(new Set())
+
+  // Tooltip state (needs React state for DOM rendering)
+  const [tooltipState, setTooltipState] = useState<{ node: GraphNode; x: number; y: number } | null>(null)
+
+  // Build graph data from config
+  const graphData: GraphData = useMemo(() => {
+    const nodes: GraphNode[] = []
+    const links: GraphLink[] = []
+
+    // IP node
+    nodes.push({
+      id: config.id,
+      label: config.label,
+      sub: config.sub,
+      nodeType: 'ip',
+      color: config.color,
+      ipColor: config.color,
+    })
+
+    // Bottleneck nodes
+    config.bottlenecks.forEach(b => {
+      nodes.push({ id: b.id, label: b.label, nodeType: 'bottleneck', color: COLORS.bn, ipColor: config.color })
+      links.push({ source: config.id, target: b.id, linkType: 'flow' })
+    })
+
+    // Gate nodes
+    config.gates.forEach(g => {
+      nodes.push({ id: g.id, label: g.label, nodeType: 'gate', color: COLORS.gate, quarter: g.quarter, ipColor: config.color })
+    })
+    // Bottlenecks → gates
+    config.bottlenecks.forEach(b => {
+      config.gates.forEach(g => {
+        links.push({ source: b.id, target: g.id, linkType: 'flow' })
+      })
+    })
+
+    // Strand nodes
+    config.strands.forEach(s => {
+      nodes.push({ id: s.id, label: s.label, sub: s.sub, nodeType: 'strand', color: config.color, ipColor: config.color })
+    })
+    // Last gate → strands
+    const lastGate = config.gates[config.gates.length - 1]
+    config.strands.forEach(s => {
+      links.push({ source: lastGate.id, target: s.id, linkType: 'flow' })
+    })
+
+    // Intervention nodes
+    config.interventions.forEach(iv => {
+      nodes.push({ id: iv.id, label: iv.label, sub: iv.sub, nodeType: 'intervention', color: COLORS.cross, ipColor: config.color })
+      iv.strands.forEach(sid => {
+        links.push({ source: sid, target: iv.id, linkType: 'flow' })
+      })
+    })
+
+    // Feedback loop nodes
+    ;(config.feedbackLoops ?? []).forEach(fl => {
+      nodes.push({
+        id: fl.id,
+        label: fl.label,
+        nodeType: 'feedback',
+        color: COLORS.feedback,
+        feedbackLabel: fl.label,
+        feedbackFrom: fl.from,
+        feedbackTo: fl.to,
+        ipColor: config.color,
+      })
+      links.push({ source: fl.from, target: fl.id, linkType: 'feedback-in' })
+      links.push({ source: fl.id, target: fl.to, linkType: 'feedback-out' })
+    })
+
+    return { nodes, links }
+  }, [config])
+
+  // Build connected-ids set for a given node
+  const buildConnectedIds = useCallback((nodeId: string): Set<string> => {
+    const ids = new Set<string>([nodeId])
+    graphData.links.forEach(link => {
+      const src = typeof link.source === 'object' ? (link.source as GraphNode).id : link.source as string
+      const tgt = typeof link.target === 'object' ? (link.target as GraphNode).id : link.target as string
+      if (src === nodeId) ids.add(tgt)
+      if (tgt === nodeId) ids.add(src)
+    })
+    return ids
+  }, [graphData])
+
+  // Apply custom d3 forces after graph mounts / data changes
+  useEffect(() => {
+    if (!graphRef.current) return
+    const fg = graphRef.current
+    fg.d3Force('x', forceX<GraphNode>().x((n: GraphNode) => LAYER_X[n.nodeType] ?? 0).strength(0.8))
+    fg.d3Force('y', forceY<GraphNode>().y(0).strength(0.02))
+    fg.d3Force('collide', forceCollide<GraphNode>().radius(55).strength(0.7))
+    fg.d3Force('charge')?.strength(-200)
+    fg.d3Force('link')?.distance(100)
+    fg.d3AlphaDecay(0.02)
+    fg.d3VelocityDecay(0.3)
+    fg.d3ReheatSimulation()
+  }, [graphData])
+
+  // paintNode: fully custom canvas rendering
+  const paintNode = useCallback((node: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+    const n = node as GraphNode
+    const { w, h } = NODE_DIMS[n.nodeType]
+    const x = n.x! - w / 2
+    const y = n.y! - h / 2
+    const r = n.nodeType === 'ip' ? 6 : n.nodeType === 'intervention' ? 5 : 4
+
+    const isHovered = hoveredNodeRef.current?.id === n.id
+    const hasHighlight = connectedIdsRef.current.size > 0
+    const isConnected = connectedIdsRef.current.has(n.id)
+    const alpha = hasHighlight ? (isConnected ? 1 : 0.15) : 1
+
+    ctx.save()
+    ctx.globalAlpha = alpha
+
+    // Glow on hover
+    if (isHovered) {
+      ctx.shadowColor = n.color
+      ctx.shadowBlur = 12
+    }
+
+    // Background fill
+    let bgColor = '#FFFFFF'
+    if (n.nodeType === 'bottleneck') bgColor = '#FDF8F0'
+    else if (n.nodeType === 'feedback') bgColor = '#F0FDFA'
+
+    roundRect(ctx, x, y, w, h, r)
+    ctx.fillStyle = bgColor
+    ctx.fill()
+
+    // Border
+    ctx.shadowBlur = 0
+    const isDashed = n.nodeType === 'bottleneck' || n.nodeType === 'gate' || n.nodeType === 'feedback'
+    if (isDashed) {
+      ctx.setLineDash(n.nodeType === 'bottleneck' ? [3, 3] : [5, 4])
+    }
+    let borderColor = COLORS.border
+    if (n.nodeType === 'bottleneck') borderColor = `${COLORS.bn}30`
+    else if (n.nodeType === 'gate') borderColor = `${COLORS.gate}28`
+    else if (n.nodeType === 'feedback') borderColor = `${COLORS.feedback}40`
+    roundRect(ctx, x, y, w, h, r)
+    ctx.strokeStyle = borderColor
+    ctx.lineWidth = 0.8 / globalScale
+    ctx.stroke()
+    ctx.setLineDash([])
+
+    // Left accent bar
+    if (n.nodeType === 'ip') {
+      roundRect(ctx, x, y, 3.5, h, 1.75)
+      ctx.fillStyle = n.color
+      ctx.globalAlpha = alpha * 0.6
+      ctx.fill()
+      ctx.globalAlpha = alpha
+    } else if (n.nodeType === 'feedback') {
+      roundRect(ctx, x, y, 3, h, 1.5)
+      ctx.fillStyle = COLORS.feedback
+      ctx.globalAlpha = alpha * 0.6
+      ctx.fill()
+      ctx.globalAlpha = alpha
+    } else if (n.nodeType === 'strand') {
+      roundRect(ctx, x, y, 3, h, 1.5)
+      ctx.fillStyle = n.color
+      ctx.globalAlpha = alpha * 0.5
+      ctx.fill()
+      ctx.globalAlpha = alpha
+    }
+
+    // Small circle indicator for interventions
+    if (n.nodeType === 'intervention') {
+      ctx.beginPath()
+      ctx.arc(x + 13, n.y!, 3, 0, Math.PI * 2)
+      ctx.fillStyle = COLORS.cross
+      ctx.globalAlpha = alpha * 0.2
+      ctx.fill()
+      ctx.strokeStyle = COLORS.cross
+      ctx.lineWidth = 0.8 / globalScale
+      ctx.globalAlpha = alpha * 0.6
+      ctx.stroke()
+      ctx.globalAlpha = alpha
+    }
+
+    // Gate chevron icon
+    if (n.nodeType === 'gate') {
+      ctx.beginPath()
+      ctx.moveTo(x + 11, n.y! - 4)
+      ctx.lineTo(x + 17, n.y!)
+      ctx.lineTo(x + 11, n.y! + 4)
+      ctx.strokeStyle = COLORS.gate
+      ctx.lineWidth = 1.2 / globalScale
+      ctx.globalAlpha = alpha * 0.45
+      ctx.stroke()
+      ctx.globalAlpha = alpha
+    }
+
+    // Bottleneck lines icon
+    if (n.nodeType === 'bottleneck') {
+      ctx.globalAlpha = alpha * 0.35
+      ctx.strokeStyle = COLORS.bn
+      ctx.lineWidth = 1 / globalScale
+      for (let i = -1; i <= 1; i++) {
+        ctx.beginPath()
+        ctx.moveTo(x + 10, n.y! + i * 4)
+        ctx.lineTo(x + 18, n.y! + i * 4)
+        ctx.stroke()
+      }
+      ctx.globalAlpha = alpha
+    }
+
+    // Quarter label for gates (top-right)
+    if (n.nodeType === 'gate' && n.quarter) {
+      const fontSize = Math.max(6, 8 / globalScale)
+      ctx.font = `600 ${fontSize}px 'Inter', system-ui, sans-serif`
+      ctx.textAlign = 'right'
+      ctx.textBaseline = 'top'
+      ctx.fillStyle = COLORS.gate
+      ctx.globalAlpha = alpha * 0.6
+      ctx.fillText(n.quarter, x + w - 6, y + 5)
+      ctx.globalAlpha = alpha
+    }
+
+    // Text rendering
+    const leftPad = n.nodeType === 'gate' ? 26
+      : n.nodeType === 'bottleneck' ? 24
+      : n.nodeType === 'intervention' ? 24
+      : n.nodeType === 'ip' ? 14
+      : n.nodeType === 'feedback' ? 12
+      : 12
+    const rightPad = (n.nodeType === 'gate' && n.quarter) ? 28 : 8
+    const textX = x + leftPad
+    const textMaxW = w - leftPad - rightPad
+
+    // Label font size
+    const labelSize = n.nodeType === 'ip' ? 12
+      : n.nodeType === 'bottleneck' ? 9
+      : n.nodeType === 'gate' ? 9.5
+      : n.nodeType === 'feedback' ? 9
+      : 10.5
+
+    const labelColor = n.nodeType === 'bottleneck' ? COLORS.bn
+      : n.nodeType === 'gate' ? COLORS.gate
+      : n.nodeType === 'ip' ? n.color
+      : n.nodeType === 'intervention' ? COLORS.cross
+      : n.nodeType === 'feedback' ? COLORS.feedback
+      : COLORS.text
+
+    const scaledLabelSize = Math.max(labelSize * 0.85, labelSize / globalScale)
+    ctx.font = `${n.nodeType === 'ip' ? 600 : n.nodeType === 'bottleneck' ? 500 : n.nodeType === 'gate' ? 500 : 600} ${scaledLabelSize}px 'Inter', system-ui, sans-serif`
+    ctx.textAlign = 'left'
+    ctx.textBaseline = 'middle'
+    ctx.fillStyle = labelColor
+    ctx.globalAlpha = alpha
+
+    const maxLines = n.nodeType === 'bottleneck' ? 3 : n.nodeType === 'feedback' ? 3 : 2
+    const lines = wrapText(ctx, n.label, textMaxW)
+    const clippedLines = lines.slice(0, maxLines)
+    const lineH = scaledLabelSize * 1.35
+    const hasSub = !!(n.sub && n.nodeType !== 'bottleneck' && n.nodeType !== 'feedback')
+    const subSize = n.nodeType === 'ip' ? 9 : 8.5
+    const scaledSubSize = Math.max(subSize * 0.85, subSize / globalScale)
+    const totalTextH = clippedLines.length * lineH + (hasSub ? scaledSubSize * 1.3 + 2 : 0)
+    let textY = n.y! - totalTextH / 2 + lineH / 2
+
+    clippedLines.forEach((line, i) => {
+      if (i === maxLines - 1 && lines.length > maxLines) {
+        // Truncate last line with ellipsis
+        let truncated = line
+        while (ctx.measureText(truncated + '…').width > textMaxW && truncated.length > 0) {
+          truncated = truncated.slice(0, -1)
+        }
+        ctx.fillText(truncated + '…', textX, textY)
+      } else {
+        ctx.fillText(line, textX, textY)
+      }
+      textY += lineH
+    })
+
+    // Sub-label
+    if (hasSub && n.sub) {
+      ctx.font = `400 ${scaledSubSize}px 'Inter', system-ui, sans-serif`
+      ctx.fillStyle = COLORS.textMuted
+      ctx.globalAlpha = alpha * 0.85
+      const subLines = wrapText(ctx, n.sub, textMaxW).slice(0, 2)
+      subLines.forEach(line => {
+        ctx.fillText(line, textX, textY)
+        textY += scaledSubSize * 1.3
+      })
+    }
+
+    ctx.restore()
+  }, [])
+
+  // paintLink: bezier curves with arrowheads for feedback-out
+  const paintLink = useCallback((link: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+    const source = link.source as GraphNode
+    const target = link.target as GraphNode
+    if (!source.x || !target.x) return
+
+    const isFeedback = link.linkType === 'feedback-in' || link.linkType === 'feedback-out'
+
+    // Determine edge alpha based on hover state
+    const hasHighlight = connectedIdsRef.current.size > 0
+    const srcId = source.id
+    const tgtId = target.id
+    const isConnected = hasHighlight
+      ? (connectedIdsRef.current.has(srcId) && connectedIdsRef.current.has(tgtId))
+      : false
+
+    const edgeAlpha = hasHighlight
+      ? (isConnected ? (isFeedback ? 0.45 : 0.35) : 0.04)
+      : (isFeedback ? 0.25 : 0.1)
+
+    ctx.save()
+    ctx.globalAlpha = edgeAlpha
+    ctx.beginPath()
+    ctx.moveTo(source.x!, source.y!)
+
+    const midX = (source.x! + target.x!) / 2
+    ctx.bezierCurveTo(midX, source.y!, midX, target.y!, target.x!, target.y!)
+
+    ctx.strokeStyle = isFeedback ? COLORS.feedback : COLORS.edgeDefault
+    ctx.lineWidth = isFeedback ? 0.8 / globalScale : 0.5 / globalScale
+
+    if (isFeedback) {
+      ctx.setLineDash([4, 3])
+    }
+
+    ctx.stroke()
+    ctx.setLineDash([])
+
+    // Arrowhead for feedback-out
+    if (link.linkType === 'feedback-out') {
+      const tx = target.x!
+      const ty = target.y!
+      // Approximate tangent at end of bezier
+      const t = 0.98
+      const bx = (1 - t) * (1 - t) * (1 - t) * source.x!
+        + 3 * (1 - t) * (1 - t) * t * midX
+        + 3 * (1 - t) * t * t * midX
+        + t * t * t * tx
+      const by = (1 - t) * (1 - t) * (1 - t) * source.y!
+        + 3 * (1 - t) * (1 - t) * t * source.y!
+        + 3 * (1 - t) * t * t * target.y!
+        + t * t * t * ty
+      const angle = Math.atan2(ty - by, tx - bx)
+      const arrowLen = 6 / globalScale
+      ctx.globalAlpha = edgeAlpha
+      ctx.beginPath()
+      ctx.moveTo(tx, ty)
+      ctx.lineTo(tx - arrowLen * Math.cos(angle - 0.4), ty - arrowLen * Math.sin(angle - 0.4))
+      ctx.lineTo(tx - arrowLen * Math.cos(angle + 0.4), ty - arrowLen * Math.sin(angle + 0.4))
+      ctx.closePath()
+      ctx.fillStyle = COLORS.feedback
+      ctx.fill()
+    }
+
+    ctx.restore()
+  }, [])
+
+  // onRenderFramePost: draw column labels at top of viewport
+  const paintColumnLabels = useCallback((ctx: CanvasRenderingContext2D) => {
+    const transform = graphRef.current?.graph2ScreenCoords
+    if (!transform) return
+    const fontSize = 9
+    ctx.save()
+    ctx.font = `500 ${fontSize}px 'Inter', system-ui, sans-serif`
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'top'
+    COLUMN_LABELS.forEach(col => {
+      const screenPos = graphRef.current?.graph2ScreenCoords(LAYER_X[col.type], -300)
+      if (!screenPos) return
+      ctx.fillStyle = col.type === 'bottleneck' ? COLORS.bn
+        : col.type === 'feedback' ? COLORS.feedback
+        : COLORS.textDim
+      ctx.globalAlpha = 0.45
+      ctx.fillText(col.label.toUpperCase(), screenPos.x, 8)
+    })
+    ctx.restore()
+  }, [])
+
+  // Node hover handler
+  const handleNodeHover = useCallback((node: any, prevNode: any, event?: MouseEvent) => {
+    if (!node) {
+      hoveredNodeRef.current = null
+      connectedIdsRef.current = new Set()
+      setTooltipState(null)
+      return
+    }
+    const gn = node as GraphNode
+    hoveredNodeRef.current = gn
+    connectedIdsRef.current = buildConnectedIds(gn.id)
+
+    // Get screen position for tooltip
+    if (graphRef.current) {
+      const screenPos = graphRef.current.graph2ScreenCoords(gn.x ?? 0, gn.y ?? 0)
+      const rect = containerRef.current?.getBoundingClientRect()
+      if (rect) {
+        setTooltipState({
+          node: gn,
+          x: rect.left + screenPos.x,
+          y: rect.top + screenPos.y,
+        })
+      }
+    }
+  }, [buildConnectedIds])
+
   const hasFeedback = !!(config.feedbackLoops && config.feedbackLoops.length > 0)
-  const W = hasFeedback ? COL.fb + NW.fb + PAD.right : COL.int + NW.int + PAD.right
 
-  const bnCount = config.bottlenecks.length
-  const strandCount = config.strands.length
-  const intCount = config.interventions.length
-  const gateCount = config.gates.length
-  const BN_GAP = 64
-  const STRAND_GAP = 60
-  const INT_GAP = 56
-  const GATE_GAP = 64
-
-  const gateColH = gateCount * NH.gate + (gateCount - 1) * (GATE_GAP - NH.gate)
-
-  const fbCount = config.feedbackLoops?.length ?? 0
-  const FB_GAP = 60
-
-  const contentH = Math.max(
-    NH.ip,
-    bnCount * BN_GAP - (BN_GAP - NH.bn),
-    gateColH,
-    strandCount * STRAND_GAP - (STRAND_GAP - NH.strand),
-    intCount * INT_GAP - (INT_GAP - NH.int),
-    fbCount > 0 ? fbCount * FB_GAP - (FB_GAP - NH.fb) : 0,
-  )
-  const H = PAD.top + contentH + PAD.bottom
-  const midY = PAD.top + contentH / 2
-
-  const ipNode: NodePosition = { x: COL.ip, y: midY - NH.ip / 2, w: NW.ip, h: NH.ip }
-
-  const bnNodes: BottleneckNode[] = config.bottlenecks.map((b, i) => {
-    const totalH = bnCount * BN_GAP - (BN_GAP - NH.bn)
-    const startY = midY - totalH / 2
-    return { ...b, x: COL.bn, y: startY + i * BN_GAP, w: NW.bn, h: NH.bn }
-  })
-
-  // Multi-gate: stack vertically centered at midY
-  const gateNodes: GateNode[] = config.gates.map((g, i) => {
-    const totalH = gateColH
-    const startY = midY - totalH / 2
-    return { ...g, x: COL.gate, y: startY + i * GATE_GAP, w: NW.gate, h: NH.gate }
-  })
-
-  const strandNodes: StrandNode[] = config.strands.map((s, i) => {
-    const totalH = strandCount * STRAND_GAP - (STRAND_GAP - NH.strand)
-    const startY = midY - totalH / 2
-    return { ...s, x: COL.strand, y: startY + i * STRAND_GAP, w: NW.strand, h: NH.strand }
-  })
-
-  const intNodes: InterventionNode[] = config.interventions.map((item, i) => {
-    const totalH = intCount * INT_GAP - (INT_GAP - NH.int)
-    const startY = midY - totalH / 2
-    return { ...item, x: COL.int, y: startY + i * INT_GAP, w: NW.int, h: NH.int }
-  })
-
-  const fbNodes: FeedbackNode[] = (config.feedbackLoops ?? []).map((fl, i) => {
-    const totalH = fbCount * FB_GAP - (FB_GAP - NH.fb)
-    const startY = midY - totalH / 2
-    return { ...fl, x: COL.fb, y: startY + i * FB_GAP, w: NW.fb, h: NH.fb }
-  })
-
-  // Build a lookup map for all node positions (for feedback loops)
-  const nodePositionMap: Record<string, NodePosition> = {}
-  nodePositionMap[config.id] = ipNode
-  bnNodes.forEach(n => { nodePositionMap[n.id] = n })
-  gateNodes.forEach(n => { nodePositionMap[n.id] = n })
-  strandNodes.forEach(n => { nodePositionMap[n.id] = n })
-  intNodes.forEach(n => { nodePositionMap[n.id] = n })
-  fbNodes.forEach(n => { nodePositionMap[n.id] = n })
-
-  // Highlight logic
-  const allGateIds = config.gates.map(g => g.id)
-  const getRelatedIds = (id: string | null): Set<string> | null => {
-    if (!id) return null
-    const s = new Set([id])
-    s.add(config.id)
-    allGateIds.forEach(gid => s.add(gid))
-    config.bottlenecks.forEach(b => s.add(b.id))
-    if (id === config.id || allGateIds.includes(id) || config.bottlenecks.find(b => b.id === id)) {
-      config.strands.forEach(st => s.add(st.id))
-      config.interventions.forEach(iv => s.add(iv.id))
-      return s
-    }
-    const strand = config.strands.find(st => st.id === id)
-    if (strand) {
-      config.interventions.forEach(iv => { if (iv.strands.includes(id)) s.add(iv.id) })
-      return s
-    }
-    const inv = config.interventions.find(iv => iv.id === id)
-    if (inv) {
-      inv.strands.forEach(sid => s.add(sid))
-      return s
-    }
-    // Feedback node: highlight itself + from + to nodes
-    const fb = (config.feedbackLoops ?? []).find(fl => fl.id === id)
-    if (fb) {
-      s.add(fb.from)
-      s.add(fb.to)
-      return s
-    }
-    return s
-  }
-
-  const relatedIds = getRelatedIds(hovered)
-  const isHL = (id: string): boolean | null => relatedIds ? relatedIds.has(id) : null
-  const edgeActive = (fromId: string, toId: string): boolean => relatedIds ? relatedIds.has(fromId) && relatedIds.has(toId) : false
-
-  const curve = (x1: number, y1: number, x2: number, y2: number): string => {
-    const dx = x2 - x1
-    return `M${x1},${y1} C${x1 + dx * 0.42},${y1} ${x2 - dx * 0.42},${y2} ${x2},${y2}`
-  }
-
-  const backwardCurve = (fromX: number, fromY: number, toX: number, toY: number): string => {
-    // Arc below the graph content area
-    const arcY = Math.max(fromY, toY) + 80
-    return `M${fromX},${fromY} C${fromX - 40},${arcY} ${toX + 40},${arcY} ${toX},${toY}`
-  }
-
-  const edges: Edge[] = []
-
-  // IP → bottlenecks
-  bnNodes.forEach(b => {
-    edges.push({ key: `ip-${b.id}`, d: curve(ipNode.x + ipNode.w, ipNode.y + ipNode.h / 2, b.x, b.y + b.h / 2), from: config.id, to: b.id })
-  })
-
-  // Bottlenecks → ALL gates (fan)
-  bnNodes.forEach(b => {
-    gateNodes.forEach(g => {
-      edges.push({ key: `${b.id}-${g.id}`, d: curve(b.x + b.w, b.y + b.h / 2, g.x, g.y + g.h / 2), from: b.id, to: g.id })
-    })
-  })
-
-  // Last gate → all strands
-  const lastGate = gateNodes[gateNodes.length - 1]
-  strandNodes.forEach(s => {
-    edges.push({ key: `gate-${s.id}`, d: curve(lastGate.x + lastGate.w, lastGate.y + lastGate.h / 2, s.x, s.y + s.h / 2), from: lastGate.id, to: s.id })
-  })
-
-  // Strands → interventions
-  intNodes.forEach(item => {
-    item.strands.forEach(sid => {
-      const s = strandNodes.find(sn => sn.id === sid)
-      if (s) edges.push({ key: `${s.id}-${item.id}`, d: curve(s.x + s.w, s.y + s.h / 2, item.x, item.y + item.h / 2), from: s.id, to: item.id })
-    })
-  })
-
-  const renderCard = (node: NodePosition, type: string, id: string, label: string, sub: string | null, cardColor: string, quarterLabel?: string) => {
-    const hl = isHL(id)
-    const op = hl === null ? 1 : hl ? 1 : 0.08
-    const isGate = type === 'gate'
-    const isIp = type === 'ip'
-    const isInt = type === 'int'
-    const isBn = type === 'bn'
-    const isFb = type === 'fb'
-    const leftPad = isGate ? 26 : isBn ? 24 : isInt ? 24 : isIp ? 14 : isFb ? 12 : 12
-    const displayColor = cardColor || config.color
-
-    return (
-      <g key={id + type} style={{ cursor: 'pointer', transition: 'opacity 0.3s ease' }} opacity={op}
-        onMouseEnter={(e) => {
-          setHovered(id)
-          if (!isFb) handleTooltip(id, e.clientX, e.clientY, displayColor)
-          else setFeedbackTooltip({ label, x: e.clientX, y: e.clientY })
-        }}
-        onMouseMove={(e) => {
-          if (!isFb) handleTooltip(id, e.clientX, e.clientY, displayColor)
-          else setFeedbackTooltip({ label, x: e.clientX, y: e.clientY })
-        }}
-        onMouseLeave={() => {
-          setHovered(null)
-          if (!isFb) setTooltip(null)
-          else setFeedbackTooltip(null)
-        }}>
-        <rect x={node.x + 1} y={node.y + 1.5} width={node.w} height={node.h} rx={isBn ? 3 : isGate ? 3 : 5} fill="rgba(0,0,0,0.02)" />
-        <rect x={node.x} y={node.y} width={node.w} height={node.h} rx={isBn ? 3 : isGate ? 3 : 5}
-          fill={isBn ? `${COLORS.bn}06` : isFb ? `${COLORS.feedback}06` : '#FFFFFF'}
-          stroke={isBn ? `${COLORS.bn}30` : isGate ? `${COLORS.gate}28` : isFb ? `${COLORS.feedback}40` : '#E5E7EB'}
-          strokeWidth={0.8}
-          strokeDasharray={isGate ? '5,4' : isBn ? '3,3' : isFb ? '5,4' : 'none'} />
-        {isIp && <rect x={node.x} y={node.y} width={3.5} height={node.h} rx={1.75} fill={config.color} opacity={0.6} />}
-        {isFb && <rect x={node.x} y={node.y} width={3} height={node.h} rx={1.5} fill={COLORS.feedback} opacity={0.6} />}
-        {isGate && (
-          <g opacity={0.45}>
-            <line x1={node.x + 11} y1={node.y + node.h / 2 - 4} x2={node.x + 17} y2={node.y + node.h / 2} stroke={COLORS.gate} strokeWidth={1.2} />
-            <line x1={node.x + 11} y1={node.y + node.h / 2 + 4} x2={node.x + 17} y2={node.y + node.h / 2} stroke={COLORS.gate} strokeWidth={1.2} />
-          </g>
-        )}
-        {isBn && (
-          <g opacity={0.35}>
-            <line x1={node.x + 10} y1={node.y + node.h / 2 - 4} x2={node.x + 18} y2={node.y + node.h / 2 - 4} stroke={COLORS.bn} strokeWidth={1} />
-            <line x1={node.x + 10} y1={node.y + node.h / 2} x2={node.x + 18} y2={node.y + node.h / 2} stroke={COLORS.bn} strokeWidth={1} />
-            <line x1={node.x + 10} y1={node.y + node.h / 2 + 4} x2={node.x + 18} y2={node.y + node.h / 2 + 4} stroke={COLORS.bn} strokeWidth={1} />
-          </g>
-        )}
-        {isInt && <circle cx={node.x + 13} cy={node.y + node.h / 2} r={3} fill={COLORS.cross} opacity={0.2} stroke={COLORS.cross} strokeWidth={0.8} />}
-        {/* Quarter superscript for gate nodes */}
-        {isGate && quarterLabel && (
-          <text
-            x={node.x + node.w - 6}
-            y={node.y + 9}
-            textAnchor="end"
-            fontSize={8}
-            fontWeight={600}
-            fill={COLORS.gate}
-            opacity={0.6}
-            letterSpacing={0.5}
-          >{quarterLabel}</text>
-        )}
-        <foreignObject x={node.x + leftPad} y={node.y} width={node.w - leftPad - (isGate && quarterLabel ? 28 : 8)} height={node.h}>
-          <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '3px 0' }}>
-            <div style={{
-              fontSize: isIp ? 14.5 : isBn ? 10.5 : isGate ? 11 : isInt ? 12 : isFb ? 10.5 : 12.5,
-              fontWeight: isIp ? 600 : isBn ? 500 : isGate ? 500 : isFb ? 500 : 600,
-              color: isBn ? COLORS.bn : isGate ? COLORS.gate : isIp ? config.color : isInt ? COLORS.cross : isFb ? COLORS.feedback : COLORS.text,
-              lineHeight: isBn ? 1.35 : isFb ? 1.35 : 1.2,
-              fontStyle: isGate ? 'italic' : isFb ? 'italic' : 'normal',
-              overflow: 'hidden', display: '-webkit-box',
-              WebkitLineClamp: isBn ? 3 : isFb ? 3 : 2, WebkitBoxOrient: 'vertical',
-            }}>{label}</div>
-            {sub && !isBn && !isFb && (
-              <div style={{
-                fontSize: isIp ? 11 : 10,
-                color: COLORS.textMuted, lineHeight: 1.3, marginTop: 2,
-                overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical',
-              }}>{sub}</div>
-            )}
-          </div>
-        </foreignObject>
-      </g>
-    )
-  }
+  const isFullPage = !propHeight
 
   return (
-    <div style={{ marginBottom: 48 }}>
-      <div className="flex items-baseline gap-3.5 mb-3.5">
-        <span style={{
-          fontSize: 44, fontWeight: 700,
-          color: config.color, opacity: 0.15, lineHeight: 1, letterSpacing: -2,
-        }}>{config.num}</span>
-        <div>
-          <h2 className="text-xl font-semibold tracking-tight" style={{ color: COLORS.text, lineHeight: 1.15 }}>
-            {config.label}
-          </h2>
-          <p className="text-sm text-gray-500 mt-1" style={{ fontWeight: 300 }}>
-            {config.sub}
-          </p>
+    <div style={isFullPage ? { width: '100%', height: '100%', display: 'flex', flexDirection: 'column' } : { marginBottom: 48 }}>
+      {/* IP header — hidden when used full-page (parent provides header) */}
+      {!isFullPage && (
+        <div className="flex items-baseline gap-3.5 mb-3.5">
+          <span style={{
+            fontSize: 44, fontWeight: 700,
+            color: config.color, opacity: 0.15, lineHeight: 1, letterSpacing: -2,
+          }}>{config.num}</span>
+          <div>
+            <h2 className="text-xl font-semibold tracking-tight" style={{ color: COLORS.text, lineHeight: 1.15 }}>
+              {config.label}
+            </h2>
+            <p className="text-sm text-gray-500 mt-1" style={{ fontWeight: 300 }}>
+              {config.sub}
+            </p>
+          </div>
         </div>
+      )}
+
+      {/* Graph container */}
+      <div
+        ref={containerRef}
+        style={{
+          width: '100%',
+          ...(isFullPage
+            ? { flex: 1, minHeight: 0 }
+            : { height: propHeight || 560 }),
+          background: COLORS.surface,
+          border: isFullPage ? 'none' : `1px solid ${COLORS.border}`,
+          borderRadius: isFullPage ? 0 : 8,
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
+        {ForceGraph2D ? (
+          <ForceGraph2D
+            ref={graphRef}
+            graphData={graphData}
+            width={dimensions.width}
+            height={dimensions.height}
+            // Node rendering
+            nodeCanvasObject={paintNode}
+            nodeCanvasObjectMode={REPLACE_MODE}
+            // Link rendering
+            linkCanvasObject={paintLink}
+            linkCanvasObjectMode={REPLACE_MODE}
+            // Column labels overlay
+            onRenderFramePost={paintColumnLabels}
+            // Forces
+            d3AlphaDecay={0.02}
+            d3VelocityDecay={0.3}
+            cooldownTicks={300}
+            warmupTicks={50}
+            // Interactions
+            onNodeHover={handleNodeHover}
+            onBackgroundClick={() => {
+              hoveredNodeRef.current = null
+              connectedIdsRef.current = new Set()
+              setTooltipState(null)
+            }}
+            // Background
+            backgroundColor="transparent"
+            autoPauseRedraw={true}
+          />
+        ) : (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            height: '100%', color: COLORS.textMuted, fontSize: 13,
+          }}>
+            Loading graph…
+          </div>
+        )}
+
+        {/* Tooltip */}
+        {tooltipState && (
+          <Tooltip
+            node={tooltipState.node}
+            x={tooltipState.x}
+            y={tooltipState.y}
+            config={config}
+            containerRef={containerRef}
+          />
+        )}
       </div>
 
-      {/* Sized wrapper ensures headers, graph border, and legend all match SVG width */}
-      <div style={{ width: W }}>
-        <div className="flex" style={{ width: W, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
-          {[
-            { label: 'Inflection Point', w: NW.ip + GAP },
-            { label: 'Bottlenecks', w: NW.bn + GAP },
-            { label: gateCount > 1 ? 'Gates' : 'Q4 Gate', w: NW.gate + GAP },
-            { label: 'Program Strands', w: NW.strand + GAP },
-            { label: 'Interventions', w: hasFeedback ? NW.int + GAP : NW.int },
-            ...(hasFeedback ? [{ label: 'Reinforcing Loops', w: NW.fb }] : []),
-          ].map((col, i) => (
-            <div key={i} style={{ width: col.w, flexShrink: 0, paddingLeft: i === 0 ? PAD.left : 0, textAlign: i === 0 ? 'left' : 'center' }}>
-              <div style={{
-                fontSize: 10, fontWeight: 500,
-                letterSpacing: 2, textTransform: 'uppercase',
-                color: col.label === 'Bottlenecks' ? COLORS.bn : col.label === 'Reinforcing Loops' ? COLORS.feedback : COLORS.textDim,
-                opacity: col.label === 'Bottlenecks' ? 0.7 : col.label === 'Reinforcing Loops' ? 0.7 : 1,
-              }}>{col.label}</div>
-            </div>
-          ))}
-        </div>
-
-        <div ref={containerRef} style={{
-          width: W, background: COLORS.surface, border: `1px solid ${COLORS.border}`, borderTop: 'none',
-          overflow: 'visible', position: 'relative', borderRadius: '0 0 8px 8px',
-        }}>
-          <svg width={W} height={H} style={{ display: 'block' }}>
-            {/* Arrowhead marker for feedback loops */}
-            <defs>
-              <marker id={`feedback-arrow-${config.id}`} markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-                <path d="M0,0 L0,8 L8,4 z" fill={COLORS.feedback} opacity={0.5} />
-              </marker>
-            </defs>
-
-            {edges.map(e => {
-              const hl = edgeActive(e.from, e.to)
-              const isBnEdge = config.bottlenecks.some(b => b.id === e.from || b.id === e.to)
-              return (
-                <path key={e.key} d={e.d} fill="none"
-                  stroke={hl ? COLORS.edgeHL : COLORS.edgeDefault}
-                  strokeWidth={hl ? 1.6 : 0.6}
-                  opacity={hovered ? (hl ? 0.4 : 0.04) : 0.1}
-                  strokeDasharray={isBnEdge ? '4,3' : 'none'}
-                  style={{ transition: 'all 0.3s ease' }} />
-              )
-            })}
-
-            {/* Feedback loop edges: forward (from → fb card) and backward (fb card → to) */}
-            {hasFeedback && fbNodes.map(fbNode => {
-              const fromNode = nodePositionMap[fbNode.from]
-              const toNode = nodePositionMap[fbNode.to]
-              if (!fromNode || !toNode) return null
-              const fwdD = curve(fromNode.x + fromNode.w, fromNode.y + fromNode.h / 2, fbNode.x, fbNode.y + fbNode.h / 2)
-              const bwdD = backwardCurve(fbNode.x, fbNode.y + fbNode.h / 2, toNode.x + toNode.w, toNode.y + toNode.h / 2)
-              return (
-                <g key={`fl-edges-${fbNode.id}`}>
-                  <path
-                    d={fwdD}
-                    fill="none"
-                    stroke={COLORS.feedback}
-                    strokeWidth={1.2}
-                    strokeDasharray="5,4"
-                    opacity={0.25}
-                  />
-                  <path
-                    d={bwdD}
-                    fill="none"
-                    stroke={COLORS.feedback}
-                    strokeWidth={1.2}
-                    strokeDasharray="5,4"
-                    opacity={0.25}
-                    markerEnd={`url(#feedback-arrow-${config.id})`}
-                  />
-                </g>
-              )
-            })}
-
-            {renderCard(ipNode, 'ip', config.id, config.label, config.sub, config.color)}
-            {bnNodes.map(b => renderCard(b, 'bn', b.id, b.label, null, COLORS.bn))}
-            {gateNodes.map(g => renderCard(g, 'gate', g.id, g.label, null, COLORS.gate, g.quarter))}
-            {strandNodes.map(s => renderCard(s, 'strand', s.id, s.label, s.sub, config.color))}
-            {intNodes.map(item => renderCard(item, 'int', item.id, item.label, item.sub, COLORS.cross))}
-            {fbNodes.map(fbNode => renderCard(fbNode, 'fb', fbNode.id, fbNode.label, null, COLORS.feedback))}
-          </svg>
-
-          {/* Feedback loop tooltip */}
-          {feedbackTooltip && containerRef.current && (() => {
-            const ct = containerRef.current!.getBoundingClientRect()
-            const tx = feedbackTooltip.x - ct.left + 14
-            const ty = feedbackTooltip.y - ct.top - 36
-            return (
-              <div style={{
-                position: 'absolute', left: Math.min(tx, W - 200), top: Math.max(ty, 8),
-                background: COLORS.tooltipBg, border: `1px solid ${COLORS.tooltipBorder}`,
-                boxShadow: `0 4px 16px ${COLORS.tooltipShadow}`,
-                borderRadius: 6, padding: '6px 10px', zIndex: 101, pointerEvents: 'none',
-                fontSize: 11, color: COLORS.feedback, fontStyle: 'italic', whiteSpace: 'nowrap',
-              }}>
-                {feedbackTooltip.label}
-              </div>
-            )
-          })()}
-
-          {tooltip && tooltip.data && (
-            <Tooltip data={tooltip.data} x={tooltip.x} y={tooltip.y} color={tooltip.color} containerRef={containerRef} />
-          )}
-        </div>
-
-        <div className="flex items-center gap-5 mt-2.5 justify-end flex-wrap" style={{ width: W }}>
-          {[
-            { color: config.color, label: config.label, dash: false },
-            { color: COLORS.bn, label: 'Bottleneck', dash: true },
-            { color: COLORS.gate, label: 'Go/No-Go', dash: true },
-            { color: COLORS.cross, label: 'Cross-cutting', dash: false },
-            ...(hasFeedback ? [{ color: COLORS.feedback, label: 'Feedback loop', dash: true }] : []),
-          ].map((l, i) => (
-            <div key={i} className="flex items-center gap-1.5">
-              <div style={{
-                width: 16, height: l.dash ? 0 : 1.5, background: l.dash ? 'none' : l.color, opacity: 0.5,
-                borderTop: l.dash ? `1.5px dashed ${l.color}` : 'none',
-              }} />
-              <span className="text-[10px] text-gray-500">{l.label}</span>
-            </div>
-          ))}
-          <div className="flex items-center gap-1.5 ml-2">
-            <svg width={36} height={8} style={{ opacity: 0.2 }}>
-              <line x1={0} y1={4} x2={28} y2={4} stroke={COLORS.edgeDefault} strokeWidth={1} />
-              <polygon points="28,1 34,4 28,7" fill={COLORS.edgeDefault} />
-            </svg>
-            <span className="text-[10px] text-gray-500 italic">read left to right</span>
+      {/* Legend — hidden in full-page mode */}
+      <div className="flex items-center gap-5 mt-2.5 justify-end flex-wrap" style={{ width: '100%', display: isFullPage ? 'none' : undefined }}>
+        {[
+          { color: config.color, label: config.label, dash: false },
+          { color: COLORS.bn, label: 'Bottleneck', dash: true },
+          { color: COLORS.gate, label: 'Go/No-Go', dash: true },
+          { color: COLORS.cross, label: 'Cross-cutting', dash: false },
+          ...(hasFeedback ? [{ color: COLORS.feedback, label: 'Feedback loop', dash: true }] : []),
+        ].map((l, i) => (
+          <div key={i} className="flex items-center gap-1.5">
+            <div style={{
+              width: 16, height: l.dash ? 0 : 1.5, background: l.dash ? 'none' : l.color, opacity: 0.5,
+              borderTop: l.dash ? `1.5px dashed ${l.color}` : 'none',
+            }} />
+            <span className="text-[10px] text-gray-500">{l.label}</span>
           </div>
+        ))}
+        <div className="flex items-center gap-1.5 ml-2">
+          <svg width={36} height={8} style={{ opacity: 0.2 }}>
+            <line x1={0} y1={4} x2={28} y2={4} stroke={COLORS.edgeDefault} strokeWidth={1} />
+            <polygon points="28,1 34,4 28,7" fill={COLORS.edgeDefault} />
+          </svg>
+          <span className="text-[10px] text-gray-500 italic">read left to right</span>
         </div>
       </div>
     </div>

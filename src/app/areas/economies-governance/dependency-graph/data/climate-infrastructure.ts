@@ -32,10 +32,10 @@ export const climateInfrastructureConfig: IPConfig = {
     { id: 'i7', label: 'Event Laboratories', sub: 'Climate DePIN Summit co-location', strands: ['s4b'] },
   ],
   feedbackLoops: [
-    { id: 'fl4a', from: 's4b', to: 's4a', label: 'Network coordination reveals data gaps → MRV grants target underserved verification domains' },
-    { id: 'fl4b', from: 's4c', to: 's4b', label: 'Prize benchmark dataset → projects self-assess against it → network visibility improves' },
-    { id: 'fl4c', from: 'i3', to: 'b4b', label: "Regional proving grounds demonstrate composition value → counter \"projects don't compose\" bottleneck" },
-    { id: 'fl4d', from: 'i4', to: 'b4c', label: 'Published verification benchmarks → build institutional evidence base → reduce trust gap' },
+    { id: 'fl4a', from: 's4b', to: 'b4b', label: 'Network coordination tests whether composed data commands a premium' },
+    { id: 'fl4b', from: 's4c', to: 'b4a', label: 'Verification standards reduce coordination overhead via benchmarks' },
+    { id: 'fl4c', from: 's4a', to: 'b4c', label: 'MRV grant results build institutional evidence for AI verification' },
+    { id: 'fl4d', from: 's4b', to: 'b4d', label: 'Network demonstrates viable alternative to legacy registries' },
   ],
 }
 

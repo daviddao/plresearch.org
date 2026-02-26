@@ -31,10 +31,10 @@ export const governanceDemocracyConfig: IPConfig = {
     { id: 'i5', label: 'Fellowship Cohort', sub: 'Civic tech leaders — tooling expertise', strands: ['s3c'] },
   ],
   feedbackLoops: [
-    { id: 'fl3a', from: 's3a', to: 's3b', label: 'Observatory data reveals UX gaps → tooling grants target specific failures' },
-    { id: 'fl3b', from: 's3c', to: 's3a', label: 'Deliberative research produces reusable protocols → Observatory adopts for next village' },
-    { id: 'fl3c', from: 'i3', to: 'b3b', label: 'Proving ground diversity → test pop-up-to-permanent transfer → reduce gap' },
-    { id: 'fl3d', from: 'i4', to: 'i5', label: 'Published governance outcomes → attract civic tech fellowship applicants' },
+    { id: 'fl3a', from: 's3a', to: 'b3a', label: 'Observatory pre-registered metrics define what "better governance" means' },
+    { id: 'fl3b', from: 's3c', to: 'b3c', label: 'Deliberative + crypto research tests whether crypto component adds value' },
+    { id: 'fl3c', from: 's3b', to: 'b3b', label: 'Tooling tested in non-tech communities addresses pop-up-to-permanent gap' },
+    { id: 'fl3d', from: 's3a', to: 'b3d', label: 'Governance usage data informs identity infrastructure requirements' },
   ],
 }
 

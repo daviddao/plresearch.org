@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import Breadcrumb from '@/components/Breadcrumb'
 import { IPFigure } from '../DependencyGraph'
 import { expandedConfigs } from '../data'
 
@@ -23,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const config = expandedConfigs[slug]
   if (!config) return { title: 'Not Found' }
   return {
-    title: config.label,
+    title: `${config.label} — Dependency Graph`,
     description: config.sub,
   }
 }
@@ -34,49 +33,45 @@ export default async function DependencyGraphSlugPage({ params }: Props) {
   if (!config) notFound()
 
   return (
-    <div className="max-w-[1400px] mx-auto px-6 pt-8 pb-16">
-      <Breadcrumb
-        items={[
-          { label: 'Areas', href: '/areas' },
-          { label: 'Economies & Governance', href: '/areas/economies-governance' },
-          { label: 'Dependency Graph', href: '/areas/economies-governance/dependency-graph' },
-          { label: config.label },
-        ]}
-      />
-
-      {/* Back link */}
-      <div className="mt-4 mb-8">
-        <Link
-          href="/areas/economies-governance/dependency-graph"
-          className="text-sm text-gray-500 hover:text-gray-800 transition-colors duration-150 inline-flex items-center gap-1.5"
-        >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <path d="M9 11L5 7l4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          Back to all graphs
-        </Link>
-      </div>
-
-      {/* Header */}
-      <div className="mb-10">
-        <div className="flex items-baseline gap-3 mb-2">
-          <span
-            className="text-5xl font-bold leading-none"
-            style={{ color: config.color, opacity: 0.15, letterSpacing: -2 }}
-          >
-            {config.num}
-          </span>
-          <h1 className="text-2xl lg:text-[32px] font-semibold tracking-tight leading-tight">
-            {config.label}
-          </h1>
+    <div className="h-screen flex flex-col overflow-hidden bg-white">
+      {/* Compact header bar */}
+      <header className="shrink-0 border-b border-gray-200 bg-white/95 backdrop-blur-sm z-10">
+        <div className="flex items-center justify-between px-5 h-14">
+          <div className="flex items-center gap-3 min-w-0">
+            <Link
+              href="/areas/economies-governance/dependency-graph"
+              className="text-gray-400 hover:text-gray-700 transition-colors shrink-0"
+              aria-label="Back to all graphs"
+            >
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M11 14L6 9l5-5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Link>
+            <div className="flex items-baseline gap-2.5 min-w-0">
+              <span
+                className="text-2xl font-bold leading-none shrink-0"
+                style={{ color: config.color, opacity: 0.25 }}
+              >
+                {config.num}
+              </span>
+              <div className="min-w-0">
+                <h1 className="text-sm font-semibold tracking-tight truncate" style={{ color: '#131316' }}>
+                  {config.label}
+                </h1>
+                <p className="text-xs text-gray-400 truncate" style={{ fontWeight: 300 }}>
+                  {config.sub}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="text-[10px] text-gray-400 uppercase tracking-widest shrink-0 hidden sm:block">
+            Dependency Graph
+          </div>
         </div>
-        <p className="text-lg text-gray-500 leading-relaxed max-w-2xl" style={{ fontWeight: 300 }}>
-          {config.sub}
-        </p>
-      </div>
+      </header>
 
-      {/* Graph — full-width scrollable */}
-      <div className="overflow-x-auto">
+      {/* Full-page canvas */}
+      <div className="flex-1 relative">
         <IPFigure config={config} />
       </div>
     </div>
