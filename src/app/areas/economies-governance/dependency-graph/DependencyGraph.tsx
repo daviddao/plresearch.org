@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
+import Link from 'next/link'
 import { forceX, forceY, forceCollide, forceRadial } from 'd3-force'
 
 // --- Color palette adapted to site design language ---
@@ -1308,7 +1309,7 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
 
           {/* Layout toolbar — top-left inside canvas */}
           <div style={{
-            position: 'absolute', top: 12, left: 12, zIndex: 50, pointerEvents: 'auto',
+            position: 'absolute', top: 64, left: 12, zIndex: 50, pointerEvents: 'auto',
             display: 'flex', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
             borderRadius: 8, border: `1px solid ${COLORS.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
             overflow: 'hidden',
@@ -1388,6 +1389,37 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
               </React.Fragment>
             ))}
           </div>
+
+          {/* Header overlay — full-page mode only */}
+          {isFullPage && (
+            <div style={{
+              position: 'absolute', top: 12, left: 12, zIndex: 50, pointerEvents: 'auto',
+              display: 'flex', alignItems: 'center', gap: 12,
+              background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
+              borderRadius: 8, border: `1px solid ${COLORS.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+              padding: '8px 16px',
+            }}>
+              <Link
+                href="/areas/economies-governance/dependency-graph"
+                style={{ color: COLORS.textMuted, display: 'flex', alignItems: 'center', textDecoration: 'none' }}
+                aria-label="Back to all graphs"
+              >
+                <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+                  <path d="M12 15L7 10l5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </Link>
+              <div style={{ width: 1, height: 20, background: COLORS.border, flexShrink: 0 }} />
+              <span style={{ fontSize: 15, fontWeight: 600, color: config.color, opacity: 0.45, fontVariantNumeric: 'tabular-nums' }}>{config.num}</span>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.text, lineHeight: 1.2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {config.label}
+                </div>
+                <div style={{ fontSize: 10, color: COLORS.textMuted, lineHeight: 1.2, marginTop: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {config.sub}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Tooltip - floats above canvas */}
           {tooltipState && !selectedNode && (
