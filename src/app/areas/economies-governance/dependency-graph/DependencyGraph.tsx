@@ -87,6 +87,7 @@ type BottleneckNode = BottleneckConfig & NodePosition
 type GateNode = GateConfig & NodePosition
 type StrandNode = StrandConfig & NodePosition
 type InterventionNode = InterventionConfig & NodePosition
+type FeedbackNode = FeedbackLoop & NodePosition
 
 type Edge = {
   key: string
@@ -300,8 +301,8 @@ export function IPFigure({ config }: { config: IPConfig }) {
 
   const PAD = { left: 52, right: 40, top: 36, bottom: 40 }
   const GAP = 52
-  const NW = { ip: 200, bn: 250, gate: 230, strand: 240, int: 210 }
-  const NH = { ip: 74, bn: 54, gate: 46, strand: 52, int: 48 }
+  const NW = { ip: 200, bn: 250, gate: 230, strand: 240, int: 210, fb: 240 }
+  const NH = { ip: 74, bn: 54, gate: 46, strand: 52, int: 48, fb: 52 }
 
   const COL = {
     ip: PAD.left,
@@ -309,8 +310,10 @@ export function IPFigure({ config }: { config: IPConfig }) {
     gate: PAD.left + NW.ip + GAP + NW.bn + GAP,
     strand: PAD.left + NW.ip + GAP + NW.bn + GAP + NW.gate + GAP,
     int: PAD.left + NW.ip + GAP + NW.bn + GAP + NW.gate + GAP + NW.strand + GAP,
+    fb: PAD.left + NW.ip + GAP + NW.bn + GAP + NW.gate + GAP + NW.strand + GAP + NW.int + GAP,
   }
-  const W = COL.int + NW.int + PAD.right
+  const hasFeedback = !!(config.feedbackLoops && config.feedbackLoops.length > 0)
+  const W = hasFeedback ? COL.fb + NW.fb + PAD.right : COL.int + NW.int + PAD.right
 
   const bnCount = config.bottlenecks.length
   const strandCount = config.strands.length
@@ -321,11 +324,10 @@ export function IPFigure({ config }: { config: IPConfig }) {
   const INT_GAP = 56
   const GATE_GAP = 64
 
-  // Extra bottom padding for feedback loops
-  const hasFeedback = !!(config.feedbackLoops && config.feedbackLoops.length > 0)
-  const FEEDBACK_EXTRA = hasFeedback ? 60 : 0
-
   const gateColH = gateCount * NH.gate + (gateCount - 1) * (GATE_GAP - NH.gate)
+
+  const fbCount = config.feedbackLoops?.length ?? 0
+  const FB_GAP = 60
 
   const contentH = Math.max(
     NH.ip,
@@ -333,8 +335,9 @@ export function IPFigure({ config }: { config: IPConfig }) {
     gateColH,
     strandCount * STRAND_GAP - (STRAND_GAP - NH.strand),
     intCount * INT_GAP - (INT_GAP - NH.int),
+    fbCount > 0 ? fbCount * FB_GAP - (FB_GAP - NH.fb) : 0,
   )
-  const H = PAD.top + contentH + PAD.bottom + FEEDBACK_EXTRA
+  const H = PAD.top + contentH + PAD.bottom
   const midY = PAD.top + contentH / 2
 
   const ipNode: NodePosition = { x: COL.ip, y: midY - NH.ip / 2, w: NW.ip, h: NH.ip }
@@ -364,6 +367,12 @@ export function IPFigure({ config }: { config: IPConfig }) {
     return { ...item, x: COL.int, y: startY + i * INT_GAP, w: NW.int, h: NH.int }
   })
 
+  const fbNodes: FeedbackNode[] = (config.feedbackLoops ?? []).map((fl, i) => {
+    const totalH = fbCount * FB_GAP - (FB_GAP - NH.fb)
+    const startY = midY - totalH / 2
+    return { ...fl, x: COL.fb, y: startY + i * FB_GAP, w: NW.fb, h: NH.fb }
+  })
+
   // Build a lookup map for all node positions (for feedback loops)
   const nodePositionMap: Record<string, NodePosition> = {}
   nodePositionMap[config.id] = ipNode
@@ -371,6 +380,7 @@ export function IPFigure({ config }: { config: IPConfig }) {
   gateNodes.forEach(n => { nodePositionMap[n.id] = n })
   strandNodes.forEach(n => { nodePositionMap[n.id] = n })
   intNodes.forEach(n => { nodePositionMap[n.id] = n })
+  fbNodes.forEach(n => { nodePositionMap[n.id] = n })
 
   // Highlight logic
   const allGateIds = config.gates.map(g => g.id)
@@ -395,6 +405,13 @@ export function IPFigure({ config }: { config: IPConfig }) {
       inv.strands.forEach(sid => s.add(sid))
       return s
     }
+    // Feedback node: highlight itself + from + to nodes
+    const fb = (config.feedbackLoops ?? []).find(fl => fl.id === id)
+    if (fb) {
+      s.add(fb.from)
+      s.add(fb.to)
+      return s
+    }
     return s
   }
 
@@ -405,6 +422,12 @@ export function IPFigure({ config }: { config: IPConfig }) {
   const curve = (x1: number, y1: number, x2: number, y2: number): string => {
     const dx = x2 - x1
     return `M${x1},${y1} C${x1 + dx * 0.42},${y1} ${x2 - dx * 0.42},${y2} ${x2},${y2}`
+  }
+
+  const backwardCurve = (fromX: number, fromY: number, toX: number, toY: number): string => {
+    // Arc below the graph content area
+    const arcY = Math.max(fromY, toY) + 80
+    return `M${fromX},${fromY} C${fromX - 40},${arcY} ${toX + 40},${arcY} ${toX},${toY}`
   }
 
   const edges: Edge[] = []
@@ -435,18 +458,6 @@ export function IPFigure({ config }: { config: IPConfig }) {
     })
   })
 
-  // Feedback loop path: from source bottom-center, arc below graph, to target bottom-center
-  const feedbackArcPath = (fromNode: NodePosition, toNode: NodePosition, graphBottom: number): string => {
-    const fx = fromNode.x + fromNode.w / 2
-    const fy = fromNode.y + fromNode.h
-    const tx = toNode.x + toNode.w / 2
-    const ty = toNode.y + toNode.h
-    const arcDepth = graphBottom + 30
-    return `M${fx},${fy} C${fx},${arcDepth} ${tx},${arcDepth} ${tx},${ty}`
-  }
-
-  const graphBottom = PAD.top + contentH
-
   const renderCard = (node: NodePosition, type: string, id: string, label: string, sub: string | null, cardColor: string, quarterLabel?: string) => {
     const hl = isHL(id)
     const op = hl === null ? 1 : hl ? 1 : 0.08
@@ -454,21 +465,34 @@ export function IPFigure({ config }: { config: IPConfig }) {
     const isIp = type === 'ip'
     const isInt = type === 'int'
     const isBn = type === 'bn'
-    const leftPad = isGate ? 26 : isBn ? 24 : isInt ? 24 : isIp ? 14 : 12
+    const isFb = type === 'fb'
+    const leftPad = isGate ? 26 : isBn ? 24 : isInt ? 24 : isIp ? 14 : isFb ? 12 : 12
     const displayColor = cardColor || config.color
 
     return (
       <g key={id + type} style={{ cursor: 'pointer', transition: 'opacity 0.3s ease' }} opacity={op}
-        onMouseEnter={(e) => { setHovered(id); handleTooltip(id, e.clientX, e.clientY, displayColor) }}
-        onMouseMove={(e) => handleTooltip(id, e.clientX, e.clientY, displayColor)}
-        onMouseLeave={() => { setHovered(null); setTooltip(null) }}>
+        onMouseEnter={(e) => {
+          setHovered(id)
+          if (!isFb) handleTooltip(id, e.clientX, e.clientY, displayColor)
+          else setFeedbackTooltip({ label, x: e.clientX, y: e.clientY })
+        }}
+        onMouseMove={(e) => {
+          if (!isFb) handleTooltip(id, e.clientX, e.clientY, displayColor)
+          else setFeedbackTooltip({ label, x: e.clientX, y: e.clientY })
+        }}
+        onMouseLeave={() => {
+          setHovered(null)
+          if (!isFb) setTooltip(null)
+          else setFeedbackTooltip(null)
+        }}>
         <rect x={node.x + 1} y={node.y + 1.5} width={node.w} height={node.h} rx={isBn ? 3 : isGate ? 3 : 5} fill="rgba(0,0,0,0.02)" />
         <rect x={node.x} y={node.y} width={node.w} height={node.h} rx={isBn ? 3 : isGate ? 3 : 5}
-          fill={isBn ? `${COLORS.bn}06` : '#FFFFFF'}
-          stroke={isBn ? `${COLORS.bn}30` : isGate ? `${COLORS.gate}28` : '#E5E7EB'}
+          fill={isBn ? `${COLORS.bn}06` : isFb ? `${COLORS.feedback}06` : '#FFFFFF'}
+          stroke={isBn ? `${COLORS.bn}30` : isGate ? `${COLORS.gate}28` : isFb ? `${COLORS.feedback}40` : '#E5E7EB'}
           strokeWidth={0.8}
-          strokeDasharray={isGate ? '5,4' : isBn ? '3,3' : 'none'} />
+          strokeDasharray={isGate ? '5,4' : isBn ? '3,3' : isFb ? '5,4' : 'none'} />
         {isIp && <rect x={node.x} y={node.y} width={3.5} height={node.h} rx={1.75} fill={config.color} opacity={0.6} />}
+        {isFb && <rect x={node.x} y={node.y} width={3} height={node.h} rx={1.5} fill={COLORS.feedback} opacity={0.6} />}
         {isGate && (
           <g opacity={0.45}>
             <line x1={node.x + 11} y1={node.y + node.h / 2 - 4} x2={node.x + 17} y2={node.y + node.h / 2} stroke={COLORS.gate} strokeWidth={1.2} />
@@ -499,15 +523,15 @@ export function IPFigure({ config }: { config: IPConfig }) {
         <foreignObject x={node.x + leftPad} y={node.y} width={node.w - leftPad - (isGate && quarterLabel ? 28 : 8)} height={node.h}>
           <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '3px 0' }}>
             <div style={{
-              fontSize: isIp ? 14.5 : isBn ? 10.5 : isGate ? 11 : isInt ? 12 : 12.5,
-              fontWeight: isIp ? 600 : isBn ? 500 : isGate ? 500 : 600,
-              color: isBn ? COLORS.bn : isGate ? COLORS.gate : isIp ? config.color : isInt ? COLORS.cross : COLORS.text,
-              lineHeight: isBn ? 1.35 : 1.2,
-              fontStyle: isGate ? 'italic' : 'normal',
+              fontSize: isIp ? 14.5 : isBn ? 10.5 : isGate ? 11 : isInt ? 12 : isFb ? 10.5 : 12.5,
+              fontWeight: isIp ? 600 : isBn ? 500 : isGate ? 500 : isFb ? 500 : 600,
+              color: isBn ? COLORS.bn : isGate ? COLORS.gate : isIp ? config.color : isInt ? COLORS.cross : isFb ? COLORS.feedback : COLORS.text,
+              lineHeight: isBn ? 1.35 : isFb ? 1.35 : 1.2,
+              fontStyle: isGate ? 'italic' : isFb ? 'italic' : 'normal',
               overflow: 'hidden', display: '-webkit-box',
-              WebkitLineClamp: isBn ? 3 : 2, WebkitBoxOrient: 'vertical',
+              WebkitLineClamp: isBn ? 3 : isFb ? 3 : 2, WebkitBoxOrient: 'vertical',
             }}>{label}</div>
-            {sub && !isBn && (
+            {sub && !isBn && !isFb && (
               <div style={{
                 fontSize: isIp ? 11 : 10,
                 color: COLORS.textMuted, lineHeight: 1.3, marginTop: 2,
@@ -545,14 +569,15 @@ export function IPFigure({ config }: { config: IPConfig }) {
             { label: 'Bottlenecks', w: NW.bn + GAP },
             { label: gateCount > 1 ? 'Gates' : 'Q4 Gate', w: NW.gate + GAP },
             { label: 'Program Strands', w: NW.strand + GAP },
-            { label: 'Interventions', w: NW.int },
+            { label: 'Interventions', w: hasFeedback ? NW.int + GAP : NW.int },
+            ...(hasFeedback ? [{ label: 'Reinforcing Loops', w: NW.fb }] : []),
           ].map((col, i) => (
             <div key={i} style={{ width: col.w, flexShrink: 0, paddingLeft: i === 0 ? PAD.left : 0, textAlign: i === 0 ? 'left' : 'center' }}>
               <div style={{
                 fontSize: 10, fontWeight: 500,
                 letterSpacing: 2, textTransform: 'uppercase',
-                color: col.label === 'Bottlenecks' ? COLORS.bn : COLORS.textDim,
-                opacity: col.label === 'Bottlenecks' ? 0.7 : 1,
+                color: col.label === 'Bottlenecks' ? COLORS.bn : col.label === 'Reinforcing Loops' ? COLORS.feedback : COLORS.textDim,
+                opacity: col.label === 'Bottlenecks' ? 0.7 : col.label === 'Reinforcing Loops' ? 0.7 : 1,
               }}>{col.label}</div>
             </div>
           ))}
@@ -583,27 +608,33 @@ export function IPFigure({ config }: { config: IPConfig }) {
               )
             })}
 
-            {/* Feedback loop edges */}
-            {hasFeedback && config.feedbackLoops!.map(fl => {
-              const fromNode = nodePositionMap[fl.from]
-              const toNode = nodePositionMap[fl.to]
+            {/* Feedback loop edges: forward (from → fb card) and backward (fb card → to) */}
+            {hasFeedback && fbNodes.map(fbNode => {
+              const fromNode = nodePositionMap[fbNode.from]
+              const toNode = nodePositionMap[fbNode.to]
               if (!fromNode || !toNode) return null
-              const d = feedbackArcPath(fromNode, toNode, graphBottom)
+              const fwdD = curve(fromNode.x + fromNode.w, fromNode.y + fromNode.h / 2, fbNode.x, fbNode.y + fbNode.h / 2)
+              const bwdD = backwardCurve(fbNode.x, fbNode.y + fbNode.h / 2, toNode.x + toNode.w, toNode.y + toNode.h / 2)
               return (
-                <path
-                  key={`fl-${fl.id}`}
-                  d={d}
-                  fill="none"
-                  stroke={COLORS.feedback}
-                  strokeWidth={1.2}
-                  strokeDasharray="5,4"
-                  opacity={0.3}
-                  markerEnd={`url(#feedback-arrow-${config.id})`}
-                  style={{ cursor: 'pointer' }}
-                  onMouseEnter={(e) => setFeedbackTooltip({ label: fl.label, x: e.clientX, y: e.clientY })}
-                  onMouseMove={(e) => setFeedbackTooltip({ label: fl.label, x: e.clientX, y: e.clientY })}
-                  onMouseLeave={() => setFeedbackTooltip(null)}
-                />
+                <g key={`fl-edges-${fbNode.id}`}>
+                  <path
+                    d={fwdD}
+                    fill="none"
+                    stroke={COLORS.feedback}
+                    strokeWidth={1.2}
+                    strokeDasharray="5,4"
+                    opacity={0.25}
+                  />
+                  <path
+                    d={bwdD}
+                    fill="none"
+                    stroke={COLORS.feedback}
+                    strokeWidth={1.2}
+                    strokeDasharray="5,4"
+                    opacity={0.25}
+                    markerEnd={`url(#feedback-arrow-${config.id})`}
+                  />
+                </g>
               )
             })}
 
@@ -612,6 +643,7 @@ export function IPFigure({ config }: { config: IPConfig }) {
             {gateNodes.map(g => renderCard(g, 'gate', g.id, g.label, null, COLORS.gate, g.quarter))}
             {strandNodes.map(s => renderCard(s, 'strand', s.id, s.label, s.sub, config.color))}
             {intNodes.map(item => renderCard(item, 'int', item.id, item.label, item.sub, COLORS.cross))}
+            {fbNodes.map(fbNode => renderCard(fbNode, 'fb', fbNode.id, fbNode.label, null, COLORS.feedback))}
           </svg>
 
           {/* Feedback loop tooltip */}
