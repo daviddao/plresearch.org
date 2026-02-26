@@ -29,9 +29,9 @@ export default function DependencyGraphPage() {
       <div className="mb-10">
         <h1 className="text-2xl lg:text-[36px] font-semibold mb-3">Dependency Graph</h1>
         <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">
-          Each inflection point mapped through its structural bottlenecks,
-          Q4 decision gate, program strands, and cross-cutting interventions.
-          Hover over any node for detail.
+          Each inflection point visualized as an interactive force-directed graph —
+          from bottlenecks and checkpoints to program strands and interventions.
+          Click any node to explore.
         </p>
       </div>
 

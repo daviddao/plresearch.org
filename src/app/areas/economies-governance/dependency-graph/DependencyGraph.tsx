@@ -596,7 +596,10 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: propWidth || 800, height: propHeight || 560 })
 
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>('force')
+  const [userLayout, setUserLayout] = useState<LayoutMode>('radial')
+  const [activeLayout, setActiveLayout] = useState<LayoutMode>('force')
+  // layoutMode = what the simulation actually uses (activeLayout during bootstrap, userLayout after)
+  const layoutMode = activeLayout
 
   // Lazy-load ForceGraph2D
   const [ForceGraph2D, setForceGraph2D] = useState<React.ComponentType<any> | null>(_ForceGraph2DModule)
@@ -705,14 +708,14 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     return { nodes, links }
   }, [config])
 
-  // Bootstrap: run force layout briefly for good initial positions, then switch to radial
+  // Bootstrap: secretly run force layout for initial positions, then activate user's choice
   const bootstrapped = useRef(false)
   useEffect(() => {
     if (bootstrapped.current || !ForceGraph2D || !graphData.nodes.length) return
     bootstrapped.current = true
-    const timer = setTimeout(() => setLayoutMode('radial'), 15)
+    const timer = setTimeout(() => setActiveLayout(userLayout), 100)
     return () => clearTimeout(timer)
-  }, [ForceGraph2D, graphData.nodes.length])
+  }, [ForceGraph2D, graphData.nodes.length, userLayout])
 
 
 
@@ -1369,14 +1372,14 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
               <React.Fragment key={item.mode}>
                 {i > 0 && <div style={{ width: 1, background: COLORS.border }} />}
                 <button
-                  onClick={() => setLayoutMode(item.mode)}
+                  onClick={() => { setUserLayout(item.mode); setActiveLayout(item.mode) }}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 5,
                     padding: '6px 12px', border: 'none', cursor: 'pointer',
                     fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap',
                     transition: 'all 0.15s ease',
-                    background: layoutMode === item.mode ? config.color : 'transparent',
-                    color: layoutMode === item.mode ? '#FFFFFF' : COLORS.textMuted,
+                    background: userLayout === item.mode ? config.color : 'transparent',
+                    color: userLayout === item.mode ? '#FFFFFF' : COLORS.textMuted,
                   }}
                 >
                   {item.icon}
