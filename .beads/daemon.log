@@ -112,3 +112,60 @@ time=2026-02-27T01:15:27.250+08:00 level=INFO msg="Successfully re-established J
 time=2026-02-27T01:15:27.250+08:00 level=INFO msg="JSONL file created" path=/Users/david/Projects/FA2/plresearch.org/.beads/issues.jsonl
 time=2026-02-27T01:15:28.252+08:00 level=INFO msg="Import triggered by file change"
 time=2026-02-27T01:15:28.254+08:00 level=INFO msg="Skipping: in backoff period" mode=auto-import
+time=2026-02-27T01:15:32.280+08:00 level=INFO msg="JSONL removed/renamed, re-establishing watch"
+time=2026-02-27T01:15:32.331+08:00 level=INFO msg="Successfully re-established JSONL watch" delay=50ms
+time=2026-02-27T01:15:32.331+08:00 level=INFO msg="JSONL file created" path=/Users/david/Projects/FA2/plresearch.org/.beads/issues.jsonl
+time=2026-02-27T01:15:33.333+08:00 level=INFO msg="Import triggered by file change"
+time=2026-02-27T01:15:33.335+08:00 level=INFO msg="Skipping: in backoff period" mode=auto-import
+time=2026-02-27T01:22:36.273+08:00 level=INFO msg="JSONL removed/renamed, re-establishing watch"
+time=2026-02-27T01:22:36.325+08:00 level=INFO msg="Successfully re-established JSONL watch" delay=50ms
+time=2026-02-27T01:22:36.325+08:00 level=INFO msg="JSONL file created" path=/Users/david/Projects/FA2/plresearch.org/.beads/issues.jsonl
+time=2026-02-27T01:22:37.327+08:00 level=INFO msg="Import triggered by file change"
+time=2026-02-27T01:22:37.330+08:00 level=INFO msg="Starting auto-import" mode=auto-import
+time=2026-02-27T01:22:38.094+08:00 level=INFO msg="Pull failed" error="git pull failed: exit status 1\nfatal: couldn't find remote ref grants-and-graphs\n" backoff=5m0s
+time=2026-02-27T01:22:40.705+08:00 level=INFO msg="Mutation detected" type=status issue_id=plresearch.org-epv.1
+time=2026-02-27T01:22:40.753+08:00 level=INFO msg="Mutation detected" type=status issue_id=plresearch.org-epv.2
+time=2026-02-27T01:22:41.254+08:00 level=INFO msg="Export triggered by mutation events"
+time=2026-02-27T01:22:41.255+08:00 level=INFO msg=Starting mode=export
+time=2026-02-27T01:22:41.265+08:00 level=INFO msg="JSONL removed/renamed, re-establishing watch"
+time=2026-02-27T01:22:41.266+08:00 level=INFO msg="Exported to JSONL"
+time=2026-02-27T01:22:41.266+08:00 level=INFO msg="Export complete"
+time=2026-02-27T01:22:41.316+08:00 level=INFO msg="Successfully re-established JSONL watch" delay=50ms
+time=2026-02-27T01:22:41.316+08:00 level=INFO msg="JSONL file created" path=/Users/david/Projects/FA2/plresearch.org/.beads/issues.jsonl
+time=2026-02-27T01:22:42.318+08:00 level=INFO msg="Import triggered by file change"
+time=2026-02-27T01:22:42.321+08:00 level=INFO msg="Skipping: in backoff period" mode=auto-import
+time=2026-02-27T01:24:16.193+08:00 level=INFO msg="JSONL removed/renamed, re-establishing watch"
+time=2026-02-27T01:24:16.245+08:00 level=INFO msg="Successfully re-established JSONL watch" delay=50ms
+time=2026-02-27T01:24:16.245+08:00 level=INFO msg="JSONL file created" path=/Users/david/Projects/FA2/plresearch.org/.beads/issues.jsonl
+time=2026-02-27T01:24:17.248+08:00 level=INFO msg="Import triggered by file change"
+time=2026-02-27T01:24:17.250+08:00 level=INFO msg="Skipping: in backoff period" mode=auto-import
+time=2026-02-27T01:24:21.478+08:00 level=INFO msg="Mutation detected" type=status issue_id=plresearch.org-epv.4
+time=2026-02-27T01:24:21.531+08:00 level=INFO msg="Mutation detected" type=status issue_id=plresearch.org-epv.5
+time=2026-02-27T01:24:21.580+08:00 level=INFO msg="Mutation detected" type=status issue_id=plresearch.org-epv.6
+time=2026-02-27T01:24:21.629+08:00 level=INFO msg="Mutation detected" type=status issue_id=plresearch.org-epv.7
+time=2026-02-27T01:24:22.130+08:00 level=INFO msg="Export triggered by mutation events"
+time=2026-02-27T01:24:22.131+08:00 level=INFO msg=Starting mode=export
+time=2026-02-27T01:24:22.140+08:00 level=INFO msg="JSONL removed/renamed, re-establishing watch"
+time=2026-02-27T01:24:22.141+08:00 level=INFO msg="Exported to JSONL"
+time=2026-02-27T01:24:22.141+08:00 level=INFO msg="Export complete"
+time=2026-02-27T01:24:22.192+08:00 level=INFO msg="Successfully re-established JSONL watch" delay=50ms
+time=2026-02-27T01:24:22.192+08:00 level=INFO msg="JSONL file created" path=/Users/david/Projects/FA2/plresearch.org/.beads/issues.jsonl
+time=2026-02-27T01:24:23.193+08:00 level=INFO msg="Import triggered by file change"
+time=2026-02-27T01:24:23.195+08:00 level=INFO msg="Skipping: in backoff period" mode=auto-import
+time=2026-02-27T01:26:11.461+08:00 level=INFO msg="JSONL removed/renamed, re-establishing watch"
+time=2026-02-27T01:26:11.513+08:00 level=INFO msg="Successfully re-established JSONL watch" delay=50ms
+time=2026-02-27T01:26:11.513+08:00 level=INFO msg="JSONL file created" path=/Users/david/Projects/FA2/plresearch.org/.beads/issues.jsonl
+time=2026-02-27T01:26:12.515+08:00 level=INFO msg="Import triggered by file change"
+time=2026-02-27T01:26:12.517+08:00 level=INFO msg="Skipping: in backoff period" mode=auto-import
+time=2026-02-27T01:26:15.353+08:00 level=INFO msg="Mutation detected" type=status issue_id=plresearch.org-epv.3
+time=2026-02-27T01:26:15.404+08:00 level=INFO msg="Mutation detected" type=status issue_id=plresearch.org-epv.8
+time=2026-02-27T01:26:15.905+08:00 level=INFO msg="Export triggered by mutation events"
+time=2026-02-27T01:26:15.906+08:00 level=INFO msg=Starting mode=export
+time=2026-02-27T01:26:15.914+08:00 level=INFO msg="JSONL removed/renamed, re-establishing watch"
+time=2026-02-27T01:26:15.916+08:00 level=INFO msg="Exported to JSONL"
+time=2026-02-27T01:26:15.916+08:00 level=INFO msg="Export complete"
+time=2026-02-27T01:26:15.966+08:00 level=INFO msg="Successfully re-established JSONL watch" delay=50ms
+time=2026-02-27T01:26:15.966+08:00 level=INFO msg="JSONL file created" path=/Users/david/Projects/FA2/plresearch.org/.beads/issues.jsonl
+time=2026-02-27T01:26:16.968+08:00 level=INFO msg="Import triggered by file change"
+time=2026-02-27T01:26:16.970+08:00 level=INFO msg="Skipping: in backoff period" mode=auto-import
+time=2026-02-27T01:26:55.561+08:00 level=INFO msg="JSONL removed/renamed, re-establishing watch"
