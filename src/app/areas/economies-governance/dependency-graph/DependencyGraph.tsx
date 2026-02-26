@@ -1056,7 +1056,7 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
 
         {/* Layout toolbar - floats above canvas */}
         <div style={{
-          position: 'absolute', bottom: 16, left: 16, zIndex: 50,
+          position: 'fixed', top: 72, right: 16, zIndex: 50, pointerEvents: 'auto',
           display: 'flex', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
           borderRadius: 8, border: `1px solid ${COLORS.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
           overflow: 'hidden',
