@@ -311,27 +311,29 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
 }
 
 // --- Tooltip component ---
-function Tooltip({ node, x, y, config, containerRef }: {
+function Tooltip({ node, x, y, config }: {
   node: GraphNode
   x: number
   y: number
   config: IPConfig
-  containerRef: React.RefObject<HTMLDivElement | null>
 }) {
   const ref = useRef<HTMLDivElement>(null)
   const [pos, setPos] = useState({ x: 0, y: 0 })
 
   useEffect(() => {
-    if (!ref.current || !containerRef.current) return
+    if (!ref.current) return
     const tt = ref.current.getBoundingClientRect()
-    const ct = containerRef.current.getBoundingClientRect()
-    let nx = x - ct.left + 14
-    let ny = y - ct.top - tt.height - 14
-    if (nx + tt.width > ct.width - 16) nx = ct.width - tt.width - 16
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+    // Position relative to viewport
+    let nx = x + 14
+    let ny = y - tt.height - 14
+    if (nx + tt.width > vw - 16) nx = vw - tt.width - 16
     if (nx < 16) nx = 16
-    if (ny < 16) ny = y - ct.top + 28
+    if (ny < 16) ny = y + 28
+    if (ny + tt.height > vh - 16) ny = vh - tt.height - 16
     setPos({ x: nx, y: ny })
-  }, [x, y, containerRef])
+  }, [x, y])
 
   // Feedback node tooltip
   if (node.nodeType === 'feedback') {
@@ -345,7 +347,7 @@ function Tooltip({ node, x, y, config, containerRef }: {
 
     return (
       <div ref={ref} className="dep-graph-tooltip" style={{
-        position: 'absolute', left: pos.x, top: pos.y, width: 300, zIndex: 100, pointerEvents: 'none',
+        position: 'fixed', left: pos.x, top: pos.y, width: 300, zIndex: 100, pointerEvents: 'none',
         background: COLORS.tooltipBg, border: `1px solid ${COLORS.tooltipBorder}`,
         boxShadow: `0 8px 32px ${COLORS.tooltipShadow}, 0 2px 8px ${COLORS.tooltipShadow}`,
         borderRadius: 8, padding: '16px 18px',
@@ -381,7 +383,7 @@ function Tooltip({ node, x, y, config, containerRef }: {
 
   return (
     <div ref={ref} className="dep-graph-tooltip" style={{
-      position: 'absolute', left: pos.x, top: pos.y, width: 320, zIndex: 100, pointerEvents: 'none',
+      position: 'fixed', left: pos.x, top: pos.y, width: 320, zIndex: 100, pointerEvents: 'none',
       background: COLORS.tooltipBg, border: `1px solid ${COLORS.tooltipBorder}`,
       boxShadow: `0 8px 32px ${COLORS.tooltipShadow}, 0 2px 8px ${COLORS.tooltipShadow}`,
       borderRadius: 8, padding: '18px 20px',
@@ -804,7 +806,11 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
       ctx.globalAlpha = alpha
     }
 
-    // Text rendering
+    // Text rendering — clip to box boundaries
+    ctx.save()
+    roundRect(ctx, x, y, w, h, r)
+    ctx.clip()
+
     const leftPad = n.nodeType === 'gate' ? 26
       : n.nodeType === 'bottleneck' ? 24
       : n.nodeType === 'intervention' ? 24
@@ -815,7 +821,7 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     const textX = x + leftPad
     const textMaxW = w - leftPad - rightPad
 
-    // Label font size
+    // Use FIXED font sizes in graph coordinates (don't scale with zoom)
     const labelSize = n.nodeType === 'ip' ? 12
       : n.nodeType === 'bottleneck' ? 9
       : n.nodeType === 'gate' ? 9.5
@@ -829,8 +835,8 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
       : n.nodeType === 'feedback' ? COLORS.feedback
       : COLORS.text
 
-    const scaledLabelSize = Math.max(labelSize * 0.85, labelSize / globalScale)
-    ctx.font = `${n.nodeType === 'ip' ? 600 : n.nodeType === 'bottleneck' ? 500 : n.nodeType === 'gate' ? 500 : 600} ${scaledLabelSize}px 'Inter', system-ui, sans-serif`
+    const fontWeight = n.nodeType === 'ip' ? 600 : n.nodeType === 'bottleneck' ? 500 : n.nodeType === 'gate' ? 500 : 600
+    ctx.font = `${fontWeight} ${labelSize}px 'Inter', system-ui, sans-serif`
     ctx.textAlign = 'left'
     ctx.textBaseline = 'middle'
     ctx.fillStyle = labelColor
@@ -839,16 +845,14 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     const maxLines = n.nodeType === 'bottleneck' ? 3 : n.nodeType === 'feedback' ? 3 : 2
     const lines = wrapText(ctx, n.label, textMaxW)
     const clippedLines = lines.slice(0, maxLines)
-    const lineH = scaledLabelSize * 1.35
+    const lineH = labelSize * 1.35
     const hasSub = !!(n.sub && n.nodeType !== 'bottleneck' && n.nodeType !== 'feedback')
     const subSize = n.nodeType === 'ip' ? 9 : 8.5
-    const scaledSubSize = Math.max(subSize * 0.85, subSize / globalScale)
-    const totalTextH = clippedLines.length * lineH + (hasSub ? scaledSubSize * 1.3 + 2 : 0)
+    const totalTextH = clippedLines.length * lineH + (hasSub ? subSize * 1.3 + 2 : 0)
     let textY = n.y! - totalTextH / 2 + lineH / 2
 
     clippedLines.forEach((line, i) => {
       if (i === maxLines - 1 && lines.length > maxLines) {
-        // Truncate last line with ellipsis
         let truncated = line
         while (ctx.measureText(truncated + '…').width > textMaxW && truncated.length > 0) {
           truncated = truncated.slice(0, -1)
@@ -862,15 +866,17 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
 
     // Sub-label
     if (hasSub && n.sub) {
-      ctx.font = `400 ${scaledSubSize}px 'Inter', system-ui, sans-serif`
+      ctx.font = `400 ${subSize}px 'Inter', system-ui, sans-serif`
       ctx.fillStyle = COLORS.textMuted
       ctx.globalAlpha = alpha * 0.85
       const subLines = wrapText(ctx, n.sub, textMaxW).slice(0, 2)
       subLines.forEach(line => {
         ctx.fillText(line, textX, textY)
-        textY += scaledSubSize * 1.3
+        textY += subSize * 1.3
       })
     }
+
+    ctx.restore() // restore clipping
 
     ctx.restore()
   }, [])
@@ -974,6 +980,15 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
 
   return (
     <div style={isFullPage ? { width: '100%', height: '100%', display: 'flex', flexDirection: 'column' } : { marginBottom: 48 }}>
+      <style>{`
+        .dep-graph-tooltip {
+          animation: depGraphTtFade 0.2s ease;
+        }
+        @keyframes depGraphTtFade {
+          from { opacity: 0; transform: translateY(4px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
       {/* IP header — hidden when used full-page (parent provides header) */}
       {!isFullPage && (
         <div className="flex items-baseline gap-3.5 mb-3.5">
@@ -1144,7 +1159,6 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
             x={tooltipState.x}
             y={tooltipState.y}
             config={config}
-            containerRef={containerRef}
           />
         )}
       </div>
