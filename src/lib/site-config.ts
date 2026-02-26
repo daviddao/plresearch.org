@@ -43,6 +43,6 @@ export const mainNav: NavItem[] = [
 export const footerNav: NavItem[] = [
   { name: 'About', url: '/about/' },
   { name: 'Team', url: '/authors/' },
-  { name: 'Research', url: '/research/' },
+  { name: 'Insights', url: '/insights/' },
   { name: 'Blog', url: '/blog/' },
 ]
