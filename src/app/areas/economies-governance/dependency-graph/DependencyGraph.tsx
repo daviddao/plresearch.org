@@ -22,48 +22,58 @@ const COLORS = {
   tooltipBg: '#FFFFFF',
   tooltipBorder: '#E5E7EB',
   tooltipShadow: 'rgba(0,0,0,0.08)',
+  feedback: '#0D9488',
 }
 
 // --- Types ---
-type TooltipEntry = {
+export type TooltipEntry = {
   title: string
   body: string
   context: string
 }
 
-type BottleneckConfig = {
+export type BottleneckConfig = {
   id: string
   label: string
 }
 
-type GateConfig = {
+export type GateConfig = {
   id: string
   label: string
+  quarter: string
 }
 
-type StrandConfig = {
+export type StrandConfig = {
   id: string
   label: string
   sub: string
 }
 
-type InterventionConfig = {
+export type InterventionConfig = {
   id: string
   label: string
   sub: string
   strands: string[]
 }
 
-type IPConfig = {
+export type FeedbackLoop = {
+  id: string
+  from: string   // node id (strand or intervention)
+  to: string     // node id (bottleneck, gate, or strand)
+  label: string  // short label like 'Evidence compounds'
+}
+
+export type IPConfig = {
   id: string
   label: string
   sub: string
   color: string
   num: string
   bottlenecks: BottleneckConfig[]
-  gate: GateConfig
+  gates: GateConfig[]
   strands: StrandConfig[]
   interventions: InterventionConfig[]
+  feedbackLoops?: FeedbackLoop[]
 }
 
 type NodePosition = {
@@ -74,6 +84,7 @@ type NodePosition = {
 }
 
 type BottleneckNode = BottleneckConfig & NodePosition
+type GateNode = GateConfig & NodePosition
 type StrandNode = StrandConfig & NodePosition
 type InterventionNode = InterventionConfig & NodePosition
 
@@ -139,7 +150,7 @@ const tooltipData: Record<string, TooltipEntry> = {
   i8: { title: 'Co-Funding Partners', body: 'EF, Octant, Edge City, Ma Earth. Target: $1.50–2x per FA2 dollar.', context: 'If co-funding fails — concentrate on 2 IPs (Climate + PGF). Secure BEFORE deploying grants.' },
 }
 
-const ipConfigs: IPConfig[] = [
+export const ipConfigs: IPConfig[] = [
   {
     id: 'ip1', label: 'Sovereign Digital Public Infrastructure', sub: 'Nation-state runs core systems on crypto-rails with measurable advantage', color: COLORS.ip1, num: '01',
     bottlenecks: [
@@ -148,7 +159,7 @@ const ipConfigs: IPConfig[] = [
       { id: 'b1c', label: 'Political champion fragility — Bhutan interest may not survive government changes' },
       { id: 'b1d', label: 'Pilot-to-production gap — dozens of Digital Public Infrastructure pilots went nowhere [Shared Blocker]' },
     ],
-    gate: { id: 'g1', label: '1,000+ real users on open infrastructure for 30+ continuous days' },
+    gates: [{ id: 'g1', label: '1,000+ real users on open infrastructure for 30+ continuous days', quarter: 'Q4' }],
     strands: [
       { id: 's1a', label: 'Prize 1: Sovereign Stack', sub: '3–5 competing teams with proving grounds' },
       { id: 's1b', label: 'Bhutan Deep Engagement', sub: 'Map infra, identify pilot, formal agreement' },
@@ -170,7 +181,7 @@ const ipConfigs: IPConfig[] = [
       { id: 'b2c', label: 'Mechanism attack surface at $100M+ — collusion, sybil, strategic manipulation' },
       { id: 'b2d', label: 'Perpetual grant dependency — new mechanisms may not fix underlying unit economics' },
     ],
-    gate: { id: 'g2', label: 'AI evaluation outperforms human committees on 12-month outcomes' },
+    gates: [{ id: 'g2', label: 'AI evaluation outperforms human committees on 12-month outcomes', quarter: 'Q4' }],
     strands: [
       { id: 's2a', label: 'AI4PG Research Coalition', sub: 'Benchmark AI vs. human on 10 historical rounds' },
       { id: 's2b', label: 'Funding Experiments', sub: 'Live experimentation at PL ecosystem events' },
@@ -194,7 +205,7 @@ const ipConfigs: IPConfig[] = [
       { id: 'b3c', label: 'Crypto component unproven — Pol.is & QV work without blockchain' },
       { id: 'b3d', label: 'No sovereign-grade identity infrastructure exists [Shared Blocker]' },
     ],
-    gate: { id: 'g3', label: '50%+ participation in a 500+ person community for a real decision' },
+    gates: [{ id: 'g3', label: '50%+ participation in a 500+ person community for a real decision', quarter: 'Q4' }],
     strands: [
       { id: 's3a', label: 'Governance Observatory', sub: 'Pre-registered metrics, cross-mechanism comparison' },
       { id: 's3b', label: 'Governance Tooling Grants', sub: 'Deliberation-first, offline-capable, accessible' },
@@ -216,7 +227,7 @@ const ipConfigs: IPConfig[] = [
       { id: 'b4c', label: 'AI verification may not meet institutional fiduciary evidentiary standards' },
       { id: 'b4d', label: 'Verra / Gold Standard have regulatory moats & institutional lock-in' },
     ],
-    gate: { id: 'g4', label: 'Verification outperforms legacy MRV on accuracy at lower cost' },
+    gates: [{ id: 'g4', label: 'Verification outperforms legacy MRV on accuracy at lower cost', quarter: 'Q4' }],
     strands: [
       { id: 's4a', label: 'Climate MRV Grants', sub: 'IoT, satellite, audio, community, hybrid' },
       { id: 's4b', label: 'Network Coordination', sub: 'DePIN Summit, regional proving grounds' },
@@ -275,9 +286,10 @@ function Tooltip({ data: td, x, y, color, containerRef }: {
 }
 
 // --- Single IP Figure ---
-function IPFigure({ config }: { config: IPConfig }) {
+export function IPFigure({ config }: { config: IPConfig }) {
   const [hovered, setHovered] = useState<string | null>(null)
   const [tooltip, setTooltip] = useState<TooltipState>(null)
+  const [feedbackTooltip, setFeedbackTooltip] = useState<{ label: string; x: number; y: number } | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleTooltip = useCallback((id: string | null, cx: number, cy: number, color: string) => {
@@ -303,27 +315,41 @@ function IPFigure({ config }: { config: IPConfig }) {
   const bnCount = config.bottlenecks.length
   const strandCount = config.strands.length
   const intCount = config.interventions.length
+  const gateCount = config.gates.length
   const BN_GAP = 64
   const STRAND_GAP = 60
   const INT_GAP = 56
+  const GATE_GAP = 64
+
+  // Extra bottom padding for feedback loops
+  const hasFeedback = !!(config.feedbackLoops && config.feedbackLoops.length > 0)
+  const FEEDBACK_EXTRA = hasFeedback ? 60 : 0
+
+  const gateColH = gateCount * NH.gate + (gateCount - 1) * (GATE_GAP - NH.gate)
 
   const contentH = Math.max(
     NH.ip,
-    bnCount * NH.bn + (bnCount - 1) * (BN_GAP - NH.bn),
-    NH.gate,
-    strandCount * NH.strand + (strandCount - 1) * (STRAND_GAP - NH.strand),
-    intCount * NH.int + (intCount - 1) * (INT_GAP - NH.int),
+    bnCount * BN_GAP - (BN_GAP - NH.bn),
+    gateColH,
+    strandCount * STRAND_GAP - (STRAND_GAP - NH.strand),
+    intCount * INT_GAP - (INT_GAP - NH.int),
   )
-  const H = PAD.top + contentH + PAD.bottom
+  const H = PAD.top + contentH + PAD.bottom + FEEDBACK_EXTRA
   const midY = PAD.top + contentH / 2
 
   const ipNode: NodePosition = { x: COL.ip, y: midY - NH.ip / 2, w: NW.ip, h: NH.ip }
-  const gateNode: NodePosition = { x: COL.gate, y: midY - NH.gate / 2, w: NW.gate, h: NH.gate }
 
   const bnNodes: BottleneckNode[] = config.bottlenecks.map((b, i) => {
     const totalH = bnCount * BN_GAP - (BN_GAP - NH.bn)
     const startY = midY - totalH / 2
     return { ...b, x: COL.bn, y: startY + i * BN_GAP, w: NW.bn, h: NH.bn }
+  })
+
+  // Multi-gate: stack vertically centered at midY
+  const gateNodes: GateNode[] = config.gates.map((g, i) => {
+    const totalH = gateColH
+    const startY = midY - totalH / 2
+    return { ...g, x: COL.gate, y: startY + i * GATE_GAP, w: NW.gate, h: NH.gate }
   })
 
   const strandNodes: StrandNode[] = config.strands.map((s, i) => {
@@ -338,14 +364,23 @@ function IPFigure({ config }: { config: IPConfig }) {
     return { ...item, x: COL.int, y: startY + i * INT_GAP, w: NW.int, h: NH.int }
   })
 
+  // Build a lookup map for all node positions (for feedback loops)
+  const nodePositionMap: Record<string, NodePosition> = {}
+  nodePositionMap[config.id] = ipNode
+  bnNodes.forEach(n => { nodePositionMap[n.id] = n })
+  gateNodes.forEach(n => { nodePositionMap[n.id] = n })
+  strandNodes.forEach(n => { nodePositionMap[n.id] = n })
+  intNodes.forEach(n => { nodePositionMap[n.id] = n })
+
   // Highlight logic
+  const allGateIds = config.gates.map(g => g.id)
   const getRelatedIds = (id: string | null): Set<string> | null => {
     if (!id) return null
     const s = new Set([id])
     s.add(config.id)
-    s.add(config.gate.id)
+    allGateIds.forEach(gid => s.add(gid))
     config.bottlenecks.forEach(b => s.add(b.id))
-    if (id === config.id || id === config.gate.id || config.bottlenecks.find(b => b.id === id)) {
+    if (id === config.id || allGateIds.includes(id) || config.bottlenecks.find(b => b.id === id)) {
       config.strands.forEach(st => s.add(st.id))
       config.interventions.forEach(iv => s.add(iv.id))
       return s
@@ -373,15 +408,26 @@ function IPFigure({ config }: { config: IPConfig }) {
   }
 
   const edges: Edge[] = []
+
+  // IP → bottlenecks
   bnNodes.forEach(b => {
     edges.push({ key: `ip-${b.id}`, d: curve(ipNode.x + ipNode.w, ipNode.y + ipNode.h / 2, b.x, b.y + b.h / 2), from: config.id, to: b.id })
   })
+
+  // Bottlenecks → ALL gates (fan)
   bnNodes.forEach(b => {
-    edges.push({ key: `${b.id}-gate`, d: curve(b.x + b.w, b.y + b.h / 2, gateNode.x, gateNode.y + gateNode.h / 2), from: b.id, to: config.gate.id })
+    gateNodes.forEach(g => {
+      edges.push({ key: `${b.id}-${g.id}`, d: curve(b.x + b.w, b.y + b.h / 2, g.x, g.y + g.h / 2), from: b.id, to: g.id })
+    })
   })
+
+  // Last gate → all strands
+  const lastGate = gateNodes[gateNodes.length - 1]
   strandNodes.forEach(s => {
-    edges.push({ key: `gate-${s.id}`, d: curve(gateNode.x + gateNode.w, gateNode.y + gateNode.h / 2, s.x, s.y + s.h / 2), from: config.gate.id, to: s.id })
+    edges.push({ key: `gate-${s.id}`, d: curve(lastGate.x + lastGate.w, lastGate.y + lastGate.h / 2, s.x, s.y + s.h / 2), from: lastGate.id, to: s.id })
   })
+
+  // Strands → interventions
   intNodes.forEach(item => {
     item.strands.forEach(sid => {
       const s = strandNodes.find(sn => sn.id === sid)
@@ -389,7 +435,19 @@ function IPFigure({ config }: { config: IPConfig }) {
     })
   })
 
-  const renderCard = (node: NodePosition, type: string, id: string, label: string, sub: string | null, cardColor: string) => {
+  // Feedback loop path: from source bottom-center, arc below graph, to target bottom-center
+  const feedbackArcPath = (fromNode: NodePosition, toNode: NodePosition, graphBottom: number): string => {
+    const fx = fromNode.x + fromNode.w / 2
+    const fy = fromNode.y + fromNode.h
+    const tx = toNode.x + toNode.w / 2
+    const ty = toNode.y + toNode.h
+    const arcDepth = graphBottom + 30
+    return `M${fx},${fy} C${fx},${arcDepth} ${tx},${arcDepth} ${tx},${ty}`
+  }
+
+  const graphBottom = PAD.top + contentH
+
+  const renderCard = (node: NodePosition, type: string, id: string, label: string, sub: string | null, cardColor: string, quarterLabel?: string) => {
     const hl = isHL(id)
     const op = hl === null ? 1 : hl ? 1 : 0.08
     const isGate = type === 'gate'
@@ -425,7 +483,20 @@ function IPFigure({ config }: { config: IPConfig }) {
           </g>
         )}
         {isInt && <circle cx={node.x + 13} cy={node.y + node.h / 2} r={3} fill={COLORS.cross} opacity={0.2} stroke={COLORS.cross} strokeWidth={0.8} />}
-        <foreignObject x={node.x + leftPad} y={node.y} width={node.w - leftPad - 8} height={node.h}>
+        {/* Quarter superscript for gate nodes */}
+        {isGate && quarterLabel && (
+          <text
+            x={node.x + node.w - 6}
+            y={node.y + 9}
+            textAnchor="end"
+            fontSize={8}
+            fontWeight={600}
+            fill={COLORS.gate}
+            opacity={0.6}
+            letterSpacing={0.5}
+          >{quarterLabel}</text>
+        )}
+        <foreignObject x={node.x + leftPad} y={node.y} width={node.w - leftPad - (isGate && quarterLabel ? 28 : 8)} height={node.h}>
           <div style={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '3px 0' }}>
             <div style={{
               fontSize: isIp ? 14.5 : isBn ? 10.5 : isGate ? 11 : isInt ? 12 : 12.5,
@@ -472,7 +543,7 @@ function IPFigure({ config }: { config: IPConfig }) {
           {[
             { label: 'Inflection Point', w: NW.ip + GAP },
             { label: 'Bottlenecks', w: NW.bn + GAP },
-            { label: 'Q4 Gate', w: NW.gate + GAP },
+            { label: gateCount > 1 ? 'Gates' : 'Q4 Gate', w: NW.gate + GAP },
             { label: 'Program Strands', w: NW.strand + GAP },
             { label: 'Interventions', w: NW.int },
           ].map((col, i) => (
@@ -492,6 +563,13 @@ function IPFigure({ config }: { config: IPConfig }) {
           overflow: 'visible', position: 'relative', borderRadius: '0 0 8px 8px',
         }}>
           <svg width={W} height={H} style={{ display: 'block' }}>
+            {/* Arrowhead marker for feedback loops */}
+            <defs>
+              <marker id={`feedback-arrow-${config.id}`} markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <path d="M0,0 L0,8 L8,4 z" fill={COLORS.feedback} opacity={0.5} />
+              </marker>
+            </defs>
+
             {edges.map(e => {
               const hl = edgeActive(e.from, e.to)
               const isBnEdge = config.bottlenecks.some(b => b.id === e.from || b.id === e.to)
@@ -504,12 +582,56 @@ function IPFigure({ config }: { config: IPConfig }) {
                   style={{ transition: 'all 0.3s ease' }} />
               )
             })}
+
+            {/* Feedback loop edges */}
+            {hasFeedback && config.feedbackLoops!.map(fl => {
+              const fromNode = nodePositionMap[fl.from]
+              const toNode = nodePositionMap[fl.to]
+              if (!fromNode || !toNode) return null
+              const d = feedbackArcPath(fromNode, toNode, graphBottom)
+              return (
+                <path
+                  key={`fl-${fl.id}`}
+                  d={d}
+                  fill="none"
+                  stroke={COLORS.feedback}
+                  strokeWidth={1.2}
+                  strokeDasharray="5,4"
+                  opacity={0.3}
+                  markerEnd={`url(#feedback-arrow-${config.id})`}
+                  style={{ cursor: 'pointer' }}
+                  onMouseEnter={(e) => setFeedbackTooltip({ label: fl.label, x: e.clientX, y: e.clientY })}
+                  onMouseMove={(e) => setFeedbackTooltip({ label: fl.label, x: e.clientX, y: e.clientY })}
+                  onMouseLeave={() => setFeedbackTooltip(null)}
+                />
+              )
+            })}
+
             {renderCard(ipNode, 'ip', config.id, config.label, config.sub, config.color)}
             {bnNodes.map(b => renderCard(b, 'bn', b.id, b.label, null, COLORS.bn))}
-            {renderCard(gateNode, 'gate', config.gate.id, config.gate.label, null, COLORS.gate)}
+            {gateNodes.map(g => renderCard(g, 'gate', g.id, g.label, null, COLORS.gate, g.quarter))}
             {strandNodes.map(s => renderCard(s, 'strand', s.id, s.label, s.sub, config.color))}
             {intNodes.map(item => renderCard(item, 'int', item.id, item.label, item.sub, COLORS.cross))}
           </svg>
+
+          {/* Feedback loop tooltip */}
+          {feedbackTooltip && containerRef.current && (() => {
+            const ct = containerRef.current!.getBoundingClientRect()
+            const tx = feedbackTooltip.x - ct.left + 14
+            const ty = feedbackTooltip.y - ct.top - 36
+            return (
+              <div style={{
+                position: 'absolute', left: Math.min(tx, W - 200), top: Math.max(ty, 8),
+                background: COLORS.tooltipBg, border: `1px solid ${COLORS.tooltipBorder}`,
+                boxShadow: `0 4px 16px ${COLORS.tooltipShadow}`,
+                borderRadius: 6, padding: '6px 10px', zIndex: 101, pointerEvents: 'none',
+                fontSize: 11, color: COLORS.feedback, fontStyle: 'italic', whiteSpace: 'nowrap',
+              }}>
+                {feedbackTooltip.label}
+              </div>
+            )
+          })()}
+
           {tooltip && tooltip.data && (
             <Tooltip data={tooltip.data} x={tooltip.x} y={tooltip.y} color={tooltip.color} containerRef={containerRef} />
           )}
@@ -521,6 +643,7 @@ function IPFigure({ config }: { config: IPConfig }) {
             { color: COLORS.bn, label: 'Bottleneck', dash: true },
             { color: COLORS.gate, label: 'Go/No-Go', dash: true },
             { color: COLORS.cross, label: 'Cross-cutting', dash: false },
+            ...(hasFeedback ? [{ color: COLORS.feedback, label: 'Feedback loop', dash: true }] : []),
           ].map((l, i) => (
             <div key={i} className="flex items-center gap-1.5">
               <div style={{
