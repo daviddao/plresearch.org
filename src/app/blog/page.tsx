@@ -15,7 +15,7 @@ export default function BlogPage() {
           Blog
         </h1>
         <p className="relative z-10 text-gray-600 leading-relaxed max-w-xl">
-          Updates, insights, and reflections from the Protocol Labs R&D team.
+          Updates, insights, and reflections from the PL R&D team.
         </p>
       </div>
 

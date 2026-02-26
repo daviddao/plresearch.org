@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
         destination: '/areas/economies-governance/',
         permanent: true,
       },
+      {
+        source: '/research/:path*',
+        destination: '/insights/:path*',
+        permanent: true,
+      },
     ]
   },
 }

@@ -17,10 +17,17 @@ export type NavItem = {
 }
 
 export const mainNav: NavItem[] = [
-  { name: 'About', url: '/about/' },
+  {
+    name: 'About us',
+    url: '#',
+    children: [
+      { name: 'About us', url: '/about/' },
+      { name: 'Protocol Labs', url: 'https://protocol.ai' },
+    ],
+  },
   {
     name: 'Focus Areas',
-    url: '/areas/',
+    url: '#',
     children: [
       { name: 'Digital Human Rights', url: '/areas/digital-human-rights/' },
       { name: 'Economies & Governance', url: '/areas/economies-governance/' },
@@ -28,15 +35,7 @@ export const mainNav: NavItem[] = [
       { name: 'Neurotech', url: '/areas/neurotech/' },
     ],
   },
-  {
-    name: 'Research',
-    url: '/research/',
-    children: [
-      { name: 'Talks', url: '/talks/' },
-      { name: 'Publications', url: '/publications/' },
-      { name: 'Tutorials', url: '/tutorials/' },
-    ],
-  },
+  { name: 'Insights', url: '/insights/' },
   { name: 'Team', url: '/authors/' },
   { name: 'Blog', url: '/blog/' },
 ]
