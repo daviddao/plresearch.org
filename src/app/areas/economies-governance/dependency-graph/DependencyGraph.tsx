@@ -548,8 +548,8 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
 
   // Apply forces based on layout mode
   useEffect(() => {
-    if (!graphRef.current) return
     const fg = graphRef.current
+    if (!fg || typeof fg.d3Force !== 'function') return
 
     // Clear custom forces from previous mode
     const clearCustomForces = () => {
@@ -677,9 +677,13 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
       )
     }
 
-    fg.d3AlphaDecay(0.02)
-    fg.d3VelocityDecay(0.3)
-    fg.d3ReheatSimulation()
+    if (typeof fg.d3AlphaDecay === 'function') {
+      fg.d3AlphaDecay(0.02)
+      fg.d3VelocityDecay(0.3)
+    }
+    if (typeof fg.d3ReheatSimulation === 'function') {
+      fg.d3ReheatSimulation()
+    }
 
     // Auto zoom-to-fit after layout settles
     const timer = setTimeout(() => {
