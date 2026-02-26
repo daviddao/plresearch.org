@@ -713,9 +713,16 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
   const bootstrapped = useRef(false)
   useEffect(() => {
     if (bootstrapped.current || !ForceGraph2D || !graphData.nodes.length) return
-    bootstrapped.current = true
-    const timer = setTimeout(() => setActiveLayout(userLayout), 100)
-    return () => clearTimeout(timer)
+    // Poll until graph ref is mounted and simulation is running
+    const poll = setInterval(() => {
+      const fg = graphRef.current
+      if (!fg || typeof fg.d3Force !== 'function') return
+      clearInterval(poll)
+      bootstrapped.current = true
+      // Let force run briefly for good initial positions, then switch
+      setTimeout(() => setActiveLayout(userLayout), 120)
+    }, 20)
+    return () => clearInterval(poll)
   }, [ForceGraph2D, graphData.nodes.length, userLayout])
 
 
