@@ -310,6 +310,27 @@ function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: numbe
   ctx.closePath()
 }
 
+
+// Node type display labels
+const NODE_TYPE_LABELS: Record<NodeType, string> = {
+  ip: 'Inflection Point',
+  bottleneck: 'Bottleneck',
+  gate: 'Checkpoint',
+  strand: 'Program Strand',
+  intervention: 'Intervention',
+  feedback: 'Reinforcing Loop',
+}
+
+// Color for a node type
+function nodeColor(node: GraphNode, ipColor: string): string {
+  if (node.nodeType === 'ip') return ipColor
+  if (node.nodeType === 'bottleneck') return COLORS.bn
+  if (node.nodeType === 'gate') return COLORS.gate
+  if (node.nodeType === 'intervention') return COLORS.cross
+  if (node.nodeType === 'feedback') return COLORS.feedback
+  return ipColor // strand
+}
+
 // --- Tooltip component ---
 function Tooltip({ node, x, y, config }: {
   node: GraphNode
@@ -372,14 +393,33 @@ function Tooltip({ node, x, y, config }: {
     )
   }
 
+
   // Standard tooltip
   const td = tooltipData[node.id]
-  if (!td) return null
   const color = node.nodeType === 'ip' ? config.color
     : node.nodeType === 'bottleneck' ? COLORS.bn
     : node.nodeType === 'gate' ? COLORS.gate
     : node.nodeType === 'intervention' ? COLORS.cross
+    : node.nodeType === 'strand' ? config.color
     : config.color
+  const typeLabel = NODE_TYPE_LABELS[node.nodeType]
+
+  // If no detailed tooltip data, show a minimal tooltip with type + label
+  if (!td) {
+    return (
+      <div ref={ref} className="dep-graph-tooltip" style={{
+        position: 'fixed', left: pos.x, top: pos.y, width: 280, zIndex: 100, pointerEvents: 'none',
+        background: COLORS.tooltipBg, border: `1px solid ${COLORS.tooltipBorder}`,
+        boxShadow: `0 8px 32px ${COLORS.tooltipShadow}, 0 2px 8px ${COLORS.tooltipShadow}`,
+        borderRadius: 8, padding: '14px 16px',
+      }}>
+        <div style={{ width: 24, height: 2, background: color, opacity: 0.5, marginBottom: 10, borderRadius: 1 }} />
+        <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color, marginBottom: 6, opacity: 0.7 }}>{typeLabel}</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: COLORS.text, lineHeight: 1.3 }}>{node.label}</div>
+        {node.sub && <div style={{ fontSize: 12, color: COLORS.textMuted, lineHeight: 1.4, marginTop: 4 }}>{node.sub}</div>}
+      </div>
+    )
+  }
 
   return (
     <div ref={ref} className="dep-graph-tooltip" style={{
@@ -389,11 +429,155 @@ function Tooltip({ node, x, y, config }: {
       borderRadius: 8, padding: '18px 20px',
     }}>
       <div style={{ width: 24, height: 2, background: color, opacity: 0.5, marginBottom: 10, borderRadius: 1 }} />
+      <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color, marginBottom: 6, opacity: 0.7 }}>{typeLabel}</div>
       <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, lineHeight: 1.25, marginBottom: 8 }}>{td.title}</div>
       <div style={{ fontSize: 13, color: COLORS.textMuted, lineHeight: 1.55, marginBottom: 12 }}>{td.body}</div>
       <div style={{ borderTop: `1px solid ${COLORS.borderLight}`, paddingTop: 10 }}>
         <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color: COLORS.textDim, marginBottom: 5 }}>Context</div>
         <div style={{ fontSize: 12, color: COLORS.textDim, lineHeight: 1.45, fontStyle: 'italic' }}>{td.context}</div>
+      </div>
+    </div>
+  )
+}
+
+
+// --- Node detail sidebar ---
+function NodeDetailSidebar({ node, config, connectedNodes, onClose }: {
+  node: GraphNode
+  config: IPConfig
+  connectedNodes: GraphNode[]
+  onClose: () => void
+}) {
+  const color = nodeColor(node, config.color)
+  const typeLabel = NODE_TYPE_LABELS[node.nodeType]
+  const td = tooltipData[node.id]
+
+  // For feedback nodes, resolve from/to labels
+  const feedbackFromLabel = node.nodeType === 'feedback'
+    ? (config.strands.find(s => s.id === node.feedbackFrom)?.label
+      || config.interventions.find(i => i.id === node.feedbackFrom)?.label
+      || node.feedbackFrom)
+    : null
+  const feedbackToLabel = node.nodeType === 'feedback'
+    ? (config.bottlenecks.find(b => b.id === node.feedbackTo)?.label
+      || config.gates.find(g => g.id === node.feedbackTo)?.label
+      || config.strands.find(s => s.id === node.feedbackTo)?.label
+      || node.feedbackTo)
+    : null
+
+  // Group connected nodes by type
+  const grouped = new Map<NodeType, GraphNode[]>()
+  connectedNodes.forEach(cn => {
+    if (cn.id === node.id) return
+    const list = grouped.get(cn.nodeType) || []
+    list.push(cn)
+    grouped.set(cn.nodeType, list)
+  })
+
+  return (
+    <div className="dep-sidebar-enter" style={{
+      position: 'absolute', top: 0, right: 0, bottom: 0, width: 380,
+      background: 'rgba(255,255,255,0.97)', backdropFilter: 'blur(12px)',
+      borderLeft: `1px solid ${COLORS.border}`,
+      boxShadow: '-8px 0 32px rgba(0,0,0,0.06)',
+      zIndex: 60, display: 'flex', flexDirection: 'column',
+      overflow: 'hidden',
+    }}>
+      {/* Header */}
+      <div style={{ padding: '20px 24px 16px', borderBottom: `1px solid ${COLORS.borderLight}`, flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ width: 28, height: 2.5, background: color, opacity: 0.5, marginBottom: 12, borderRadius: 2 }} />
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', color, marginBottom: 8, opacity: 0.8 }}>{typeLabel}</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: COLORS.text, lineHeight: 1.3 }}>
+              {td?.title || node.label}
+            </div>
+            {node.sub && !td && (
+              <div style={{ fontSize: 13, color: COLORS.textMuted, marginTop: 4, lineHeight: 1.4 }}>{node.sub}</div>
+            )}
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'none', border: `1px solid ${COLORS.border}`, borderRadius: 6,
+              width: 28, height: 28, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: COLORS.textMuted, flexShrink: 0, marginTop: 2,
+            }}
+            aria-label="Close detail panel"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <line x1="3" y1="3" x2="11" y2="11" /><line x1="11" y1="3" x2="3" y2="11" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Scrollable body */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px 24px' }}>
+        {/* Description */}
+        {td && (
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 13, color: COLORS.textMuted, lineHeight: 1.65 }}>{td.body}</div>
+          </div>
+        )}
+
+        {/* Feedback loop chain */}
+        {node.nodeType === 'feedback' && (
+          <div style={{ marginBottom: 20, padding: '14px 16px', background: `${COLORS.feedback}08`, borderRadius: 8, border: `1px solid ${COLORS.feedback}20` }}>
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.2, textTransform: 'uppercase', color: COLORS.feedback, marginBottom: 10, opacity: 0.8 }}>Loop Flow</div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: COLORS.text, lineHeight: 1.35, fontStyle: 'italic', marginBottom: 12 }}>{node.feedbackLabel}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, color: COLORS.textMuted, flexWrap: 'wrap' }}>
+              <span style={{ background: `${COLORS.feedback}12`, border: `1px solid ${COLORS.feedback}30`, borderRadius: 4, padding: '3px 8px', color: COLORS.feedback, fontWeight: 500 }}>
+                {feedbackFromLabel}
+              </span>
+              <span style={{ color: COLORS.feedback, opacity: 0.5 }}>→</span>
+              <span style={{ background: `${COLORS.feedback}12`, border: `1px solid ${COLORS.feedback}30`, borderRadius: 4, padding: '3px 8px', color: COLORS.feedback, fontWeight: 500 }}>
+                Loop
+              </span>
+              <span style={{ color: COLORS.feedback, opacity: 0.5 }}>→</span>
+              <span style={{ background: `${COLORS.feedback}12`, border: `1px solid ${COLORS.feedback}30`, borderRadius: 4, padding: '3px 8px', color: COLORS.feedback, fontWeight: 500 }}>
+                {feedbackToLabel}
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Context */}
+        {td?.context && (
+          <div style={{ marginBottom: 24, padding: '14px 16px', background: '#F9FAFB', borderRadius: 8, border: `1px solid ${COLORS.borderLight}` }}>
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.2, textTransform: 'uppercase', color: COLORS.textDim, marginBottom: 8 }}>Context</div>
+            <div style={{ fontSize: 12.5, color: COLORS.textDim, lineHeight: 1.55, fontStyle: 'italic' }}>{td.context}</div>
+          </div>
+        )}
+
+        {/* Connected nodes */}
+        {grouped.size > 0 && (
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: 1.2, textTransform: 'uppercase', color: COLORS.textDim, marginBottom: 12 }}>Connected Nodes</div>
+            {Array.from(grouped.entries()).map(([type, nodes]) => (
+              <div key={type} style={{ marginBottom: 14 }}>
+                <div style={{ fontSize: 10, fontWeight: 500, color: COLORS.textMuted, marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.8 }}>
+                  {NODE_TYPE_LABELS[type]}
+                </div>
+                {nodes.map(cn => {
+                  const cnColor = nodeColor(cn, config.color)
+                  return (
+                    <div key={cn.id} style={{
+                      display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px',
+                      borderRadius: 6, marginBottom: 3,
+                      background: '#FAFAFA', border: `1px solid ${COLORS.borderLight}`,
+                    }}>
+                      <div style={{ width: 3, height: 16, borderRadius: 1.5, background: cnColor, opacity: 0.5, flexShrink: 0 }} />
+                      <div style={{ fontSize: 12, color: COLORS.text, lineHeight: 1.35, fontWeight: 500, minWidth: 0 }}>
+                        {cn.label}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
@@ -412,8 +596,7 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: propWidth || 800, height: propHeight || 560 })
 
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>('dag')
-  const bootstrapped = useRef(false)
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('force')
 
   // Lazy-load ForceGraph2D
   const [ForceGraph2D, setForceGraph2D] = useState<React.ComponentType<any> | null>(_ForceGraph2DModule)
@@ -448,6 +631,10 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
 
   // Tooltip state (needs React state for DOM rendering)
   const [tooltipState, setTooltipState] = useState<{ node: GraphNode; x: number; y: number } | null>(null)
+
+  // Selected node state (persistent click selection)
+  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null)
+  const selectedIdsRef = useRef<Set<string>>(new Set())
 
   // Build graph data from config
   const graphData: GraphData = useMemo(() => {
@@ -518,13 +705,16 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     return { nodes, links }
   }, [config])
 
-  // Bootstrap: start in DAG for good initial positions, then switch to force
+  // Bootstrap: run force layout briefly for good initial positions, then switch to radial
+  const bootstrapped = useRef(false)
   useEffect(() => {
     if (bootstrapped.current || !ForceGraph2D || !graphData.nodes.length) return
     bootstrapped.current = true
-    const timer = setTimeout(() => setLayoutMode('force'), 15)
+    const timer = setTimeout(() => setLayoutMode('radial'), 15)
     return () => clearTimeout(timer)
   }, [ForceGraph2D, graphData.nodes.length])
+
+
 
   // Build connected-ids set for a given node
   const buildConnectedIds = useCallback((nodeId: string): Set<string> => {
@@ -694,17 +884,20 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     const r = n.nodeType === 'ip' ? 6 : n.nodeType === 'intervention' ? 5 : 4
 
     const isHovered = hoveredNodeRef.current?.id === n.id
-    const hasHighlight = connectedIdsRef.current.size > 0
-    const isConnected = connectedIdsRef.current.has(n.id)
-    const alpha = hasHighlight ? (isConnected ? 1 : 0.15) : 1
+    const isSelected = selectedIdsRef.current.has(n.id)
+    const hasHoverHL = connectedIdsRef.current.size > 0
+    const hasSelectHL = selectedIdsRef.current.size > 0
+    const hasHighlight = hasHoverHL || hasSelectHL
+    const isConnected = (hasHoverHL && connectedIdsRef.current.has(n.id)) || (hasSelectHL && selectedIdsRef.current.has(n.id))
+    const alpha = hasHighlight ? (isConnected ? 1 : 0.12) : 1
 
     ctx.save()
     ctx.globalAlpha = alpha
 
-    // Glow on hover
-    if (isHovered) {
+    // Glow on hover or selection
+    if (isHovered || isSelected) {
       ctx.shadowColor = n.color
-      ctx.shadowBlur = 12
+      ctx.shadowBlur = isSelected ? 16 : 12
     }
 
     // Background fill
@@ -794,17 +987,6 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
       ctx.globalAlpha = alpha
     }
 
-    // Quarter label for gates (top-right)
-    if (n.nodeType === 'gate' && n.quarter) {
-      const fontSize = Math.max(6, 8 / globalScale)
-      ctx.font = `600 ${fontSize}px 'Inter', system-ui, sans-serif`
-      ctx.textAlign = 'right'
-      ctx.textBaseline = 'top'
-      ctx.fillStyle = COLORS.gate
-      ctx.globalAlpha = alpha * 0.6
-      ctx.fillText(n.quarter, x + w - 6, y + 5)
-      ctx.globalAlpha = alpha
-    }
 
     // Text rendering — clip to box boundaries
     ctx.save()
@@ -817,7 +999,7 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
       : n.nodeType === 'ip' ? 14
       : n.nodeType === 'feedback' ? 12
       : 12
-    const rightPad = (n.nodeType === 'gate' && n.quarter) ? 28 : 8
+    const rightPad = 8
     const textX = x + leftPad
     const textMaxW = w - leftPad - rightPad
 
@@ -889,16 +1071,18 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
 
     const isFeedback = link.linkType === 'feedback-in' || link.linkType === 'feedback-out'
 
-    // Determine edge alpha based on hover state
-    const hasHighlight = connectedIdsRef.current.size > 0
+    // Determine edge alpha based on hover/selection state
+    const hasHoverHL = connectedIdsRef.current.size > 0
+    const hasSelectHL = selectedIdsRef.current.size > 0
+    const hasHighlight = hasHoverHL || hasSelectHL
     const srcId = source.id
     const tgtId = target.id
-    const isConnected = hasHighlight
-      ? (connectedIdsRef.current.has(srcId) && connectedIdsRef.current.has(tgtId))
-      : false
+    const isHoverConn = hasHoverHL && connectedIdsRef.current.has(srcId) && connectedIdsRef.current.has(tgtId)
+    const isSelectConn = hasSelectHL && selectedIdsRef.current.has(srcId) && selectedIdsRef.current.has(tgtId)
+    const isConnected = isHoverConn || isSelectConn
 
     const edgeAlpha = hasHighlight
-      ? (isConnected ? (isFeedback ? 0.45 : 0.35) : 0.04)
+      ? (isConnected ? (isFeedback ? 0.55 : 0.45) : 0.03)
       : (isFeedback ? 0.25 : 0.1)
 
     ctx.save()
@@ -988,6 +1172,37 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     }
   }, [buildConnectedIds])
 
+  // Node click handler — persistent selection + sidebar
+  const handleNodeClick = useCallback((node: any) => {
+    const gn = node as GraphNode
+    // Toggle: clicking same node deselects
+    if (selectedNode?.id === gn.id) {
+      setSelectedNode(null)
+      selectedIdsRef.current = new Set()
+    } else {
+      setSelectedNode(gn)
+      selectedIdsRef.current = buildConnectedIds(gn.id)
+    }
+    if (graphRef.current?.refresh) graphRef.current.refresh()
+  }, [selectedNode, buildConnectedIds])
+
+  // Deselect on background click
+  const handleBackgroundClick = useCallback(() => {
+    hoveredNodeRef.current = null
+    connectedIdsRef.current = new Set()
+    setTooltipState(null)
+    setSelectedNode(null)
+    selectedIdsRef.current = new Set()
+    if (graphRef.current?.refresh) graphRef.current.refresh()
+  }, [])
+
+  // Get connected nodes for sidebar
+  const selectedConnectedNodes = useMemo(() => {
+    if (!selectedNode) return []
+    const ids = buildConnectedIds(selectedNode.id)
+    return graphData.nodes.filter(n => ids.has(n.id))
+  }, [selectedNode, graphData, buildConnectedIds])
+
   const hasFeedback = !!(config.feedbackLoops && config.feedbackLoops.length > 0)
 
   const isFullPage = !propHeight
@@ -1001,6 +1216,13 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
         @keyframes depGraphTtFade {
           from { opacity: 0; transform: translateY(4px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        .dep-sidebar-enter {
+          animation: depSidebarSlide 0.25s ease;
+        }
+        @keyframes depSidebarSlide {
+          from { opacity: 0; transform: translateX(20px); }
+          to { opacity: 1; transform: translateX(0); }
         }
       `}</style>
       {/* IP header — hidden when used full-page (parent provides header) */}
@@ -1035,6 +1257,7 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
           style={{
             width: '100%',
             height: '100%',
+            position: 'relative',
             background: COLORS.surface,
             border: isFullPage ? 'none' : `1px solid ${COLORS.border}`,
             borderRadius: isFullPage ? 0 : 8,
@@ -1061,12 +1284,8 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
               warmupTicks={50}
               // Interactions
               onNodeHover={handleNodeHover}
-              onBackgroundClick={() => {
-                hoveredNodeRef.current = null
-                connectedIdsRef.current = new Set()
-                setTooltipState(null)
-                if (graphRef.current?.refresh) graphRef.current.refresh()
-              }}
+              onNodeClick={handleNodeClick}
+              onBackgroundClick={handleBackgroundClick}
               // DAG mode
               dagMode={layoutMode === 'dag' ? 'lr' : undefined}
               dagLevelDistance={150}
@@ -1083,100 +1302,110 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
               Loading graph…
             </div>
           )}
-        </div>
 
-        {/* Layout toolbar - floats above canvas */}
-        <div style={{
-          position: 'fixed', top: 72, right: 16, zIndex: 50, pointerEvents: 'auto',
-          display: 'flex', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
-          borderRadius: 8, border: `1px solid ${COLORS.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-          overflow: 'hidden',
-        }}>
-          {([
-            { mode: 'force' as LayoutMode, label: 'Force', icon: (
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="4" cy="4" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="12" cy="3" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="13" cy="11" r="1.5" fill="currentColor" stroke="none" />
-                <line x1="4" y1="4" x2="8" y2="8" strokeOpacity="0.5" />
-                <line x1="12" y1="3" x2="8" y2="8" strokeOpacity="0.5" />
-                <line x1="3" y1="12" x2="8" y2="8" strokeOpacity="0.5" />
-                <line x1="13" y1="11" x2="8" y2="8" strokeOpacity="0.5" />
-              </svg>
-            )},
-            { mode: 'dag' as LayoutMode, label: 'DAG', icon: (
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="8" cy="2.5" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="4" cy="8" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="12" cy="8" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="2" cy="13.5" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="6" cy="13.5" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="12" cy="13.5" r="1.5" fill="currentColor" stroke="none" />
-                <line x1="8" y1="4" x2="4" y2="6.5" strokeOpacity="0.5" />
-                <line x1="8" y1="4" x2="12" y2="6.5" strokeOpacity="0.5" />
-                <line x1="4" y1="9.5" x2="2" y2="12" strokeOpacity="0.5" />
-                <line x1="4" y1="9.5" x2="6" y2="12" strokeOpacity="0.5" />
-                <line x1="12" y1="9.5" x2="12" y2="12" strokeOpacity="0.5" />
-              </svg>
-            )},
-            { mode: 'radial' as LayoutMode, label: 'Radial', icon: (
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="8" cy="8" r="2" fill="currentColor" stroke="none" />
-                <circle cx="8" cy="8" r="5" fill="none" strokeOpacity="0.5" />
-                <circle cx="8" cy="8" r="7.5" fill="none" strokeOpacity="0.3" />
-              </svg>
-            )},
-            { mode: 'cluster' as LayoutMode, label: 'Cluster', icon: (
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="3.5" cy="4" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="6" cy="6" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="3" cy="7" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="11" cy="10" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="13.5" cy="11.5" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="11" cy="13" r="1.5" fill="currentColor" stroke="none" />
-              </svg>
-            )},
-            { mode: 'spread' as LayoutMode, label: 'Spread', icon: (
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="2" cy="2" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="14" cy="3" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="3" cy="14" r="1.5" fill="currentColor" stroke="none" />
-                <circle cx="13" cy="13" r="1.5" fill="currentColor" stroke="none" />
-              </svg>
-            )},
-          ]).map((item, i) => (
-            <React.Fragment key={item.mode}>
-              {i > 0 && <div style={{ width: 1, background: COLORS.border }} />}
-              <button
-                onClick={() => setLayoutMode(item.mode)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: 5,
-                  padding: '6px 12px', border: 'none', cursor: 'pointer',
-                  fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap',
-                  transition: 'all 0.15s ease',
-                  background: layoutMode === item.mode ? config.color : 'transparent',
-                  color: layoutMode === item.mode ? '#FFFFFF' : COLORS.textMuted,
-                }}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </button>
-            </React.Fragment>
-          ))}
-        </div>
+          {/* Layout toolbar — top-left inside canvas */}
+          <div style={{
+            position: 'absolute', top: 12, left: 12, zIndex: 50, pointerEvents: 'auto',
+            display: 'flex', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)',
+            borderRadius: 8, border: `1px solid ${COLORS.border}`, boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+            overflow: 'hidden',
+          }}>
+            {([
+              { mode: 'radial' as LayoutMode, label: 'Radial', icon: (
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="8" cy="8" r="2" fill="currentColor" stroke="none" />
+                  <circle cx="8" cy="8" r="5" fill="none" strokeOpacity="0.5" />
+                  <circle cx="8" cy="8" r="7.5" fill="none" strokeOpacity="0.3" />
+                </svg>
+              )},
+              { mode: 'force' as LayoutMode, label: 'Force', icon: (
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="4" cy="4" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="12" cy="3" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="13" cy="11" r="1.5" fill="currentColor" stroke="none" />
+                  <line x1="4" y1="4" x2="8" y2="8" strokeOpacity="0.5" />
+                  <line x1="12" y1="3" x2="8" y2="8" strokeOpacity="0.5" />
+                  <line x1="3" y1="12" x2="8" y2="8" strokeOpacity="0.5" />
+                  <line x1="13" y1="11" x2="8" y2="8" strokeOpacity="0.5" />
+                </svg>
+              )},
+              { mode: 'dag' as LayoutMode, label: 'DAG', icon: (
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="8" cy="2.5" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="4" cy="8" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="12" cy="8" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="2" cy="13.5" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="6" cy="13.5" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="12" cy="13.5" r="1.5" fill="currentColor" stroke="none" />
+                  <line x1="8" y1="4" x2="4" y2="6.5" strokeOpacity="0.5" />
+                  <line x1="8" y1="4" x2="12" y2="6.5" strokeOpacity="0.5" />
+                  <line x1="4" y1="9.5" x2="2" y2="12" strokeOpacity="0.5" />
+                  <line x1="4" y1="9.5" x2="6" y2="12" strokeOpacity="0.5" />
+                  <line x1="12" y1="9.5" x2="12" y2="12" strokeOpacity="0.5" />
+                </svg>
+              )},
+              { mode: 'cluster' as LayoutMode, label: 'Cluster', icon: (
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="3.5" cy="4" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="6" cy="6" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="3" cy="7" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="11" cy="10" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="13.5" cy="11.5" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="11" cy="13" r="1.5" fill="currentColor" stroke="none" />
+                </svg>
+              )},
+              { mode: 'spread' as LayoutMode, label: 'Spread', icon: (
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <circle cx="2" cy="2" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="14" cy="3" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="3" cy="14" r="1.5" fill="currentColor" stroke="none" />
+                  <circle cx="13" cy="13" r="1.5" fill="currentColor" stroke="none" />
+                </svg>
+              )},
+            ]).map((item, i) => (
+              <React.Fragment key={item.mode}>
+                {i > 0 && <div style={{ width: 1, background: COLORS.border }} />}
+                <button
+                  onClick={() => setLayoutMode(item.mode)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 5,
+                    padding: '6px 12px', border: 'none', cursor: 'pointer',
+                    fontSize: 11, fontWeight: 500, whiteSpace: 'nowrap',
+                    transition: 'all 0.15s ease',
+                    background: layoutMode === item.mode ? config.color : 'transparent',
+                    color: layoutMode === item.mode ? '#FFFFFF' : COLORS.textMuted,
+                  }}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </button>
+              </React.Fragment>
+            ))}
+          </div>
 
-        {/* Tooltip - floats above canvas */}
-        {tooltipState && (
-          <Tooltip
-            node={tooltipState.node}
-            x={tooltipState.x}
-            y={tooltipState.y}
-            config={config}
-          />
-        )}
+          {/* Tooltip - floats above canvas */}
+          {tooltipState && !selectedNode && (
+            <Tooltip
+              node={tooltipState.node}
+              x={tooltipState.x}
+              y={tooltipState.y}
+              config={config}
+            />
+          )}
+
+          {/* Detail sidebar */}
+          {selectedNode && (
+            <NodeDetailSidebar
+              node={selectedNode}
+              config={config}
+              connectedNodes={selectedConnectedNodes}
+              onClose={handleBackgroundClick}
+            />
+          )}
+        </div>
       </div>
 
       {/* Legend — hidden in full-page mode */}
