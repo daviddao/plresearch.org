@@ -948,12 +948,24 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
     ctx.restore()
   }, [])
 
+  // Paint invisible hit area matching the node box dimensions
+  const paintNodeArea = useCallback((node: any, color: string, ctx: CanvasRenderingContext2D) => {
+    const n = node as GraphNode
+    const { w, h } = NODE_DIMS[n.nodeType]
+    const x = n.x! - w / 2
+    const y = n.y! - h / 2
+    ctx.fillStyle = color
+    ctx.fillRect(x, y, w, h)
+  }, [])
+
   // Node hover handler
-  const handleNodeHover = useCallback((node: any, prevNode: any, event?: MouseEvent) => {
+  const handleNodeHover = useCallback((node: any, prevNode: any) => {
     if (!node) {
       hoveredNodeRef.current = null
       connectedIdsRef.current = new Set()
       setTooltipState(null)
+      // Force repaint to clear edge highlights
+      if (graphRef.current?.refresh) graphRef.current.refresh()
       return
     }
     const gn = node as GraphNode
@@ -971,6 +983,8 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
           y: rect.top + screenPos.y,
         })
       }
+      // Force repaint to show edge highlights
+      if (graphRef.current.refresh) graphRef.current.refresh()
     }
   }, [buildConnectedIds])
 
@@ -1036,6 +1050,7 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
               // Node rendering
               nodeCanvasObject={paintNode}
               nodeCanvasObjectMode={REPLACE_MODE}
+              nodePointerAreaPaint={paintNodeArea}
               // Link rendering
               linkCanvasObject={paintLink}
               linkCanvasObjectMode={REPLACE_MODE}
@@ -1050,6 +1065,7 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
                 hoveredNodeRef.current = null
                 connectedIdsRef.current = new Set()
                 setTooltipState(null)
+                if (graphRef.current?.refresh) graphRef.current.refresh()
               }}
               // DAG mode
               dagMode={layoutMode === 'dag' ? 'lr' : undefined}
@@ -1057,7 +1073,7 @@ export function IPFigure({ config, width: propWidth, height: propHeight }: {
               onDagError={() => {}}
               // Background
               backgroundColor="transparent"
-              autoPauseRedraw={true}
+              autoPauseRedraw={false}
             />
           ) : (
             <div style={{
