@@ -61,6 +61,31 @@ export default async function OpportunityDetailPage({ params }: Props) {
             ))}
           </div>
         )}
+
+        {/* Dependency Graph link */}
+        <Link
+          href={`/areas/economies-governance/dependency-graph/${opp.id}`}
+          className="relative z-10 group inline-flex items-center gap-3 mt-8 px-5 py-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-white hover:border-blue/30 hover:shadow-md transition-all no-underline"
+        >
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="text-gray-400 group-hover:text-blue transition-colors shrink-0">
+            <circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.2" />
+            <circle cx="3.5" cy="5" r="1.5" stroke="currentColor" strokeWidth="1" />
+            <circle cx="14.5" cy="5" r="1.5" stroke="currentColor" strokeWidth="1" />
+            <circle cx="3.5" cy="14" r="1.5" stroke="currentColor" strokeWidth="1" />
+            <circle cx="14.5" cy="14" r="1.5" stroke="currentColor" strokeWidth="1" />
+            <line x1="5" y1="5.8" x2="7" y2="7.8" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
+            <line x1="13" y1="5.8" x2="11" y2="7.8" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
+            <line x1="5" y1="13" x2="7" y2="10.5" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
+            <line x1="13" y1="13" x2="11" y2="10.5" stroke="currentColor" strokeWidth="0.8" opacity="0.5" />
+          </svg>
+          <div>
+            <div className="text-sm font-medium text-black group-hover:text-blue transition-colors">Dependency Graph</div>
+            <div className="text-xs text-gray-400">Explore our knowledge graph</div>
+          </div>
+          <svg className="w-4 h-4 text-gray-300 group-hover:text-blue group-hover:translate-x-0.5 transition-all shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
       </div>
 
       {/* Inflection Point */}
