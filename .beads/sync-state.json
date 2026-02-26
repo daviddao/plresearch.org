@@ -1,0 +1,7 @@
+{
+  "last_failure": "2026-02-27T01:14:30.683878+08:00",
+  "failure_count": 3,
+  "backoff_until": "2026-02-27T01:16:30.683879+08:00",
+  "needs_manual_sync": true,
+  "failure_reason": "git pull failed: exit status 1\nfatal: couldn't find remote ref grants-and-graphs\n"
+}
