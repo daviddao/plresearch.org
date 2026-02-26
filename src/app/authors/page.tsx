@@ -1,54 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { authors } from '@/lib/content'
-import { GeoIllustration } from '@/components/GeoIllustration'
 
 const LEADS = ['juan-benet', 'molly-mackinlay', 'will-scott', 'sean-escola', 'david-dao', 'james-tunningley']
-const ADVISOR_ROLE_KEYWORD = 'advisor'
-
-// Placeholder advisors per focus area — replace with real data when available
-const FOCUS_AREA_ADVISORS: { area: string; advisors: { name: string; role: string; affiliation: string }[] }[] = [
-  {
-    area: 'Digital Human Rights',
-    advisors: [
-      { name: 'Placeholder Advisor', role: 'Professor of Cryptography', affiliation: 'MIT' },
-      { name: 'Placeholder Advisor', role: 'Security Researcher', affiliation: 'EFF' },
-      { name: 'Placeholder Advisor', role: 'Distributed Systems Lead', affiliation: 'Stanford' },
-    ],
-  },
-  {
-    area: 'Economies & Governance',
-    advisors: [
-      { name: 'Placeholder Advisor', role: 'Mechanism Design Researcher', affiliation: 'Harvard' },
-      { name: 'Placeholder Advisor', role: 'Cryptoeconomics Researcher', affiliation: 'Oxford' },
-      { name: 'Placeholder Advisor', role: 'Public Goods Theorist', affiliation: 'UCL' },
-    ],
-  },
-  {
-    area: 'AI & Robotics',
-    advisors: [
-      { name: 'Placeholder Advisor', role: 'AGI Safety Researcher', affiliation: 'DeepMind' },
-      { name: 'Placeholder Advisor', role: 'Robotics Lead', affiliation: 'CMU' },
-      { name: 'Placeholder Advisor', role: 'ML Systems Researcher', affiliation: 'Berkeley' },
-    ],
-  },
-  {
-    area: 'Neurotechnology',
-    advisors: [
-      { name: 'Placeholder Advisor', role: 'BCI Researcher', affiliation: 'Columbia University' },
-      { name: 'Placeholder Advisor', role: 'NeuroAI Lead', affiliation: 'Caltech' },
-      { name: 'Placeholder Advisor', role: 'Computational Neuroscientist', affiliation: 'NYU' },
-    ],
-  },
-]
 
 const leadership = LEADS.map(slug => authors.find(a => a.slug === slug)).filter(Boolean) as typeof authors
-const alumni = authors.filter(a =>
-  !LEADS.includes(a.slug) &&
-  !a.role?.toLowerCase().includes(ADVISOR_ROLE_KEYWORD)
-)
+const alumni = authors.filter(a => !LEADS.includes(a.slug))
 
 const TABS = [
   { id: 'leadership', label: 'Leadership' },
@@ -101,18 +60,6 @@ export default function AuthorsPage() {
             ))}
           </div>
 
-          {/* Advisors by focus area */}
-          <div className="border-t border-gray-200 pt-16">
-            <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">Advisors</p>
-            <p className="text-gray-600 text-base mb-12 max-w-xl">
-              External advisors supporting each focus area — bringing deep domain expertise from academia and industry.
-            </p>
-            <div className="space-y-16">
-              {FOCUS_AREA_ADVISORS.map(fa => (
-                <AdvisorCarousel key={fa.area} area={fa.area} advisors={fa.advisors} />
-              ))}
-            </div>
-          </div>
         </div>
       )}
 
@@ -129,72 +76,6 @@ export default function AuthorsPage() {
           </div>
         </div>
       )}
-    </div>
-  )
-}
-
-// ── Advisor carousel per focus area ─────────────────────────────────────────
-
-function AdvisorCarousel({ area, advisors }: { area: string; advisors: { name: string; role: string; affiliation: string }[] }) {
-  const scrollRef = useRef<HTMLDivElement>(null)
-
-  const scroll = (dir: 'left' | 'right') => {
-    if (!scrollRef.current) return
-    scrollRef.current.scrollBy({ left: dir === 'right' ? 280 : -280, behavior: 'smooth' })
-  }
-
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-base font-medium text-black">{area}</h3>
-        <div className="flex gap-2">
-          <button
-            onClick={() => scroll('left')}
-            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:border-blue hover:text-blue transition-colors"
-            aria-label="Scroll left"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button
-            onClick={() => scroll('right')}
-            className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 text-gray-400 hover:border-blue hover:text-blue transition-colors"
-            aria-label="Scroll right"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-      </div>
-      <div
-        ref={scrollRef}
-        className="flex gap-5 overflow-x-auto pb-4 scrollbar-hide"
-        style={{ scrollSnapType: 'x mandatory' }}
-      >
-        {advisors.map((advisor, i) => (
-          <div
-            key={i}
-            className="flex-none w-[220px] flex flex-col"
-            style={{ scrollSnapAlign: 'start' }}
-          >
-            {/* Animated geo placeholder */}
-            <div className="w-full aspect-square rounded-xl overflow-hidden mb-3">
-              <GeoIllustration
-                seed={`${area}-${advisor.name}-${i}`}
-                focusArea={area}
-                w={220}
-                h={220}
-                className="w-full h-full"
-              />
-            </div>
-            <div className="text-sm font-medium text-black leading-snug">{advisor.name}</div>
-            <div className="text-xs text-gray-500 mt-0.5">{advisor.role}</div>
-            <div className="text-xs text-blue mt-0.5">{advisor.affiliation}</div>
-          </div>
-        ))}
-      </div>
     </div>
   )
 }
