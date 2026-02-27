@@ -156,6 +156,53 @@ function buildBlog() {
   return items
 }
 
+// Dependency Graph
+function buildDependencyGraph() {
+  const dir = path.join(CONTENT_DIR, 'areas', 'economies-governance', 'dependency-graph')
+  if (!fs.existsSync(dir)) return {}
+
+  const result = {}
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md') && !f.startsWith('_'))
+
+  for (const file of files) {
+    const slug = file.replace(/\.md$/, '')
+    const raw = fs.readFileSync(path.join(dir, file), 'utf-8')
+    const { data } = matter(raw)
+
+    const tooltips = {}
+
+    // IP-level tooltip
+    if (data.tooltip) {
+      tooltips[data.id] = data.tooltip
+    }
+
+    // Helper: strip tooltip from a node and collect it
+    function stripTooltip(node) {
+      if (!node) return node
+      const { tooltip, ...rest } = node
+      if (tooltip) tooltips[node.id] = tooltip
+      return rest
+    }
+
+    const config = {
+      id: data.id,
+      label: data.label || '',
+      sub: data.sub || '',
+      color: data.color || '',
+      num: data.num || '',
+      bottlenecks: (data.bottlenecks || []).map(stripTooltip),
+      gates: (data.gates || []).map(stripTooltip),
+      strands: (data.strands || []).map(stripTooltip),
+      interventions: (data.interventions || []).map(stripTooltip),
+      feedbackLoops: data.feedbackLoops || [],
+    }
+
+    result[slug] = { config, tooltips }
+  }
+
+  return result
+}
+
 // Areas
 function buildAreas() {
   const items = readDir('areas').map((a) => ({
@@ -305,6 +352,7 @@ const outreach = buildOutreach()
 const blog = buildBlog()
 const areas = buildAreas()
 const sections = buildSections()
+const depGraph = buildDependencyGraph()
 
 fs.mkdirSync(OUT_DIR, { recursive: true })
 
@@ -316,6 +364,7 @@ fs.writeFileSync(path.join(OUT_DIR, 'outreach.json'), JSON.stringify(outreach, n
 fs.writeFileSync(path.join(OUT_DIR, 'blog.json'), JSON.stringify(blog, null, 2))
 fs.writeFileSync(path.join(OUT_DIR, 'areas.json'), JSON.stringify(areas, null, 2))
 fs.writeFileSync(path.join(OUT_DIR, 'sections.json'), JSON.stringify(sections, null, 2))
+fs.writeFileSync(path.join(OUT_DIR, 'dependency-graph.json'), JSON.stringify(depGraph, null, 2))
 
 // Static files
 fs.writeFileSync(path.join(PUBLIC_DIR, 'feed.xml'), buildFeed(publications, talks))
@@ -328,4 +377,5 @@ console.log(`  ${tutorials.length} tutorials`)
 console.log(`  ${outreach.length} outreach`)
 console.log(`  ${blog.length} blog posts`)
 console.log(`  ${areas.length} areas`)
+console.log(`  ${Object.keys(depGraph).length} dependency graphs`)
 console.log('Done.')
