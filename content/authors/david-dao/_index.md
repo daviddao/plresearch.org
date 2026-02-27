@@ -7,7 +7,7 @@ authors:
   - david-dao
 
 # Roles/positions
-role: Economies & Governance Lead
+role: Economies & Governance Co-Lead
 
 groups:
   - 'Protocol Labs'

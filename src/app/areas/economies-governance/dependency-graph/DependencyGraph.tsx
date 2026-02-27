@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import Link from 'next/link'
 import { forceX, forceY, forceCollide, forceRadial } from 'd3-force'
+import { allTooltips, expandedConfigs } from './data'
 
 // --- Color palette adapted to site design language ---
 const COLORS = {
@@ -133,148 +134,6 @@ const NODE_DIMS: Record<NodeType, { w: number; h: number }> = {
   feedback: { w: 210, h: 48 },
 }
 
-// --- Tooltip content ---
-const tooltipData: Record<string, TooltipEntry> = {
-  ip1: { title: 'Inflection Point 1: Sovereign Digital Public Infrastructure', body: 'A nation-state successfully runs core digital systems — identity, payments, registries — on open, verifiable crypto-rails and gains measurable advantages over centralized incumbents.', context: 'Proving grounds: Bhutan (780K pop.), Argentina/Crecimiento (10K+ builders), Edge City villages. Multilaterals have moved from skepticism to active engagement.' },
-  ip2: { title: 'Inflection Point 2: Public Goods Funding', body: 'AI and crypto-native funding mechanisms allocate capital at billion-dollar scale with institutional legitimacy — shifting public goods from discretionary philanthropy to durable markets.', context: 'QF, retroactive funding, and hypercerts have PMF at $1–10M. The AI4PG coalition (EF + Octant + Hypercerts) is assembling.' },
-  ip3: { title: 'Inflection Point 3: Governance & Democracy', body: 'Crypto-native governance adopted because existing institutions can no longer credibly claim authority without it. Cities allocate budgets via crypto; governance tooling enters reform.', context: 'Edge City: 4 villages, 11K+ residents. Deliberative tools proven in civic contexts. Democratic institutions face global legitimacy crisis.' },
-  ip4: { title: 'Inflection Point 4: Climate Infrastructure', body: 'A network of DePIN-enabled climate projects collectively demonstrates coordination at scale, attracting institutional capital through verified climate assets on-chain.', context: 'Glow (120+ solar farms), GainForest (200K+ audiominutes, 50+ communities), Devonian (mobile biochar). Voluntary carbon market ($2B/yr) widely recognized as broken.' },
-  b1a: { title: 'Centralized Infra May Win', body: "Can decentralized infrastructure actually outperform centralized alternatives on metrics sovereigns care about? India's UPI and Brazil's PIX succeeded precisely because they were centralized enough for governments to mandate adoption.", context: 'This is the core testable hypothesis. The Sovereign Stack Challenge (3–5 competing teams) is designed to produce evidence by Q4. If open infra can\'t match centralized on uptime, throughput, and cost — the thesis needs revision, not abandonment.' },
-  b1b: { title: "'Sovereign-Grade' Undefined", body: "What does 'sovereign-grade' actually require? Uptime guarantees, security standards, accessibility requirements, disaster recovery — these specifications might be significantly harder than the crypto community appreciates.", context: 'The gap between a working demo and sovereign-grade production may be a chasm, not a step. Edge City prototypes help surface these requirements empirically rather than theoretically.' },
-  b1c: { title: 'Political Champion Fragility', body: "Is Bhutan's interest durable beyond individual champions? Sovereign engagement that depends on one minister or one monarch is fragile. Government changes could derail years of engagement overnight.", context: 'Risk Register R12: Maintain 2–3 parallel sovereign conversations (Uruguay, Estonia, Argentina sub-national). Fellowship cohort diversifies institutional access. Never concentrate in one jurisdiction.' },
-  b1d: { title: 'Pilot-to-Production Gap', body: 'Can pilots convert to production? The field has produced dozens of promising Digital Public Infrastructure pilots that went nowhere. We do not know whether this is a technology problem, a political problem, or a market problem.', context: 'Shared Blocker across all 4 IPs. The Q4 decision gate (1,000+ real users, 30+ continuous days) is deliberately set to test production viability, not just pilot feasibility.' },
-  b2a: { title: "AI Can't Yet Evaluate Impact", body: 'Can AI evaluate impact better than human committees? Current AI can summarize, classify, and pattern-match — but evaluating whether a public good created real value requires causal reasoning, counterfactual thinking, and domain expertise.', context: "The AI4PG benchmark study (AI retrospectively evaluates 10 historical PGF rounds vs. human evaluations vs. actual outcomes) is the foundational experiment. If AI doesn't correlate better — pivot to AI-augments-humans." },
-  b2b: { title: 'Institutions Want Control, Not Transparency', body: 'Does transparency actually attract institutional capital? Institutional funders say they want transparency and measurement. What they might actually want is control and brand association.', context: "The path to $B-scale PGF requires institutional capital. If institutions don't actually value what crypto-native mechanisms provide, the scaling thesis collapses regardless of mechanism quality." },
-  b2c: { title: 'Mechanisms Break at Scale', body: 'At what scale do PGF mechanisms break? QF works at $1–10M. At $100M+, the attack surface grows dramatically — collusion, sybil attacks, strategic manipulation. Do mechanisms scale gracefully or degrade?', context: "The AI4PG coalition's mechanism stress-testing strand addresses this directly. This is a formal mechanism design question requiring rigorous analysis, not optimistic extrapolation." },
-  b2d: { title: 'Perpetual Grant Dependency', body: 'Is the sustainability crisis solvable? Most public goods projects remain perpetually grant-dependent. New funding mechanisms might simply replace one form of dependency with another.', context: "Even a perfect allocation mechanism can't fix projects whose unit economics require perpetual subsidy. The structural economics of public goods production may be the real bottleneck." },
-  b3a: { title: "No Definition of 'Better Governance'", body: "Does 'better governance' have a clear definition? Faster decisions? More representative? More efficient allocation? Higher satisfaction? Different stakeholders want different things.", context: "The Governance Observatory addresses this by pre-registering metrics before each experiment — forcing explicit definition of what 'better' means in each context before measuring." },
-  b3b: { title: 'Pop-up to Permanent City Gap', body: 'Do pop-up city innovations transfer to permanent cities? A month-long village with self-selected tech-savvy residents is radically different from a permanent city with diverse, unselected populations and entrenched interests.', context: 'Risk Register R10: Deliberately test in non-tech communities (cooperatives, mutual aid groups, neighborhood associations). If transfer fails, critical to know early.' },
-  b3c: { title: 'Crypto Component May Add Nothing', body: "Is 'deliberative + crypto' actually better than 'deliberative alone'? Pol.is works without blockchain. Quadratic voting works without crypto. What specifically does the crypto component add beyond tamper-proof records?", context: 'The Deliberative + Crypto research strand (2–3 teams) tests this directly. The crypto component needs to earn its place through demonstrated advantage, not assumed superiority.' },
-  b3d: { title: 'Identity Infrastructure Gap', body: "Identity remains the blocker. Most governance innovations require identity infrastructure that doesn't exist at sovereign grade. Solving this through usage-based reputation is a hypothesis, not a proven approach.", context: 'Shared Blocker across all 4 IPs. Progress on identity for any IP accelerates all others. This is the highest-leverage cross-cutting challenge.' },
-  b4a: { title: 'Coordination Overhead vs. Advantage', body: 'Can decentralized coordination outperform centralized alternatives for physical infrastructure? Building solar farms and operating biochar furnaces are physical, operational challenges. Decentralization adds consensus and governance overhead.', context: 'The coordination advantage (global scale, community ownership, permissionless entry) is real but so is the coordination cost. Needs rigorous comparison against centralized operators, not assumption.' },
-  b4b: { title: "Projects Don't Actually Compose", body: "Do these projects actually compose? The 'network-of-networks' vision assumes solar + biodiversity + carbon data is more valuable together. But the markets are different — energy buyers, carbon buyers, and biodiversity buyers barely exist as unified demand.", context: 'Network Coordination strand and regional proving grounds test whether composed data commands a premium. If composition value is zero, the network thesis collapses to individual project support.' },
-  b4c: { title: 'AI Verification Does Not Equal Institutional Trust', body: "Is AI verification trustworthy enough for institutional capital? Institutional climate funds operate under fiduciary duty. 'An AI model says this solar farm generated X kWh' might not meet the evidentiary standard required.", context: "Prize 3 produces a benchmark, but institutional acceptance requires more than accuracy — it requires auditability, liability frameworks, and regulatory recognition that don't yet exist." },
-  b4d: { title: 'Registry Regulatory Moats', body: 'Can the carbon market be disrupted from outside existing registries? Verra and Gold Standard have regulatory relationships and institutional moats. Crypto-native verification might be technically superior but institutionally irrelevant.', context: 'Risk Register R11: Dual strategy — issue through legacy AND crypto channels simultaneously. Test whether crypto-verified credits trade at premium. If not, understand why before scaling.' },
-  g1: { title: 'Q4 Gate: Sovereign Services', body: 'Can any team demonstrate a core government service running on open infrastructure, serving 1,000+ real users, with performance parity vs. the status quo?', context: 'If YES — double down, seek formal sovereign pilot. If NO — diagnose bottleneck: technology, UX, political will, or market fit.' },
-  g2: { title: 'Q4 Gate: AI vs. Human Allocation', body: 'Does AI evaluation correlate with actual project outcomes better than human committee evaluations? Tested on 10 historical PGF rounds.', context: 'If YES — proceed with Prize 2 allocation. If NO — pivot: AI augments humans. Bottleneck may be data quality.' },
-  g3: { title: 'Q4 Gate: Governance Participation', body: 'Can any tooling achieve 50%+ participation in a community of 500+ people for a real decision with real stakes?', context: 'If YES — double down, begin city engagement. If NO — diagnose: UX? Incentives? Do people not want to participate?' },
-  g4: { title: 'Q4 Gate: Climate Verification', body: 'Does any verification approach outperform legacy MRV on accuracy at lower cost? Tested via open challenge with 20+ projects and independent ground truth.', context: 'If YES — award Prize 3, begin capital pathways. If NO — reassess whether centralized auditors are good enough.' },
-  s1a: { title: 'Prize 1: Sovereign Stack Challenge', body: 'Fund 3–5 competing teams to build open, verifiable public infrastructure for a municipality or small state. Each gets a proving ground.', context: 'Kill criteria: no team at 100 users by Q2 — reassess.' },
-  s1b: { title: 'Bhutan Deep Engagement', body: 'Most promising sovereign proving ground — 780K population, institutional openness via Edge City Bhutan. Sustained relationship, not a single event.', context: "Fallback: Uruguay, Estonia, Argentina sub-national. Don't concentrate in one jurisdiction." },
-  s1c: { title: 'Edge City Sovereign Prototype', body: 'Every village operates as micro-state: real identity, governance, payments, registries. 4 villages, 11K+ residents — larger than some nations.', context: 'Rigorous post-mortems published after each village. Public artifacts more compelling than playbooks.' },
-  s2a: { title: 'AI4PG Research Coalition', body: 'EF + Octant + Hypercerts produce foundational evidence: benchmark AI vs. human on historical rounds, stress-test mechanisms at $100M+, open evaluation infra.', context: "PL R&D role: convener, not sole funder. If AI doesn't beat humans, thesis needs revision." },
-  s2b: { title: 'Funding Experiments', body: 'Real capital pools at PL ecosystem events — FtC, Edge City, and other convenings. Projects present live, AI + human evaluate real-time, funding allocated before the event ends. All on-chain, auditable.', context: 'DARPA challenge model. Each event uses a different mechanism or refinement. Designed to incentivize live, focused experimentation across the PL event network.' },
-  s2c: { title: 'Prize 2: AI Capital Allocation', body: 'First system that allocates capital to public goods and produces better 12-month outcomes than matched human committee.', context: "'Better outcomes' defined BEFORE competition. Outcomes at M18–24." },
-  s3a: { title: 'Governance Observatory', body: 'Instrument every Edge City village with rigorous measurement. Pre-register metrics. Record every decision, vote, allocation. Publish everything.', context: 'Cross-mechanism comparison: QF in Village A, conviction voting in B, liquid democracy in C.' },
-  s3b: { title: 'Governance Tooling Grants', body: '3–5 teams building accessible, deliberation-first, offline-capable governance tooling. Each tests in a real community.', context: 'Current DAO tooling is DAO-native, not community-native. Gap: Pol.is + broad listening integration.' },
-  s3c: { title: 'Deliberative + Crypto Research', body: '2–3 teams integrating Pol.is-style deliberation with crypto execution. Hypothesis: deliberation leads to better preferences, crypto leads to better transparency.', context: 'Key question: is deliberative + crypto better than deliberative alone?' },
-  s4a: { title: 'Climate MRV Grants', body: '3–5 teams: IoT + cryptographic attestation, satellite + AI, audio + ML, community-based + reputation, hybrid. Open Verification Challenge.', context: 'Benchmark: verify 20+ real projects vs. ground truth. Dataset becomes public good.' },
-  s4b: { title: 'Network Coordination', body: 'Climate projects operate in parallel, not concert. Summits, regional coordination, quarterly assessments make the network visible to itself.', context: 'Identify regions where projects overlap (solar + forest + biochar). Composed impact > individual.' },
-  s4c: { title: 'Prize 3: Climate Verification', body: 'Most accurate, cost-effective verification across 20+ real-world climate projects vs. independent ground truth.', context: 'Awards: Grand Prize (accuracy), novel methodology, open-source toolkit, cross-domain composition.' },
-  i1: { title: 'ARIA-Style Grants', body: '8–12 seeds at $5–50K. Kill switches at Q2. Promotes Hypercerts/ATProto for reporting. Survivors feed prize pipeline.', context: 'ARIA model: compete, evaluate, kill underperformers, double down on winners.' },
-  i2: { title: 'PL Breakthrough Prize', body: 'Three milestone-based challenges at Q2: Sovereign Services, AI Capital Allocation, Climate Verification. Edge City as execution partner.', context: 'Prizes outperform grants when outcomes are definable but approaches are uncertain.' },
-  i3: { title: 'Proving Ground Network', body: 'Real-world environments: Bhutan, Crecimiento, Edge City, climate communities. Each serves multiple IPs simultaneously.', context: 'Compounding: Edge City Bhutan — sovereign (IP.1) + governance (IP.3) + climate (IP.4).' },
-  i4: { title: 'Evidence Engine', body: "Quarterly reports, academic papers, 'Undeniable Traction' portfolio. Rigorous, honest, published openly.", context: "When institutions ask 'what have you demonstrated?' — the answer is this portfolio." },
-  i5: { title: 'Fellowship Cohort', body: '15–18 fellows: sovereign ministers, policy professors, crypto/tech execs. UNGA-linked assembly.', context: 'Kill: if <5/18 produce concrete engagement in 12 months, restructure.' },
-  i6: { title: 'Hypercerts + ATProto', body: 'Leading hypothesis for coordination substrate. Validate fitness for climate sensor data, governance patterns, identity accumulation.', context: 'Hypothesis, not mandate. Prizes stack-agnostic. Monitor alternatives.' },
-  i7: { title: 'Event Laboratories', body: '957+ practitioners across FtC, Edge City, and PL ecosystem events. Every event generates data, tests mechanisms, produces artifacts — not networking.', context: 'Each convening must produce: (1) brief, (2) pipeline, (3) owner. Designed to incentivize live, focused experimentation.' },
-  i8: { title: 'Co-Funding Partners', body: 'EF, Octant, Edge City, Ma Earth. Target: $1.50–2x per FA2 dollar.', context: 'If co-funding fails — concentrate on 2 IPs (Climate + PGF). Secure BEFORE deploying grants.' },
-}
-
-export const ipConfigs: IPConfig[] = [
-  {
-    id: 'ip1', label: 'Sovereign Digital Public Infrastructure', sub: 'Nation-state runs core systems on crypto-rails with measurable advantage', color: COLORS.ip1, num: '01',
-    bottlenecks: [
-      { id: 'b1a', label: 'Can open infra outperform centralized on sovereign metrics? (UPI succeeded because centralized)' },
-      { id: 'b1b', label: "'Sovereign-grade' undefined — uptime, security, accessibility, disaster recovery specs unknown" },
-      { id: 'b1c', label: 'Political champion fragility — Bhutan interest may not survive government changes' },
-      { id: 'b1d', label: 'Pilot-to-production gap — dozens of Digital Public Infrastructure pilots went nowhere [Shared Blocker]' },
-    ],
-    gates: [{ id: 'g1', label: '1,000+ real users on open infrastructure for 30+ continuous days', quarter: 'Q4' }],
-    strands: [
-      { id: 's1a', label: 'Prize 1: Sovereign Stack', sub: '3–5 competing teams with proving grounds' },
-      { id: 's1b', label: 'Bhutan Deep Engagement', sub: 'Map infra, identify pilot, formal agreement' },
-      { id: 's1c', label: 'Edge City Sovereign Prototype', sub: 'Villages run identity, payments, registries' },
-    ],
-    interventions: [
-      { id: 'i1', label: 'ARIA-Style Grants', sub: '8–12 seeds, $5–50K, Q2 kill switches', strands: ['s1a'] },
-      { id: 'i2', label: 'PL Breakthrough Prize', sub: 'Prize 1: Sovereign Services Challenge', strands: ['s1a', 's1c'] },
-      { id: 'i3', label: 'Proving Ground Network', sub: 'Bhutan, Crecimiento, Edge City', strands: ['s1b', 's1c'] },
-      { id: 'i5', label: 'Fellowship Cohort', sub: 'Sovereign ministers — proving ground access', strands: ['s1b'] },
-      { id: 'i8', label: 'Co-Funding Partners', sub: 'Edge City execution infrastructure', strands: ['s1b'] },
-    ],
-  },
-  {
-    id: 'ip2', label: 'Public Goods Funding', sub: 'AI/crypto-native PGF allocates capital at billion-dollar scale', color: COLORS.ip2, num: '02',
-    bottlenecks: [
-      { id: 'b2a', label: "AI lacks causal reasoning — summarizes & classifies, but can't evaluate real impact" },
-      { id: 'b2b', label: 'Institutions may want control & brand, not the transparency crypto provides' },
-      { id: 'b2c', label: 'Mechanism attack surface at $100M+ — collusion, sybil, strategic manipulation' },
-      { id: 'b2d', label: 'Perpetual grant dependency — new mechanisms may not fix underlying unit economics' },
-    ],
-    gates: [{ id: 'g2', label: 'AI evaluation outperforms human committees on 12-month outcomes', quarter: 'Q4' }],
-    strands: [
-      { id: 's2a', label: 'AI4PG Research Coalition', sub: 'Benchmark AI vs. human on 10 historical rounds' },
-      { id: 's2b', label: 'Funding Experiments', sub: 'Live experimentation at PL ecosystem events' },
-      { id: 's2c', label: 'Prize 2: AI Capital Allocation', sub: 'Compete to produce better outcomes' },
-    ],
-    interventions: [
-      { id: 'i1', label: 'ARIA-Style Grants', sub: 'Seeds for evaluation & mechanism teams', strands: ['s2a'] },
-      { id: 'i2', label: 'PL Breakthrough Prize', sub: 'Prize 2: AI Capital Allocation Challenge', strands: ['s2c'] },
-      { id: 'i4', label: 'Evidence Engine', sub: 'AI4PG benchmark papers & reports', strands: ['s2a'] },
-      { id: 'i6', label: 'Hypercerts + ATProto', sub: 'Impact certificates & social data layer', strands: ['s2a', 's2b'] },
-      { id: 'i7', label: 'Event Laboratories', sub: 'FtC, Edge City, PL events', strands: ['s2b'] },
-      { id: 'i8', label: 'Co-Funding Partners', sub: 'EF research + Octant capital', strands: ['s2a'] },
-      { id: 'i5', label: 'Fellowship Cohort', sub: 'Policy professors — academic validation', strands: ['s2a'] },
-    ],
-  },
-  {
-    id: 'ip3', label: 'Governance & Democracy', sub: 'Crypto governance adopted as institutional necessity', color: COLORS.ip3, num: '03',
-    bottlenecks: [
-      { id: 'b3a', label: "No agreed definition of 'better governance' — different stakeholders want different things" },
-      { id: 'b3b', label: 'Pop-up to permanent city gap — self-selected tech residents differ from diverse populations' },
-      { id: 'b3c', label: 'Crypto component unproven — Pol.is & QV work without blockchain' },
-      { id: 'b3d', label: 'No sovereign-grade identity infrastructure exists [Shared Blocker]' },
-    ],
-    gates: [{ id: 'g3', label: '50%+ participation in a 500+ person community for a real decision', quarter: 'Q4' }],
-    strands: [
-      { id: 's3a', label: 'Governance Observatory', sub: 'Pre-registered metrics, cross-mechanism comparison' },
-      { id: 's3b', label: 'Governance Tooling Grants', sub: 'Deliberation-first, offline-capable, accessible' },
-      { id: 's3c', label: 'Deliberative + Crypto Research', sub: 'Pol.is integration with crypto execution' },
-    ],
-    interventions: [
-      { id: 'i1', label: 'ARIA-Style Grants', sub: 'Seeds for tooling teams', strands: ['s3b'] },
-      { id: 'i2', label: 'PL Breakthrough Prize', sub: 'Observatory data feeds prize evaluation', strands: ['s3a'] },
-      { id: 'i3', label: 'Proving Ground Network', sub: 'Edge City villages as governance labs', strands: ['s3a'] },
-      { id: 'i4', label: 'Evidence Engine', sub: 'Governance outcome publications', strands: ['s3a'] },
-      { id: 'i5', label: 'Fellowship Cohort', sub: 'Civic tech leaders — tooling expertise', strands: ['s3c'] },
-    ],
-  },
-  {
-    id: 'ip4', label: 'Climate Infrastructure', sub: 'DePIN climate projects coordinate at planetary scale', color: COLORS.ip4, num: '04',
-    bottlenecks: [
-      { id: 'b4a', label: 'Decentralized coordination adds overhead — consensus & governance cost for physical ops' },
-      { id: 'b4b', label: 'Composition value unproven — different markets, no unified buyer demand exists' },
-      { id: 'b4c', label: 'AI verification may not meet institutional fiduciary evidentiary standards' },
-      { id: 'b4d', label: 'Verra / Gold Standard have regulatory moats & institutional lock-in' },
-    ],
-    gates: [{ id: 'g4', label: 'Verification outperforms legacy MRV on accuracy at lower cost', quarter: 'Q4' }],
-    strands: [
-      { id: 's4a', label: 'Climate MRV Grants', sub: 'IoT, satellite, audio, community, hybrid' },
-      { id: 's4b', label: 'Network Coordination', sub: 'DePIN Summit, regional proving grounds' },
-      { id: 's4c', label: 'Prize 3: Climate Verification', sub: 'Grand challenge vs. ground truth benchmark' },
-    ],
-    interventions: [
-      { id: 'i1', label: 'ARIA-Style Grants', sub: '3–5 competing verification teams', strands: ['s4a'] },
-      { id: 'i2', label: 'PL Breakthrough Prize', sub: 'Prize 3: Climate Verification Grand Challenge', strands: ['s4c'] },
-      { id: 'i3', label: 'Proving Ground Network', sub: 'GainForest, Glow, Devonian as test sites', strands: ['s4b'] },
-      { id: 'i4', label: 'Evidence Engine', sub: 'Verification benchmark publications', strands: ['s4a'] },
-      { id: 'i6', label: 'Hypercerts + ATProto', sub: 'Climate sensor data fitness validation', strands: ['s4a'] },
-      { id: 'i7', label: 'Event Laboratories', sub: 'Climate DePIN Summit co-location', strands: ['s4b'] },
-    ],
-  },
-]
-
 // --- Lazy-load ForceGraph2D (preserves ref forwarding, avoids next/dynamic wrapper) ---
 let _ForceGraph2DModule: React.ComponentType<any> | null = null
 
@@ -396,7 +255,7 @@ function Tooltip({ node, x, y, config }: {
 
 
   // Standard tooltip
-  const td = tooltipData[node.id]
+  const td = allTooltips[node.id]
   const color = node.nodeType === 'ip' ? config.color
     : node.nodeType === 'bottleneck' ? COLORS.bn
     : node.nodeType === 'gate' ? COLORS.gate
@@ -451,7 +310,7 @@ function NodeDetailSidebar({ node, config, connectedNodes, onClose }: {
 }) {
   const color = nodeColor(node, config.color)
   const typeLabel = NODE_TYPE_LABELS[node.nodeType]
-  const td = tooltipData[node.id]
+  const td = allTooltips[node.id]
 
   // For feedback nodes, resolve from/to labels
   const feedbackFromLabel = node.nodeType === 'feedback'
@@ -1493,7 +1352,7 @@ export default function DependencyGraph() {
         }
       `}</style>
       <div className="space-y-2">
-        {ipConfigs.map(config => (
+        {(Object.values(expandedConfigs) as IPConfig[]).map((config) => (
           <IPFigure key={config.id} config={config} />
         ))}
       </div>

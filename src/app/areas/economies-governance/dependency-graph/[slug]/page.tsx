@@ -2,18 +2,14 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { IPFigure } from '../DependencyGraph'
 import { expandedConfigs } from '../data'
+import { dependencyGraphs } from '@/lib/content'
 
 type Props = {
   params: Promise<{ slug: string }>
 }
 
 export function generateStaticParams() {
-  return [
-    { slug: 'sovereign-dpi' },
-    { slug: 'public-goods-funding' },
-    { slug: 'governance-democracy' },
-    { slug: 'climate-infrastructure' },
-  ]
+  return Object.keys(dependencyGraphs).map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

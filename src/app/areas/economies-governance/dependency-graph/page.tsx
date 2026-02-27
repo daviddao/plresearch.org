@@ -1,18 +1,22 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Breadcrumb from '@/components/Breadcrumb'
+import { dependencyGraphs } from '@/lib/content'
 
 export const metadata: Metadata = {
   title: 'Dependency Graph',
   description: 'Strategic dependency trees mapping inflection points through bottlenecks, decision gates, program strands, and interventions.',
 }
 
-const CARDS = [
-  { num: '01', title: 'Sovereign Digital Public Infrastructure', sub: 'Nation-state runs core systems on crypto-rails with measurable advantage', slug: 'sovereign-dpi', color: '#B07D10' },
-  { num: '02', title: 'Public Goods Funding', sub: 'AI/crypto-native PGF allocates capital at billion-dollar scale', slug: 'public-goods-funding', color: '#7C52C9' },
-  { num: '03', title: 'Governance & Democracy', sub: 'Crypto governance adopted as institutional necessity', slug: 'governance-democracy', color: '#1982F4' },
-  { num: '04', title: 'Climate Infrastructure', sub: 'DePIN climate projects coordinate at planetary scale', slug: 'climate-infrastructure', color: '#2D8A50' },
-]
+const CARDS = Object.entries(dependencyGraphs)
+  .map(([slug, entry]) => ({
+    num: entry.config.num,
+    title: entry.config.label,
+    sub: entry.config.sub,
+    slug,
+    color: entry.config.color,
+  }))
+  .sort((a, b) => a.num.localeCompare(b.num))
 
 export default function DependencyGraphPage() {
   return (
