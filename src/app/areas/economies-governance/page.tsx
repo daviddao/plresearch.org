@@ -75,7 +75,7 @@ export default function FA2MainPage() {
             </svg>
           </Link>
           <a
-            href="https://plrd-grants.vercel.app"
+            href="https://grants.plresearch.org"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-5 py-2.5 border border-blue/30 text-blue rounded-full hover:bg-blue/5 transition-colors font-medium"
