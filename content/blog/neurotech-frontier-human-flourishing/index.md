@@ -51,13 +51,17 @@ Areas we find particularly promising include:
 
 Higher data-rate interfaces are advancing toward the clinic: [Paradromics received FDA approval for the Connect-One clinical study](https://paradromics.com/news/paradromics-receives-fda-approval-for-the-connect-one-clinical-study-with-the-connexus-brain-computer-interface/) of its Connexus® brain-computer interface, designed to restore speech and computer control for people with severe motor impairment. Less invasive devices are clearing regulatory review in parallel: [Precision Neuroscience received FDA 510(k) clearance](https://www.precisionneuro.io/articles/company-news/precision-neuroscience-receives-fda-clearance-for-high-resolution-cortical-electrode-array) for its Layer 7 Cortical Interface, a high-resolution cortical electrode array roughly one-fifth the thickness of a human hair. For a fuller picture of where the clinical BCI market is heading, see PL's [strategic vision for the future of brain–computer interfaces](/publications/pl-bci-roadmap-overview/) and its analysis of the [path to clinical revenue](/publications/models-to-markets-bci-neural-data/).
 
-### Inflection point 1: Clinical BCI superpower
+<div class="inflection">
+<div class="inflection-head"><span class="inflection-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></span><span class="inflection-eyebrow">Inflection point</span></div>
+<p class="inflection-title">Clinical BCI superpower</p>
+<p class="inflection-body">BCIs will demonstrate major improvements to the quality of life and capabilities of clinical patients, some of which will exceed the capabilities of healthy individuals.</p>
+</div>
 
-BCIs will demonstrate major improvements to the quality of life and capabilities of clinical patients, some of which will exceed the capabilities of healthy individuals.
-
-### Inflection point 2: The BCI app store
-
-We believe a major shift will occur when BCIs move from vertically integrated medical products to open platforms. A standardized software layer that lets third-party developers build applications on top of approved BCI hardware could increase the utility of neural interfaces by orders of magnitude. Smartphones became more valuable once app ecosystems formed on top of standard hardware; BCIs could follow the same path once many developers can deploy neural augmentations through scalable software.
+<div class="inflection">
+<div class="inflection-head"><span class="inflection-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></span><span class="inflection-eyebrow">Inflection point</span></div>
+<p class="inflection-title">The BCI app store</p>
+<p class="inflection-body">We believe a major shift will occur when BCIs move from vertically integrated medical products to open platforms. A standardized software layer that lets third-party developers build applications on top of approved BCI hardware could increase the utility of neural interfaces by orders of magnitude. Smartphones became more valuable once app ecosystems formed on top of standard hardware; BCIs could follow the same path once many developers can deploy neural augmentations through scalable software.</p>
+</div>
 
 <h2 class="os-heading">Opportunity Space <span class="os-num">2</span> Biologically Inspired Intelligence (NeuroAI)</h2>
 
@@ -80,13 +84,17 @@ Areas we find particularly promising include:
 
 Large-scale neural data is reaching new resolution: the [MICrONS project](https://www.microns-explorer.org/cortical-mm3) mapped a cubic millimeter of mouse visual cortex, resolving roughly 200,000 cells and 523 million synapses in a single functional connectome. Neural foundation models are learning to predict brain activity directly: Meta's [TRIBE v2](https://ai.meta.com/blog/tribe-v2-brain-predictive-foundation-model/) predicts human brain responses to naturalistic video, audio, and text, trained on more than 1,000 hours of fMRI across 720 subjects. These two threads point in the same direction: more data at higher resolution, feeding models that treat neural activity as a first-class training signal.
 
-### Inflection point 1: Neural distillation
+<div class="inflection">
+<div class="inflection-head"><span class="inflection-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></span><span class="inflection-eyebrow">Inflection point</span></div>
+<p class="inflection-title">Neural distillation</p>
+<p class="inflection-body">One potential breakthrough is the emergence of methods that directly align AI systems with human neural activity. If neural recordings help models learn more efficiently, or reason in ways that better reflect human cognition, neural data could become a foundational resource for AI development.</p>
+</div>
 
-One potential breakthrough is the emergence of methods that directly align AI systems with human neural activity. If neural recordings help models learn more efficiently, or reason in ways that better reflect human cognition, neural data could become a foundational resource for AI development.
-
-### Inflection point 2: The neuromorphic energy pivot
-
-A second possibility is that energy constraints push the AI industry toward biologically inspired hardware and algorithms. If brain-inspired systems achieve orders-of-magnitude improvements in efficiency, neuroscience could become a core driver of future AI progress.
+<div class="inflection">
+<div class="inflection-head"><span class="inflection-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></span><span class="inflection-eyebrow">Inflection point</span></div>
+<p class="inflection-title">The neuromorphic energy pivot</p>
+<p class="inflection-body">A second possibility is that energy constraints push the AI industry toward biologically inspired hardware and algorithms. If brain-inspired systems achieve orders-of-magnitude improvements in efficiency, neuroscience could become a core driver of future AI progress.</p>
+</div>
 
 <h2 class="os-heading">Opportunity Space <span class="os-num">3</span> Whole-Organism Emulation (WBE)</h2>
 
@@ -109,19 +117,21 @@ Areas we find particularly promising include:
 
 High-throughput connectomics is getting cheaper and faster: a Nature study on [light-microscopy-based dense connectomic reconstruction](https://www.nature.com/articles/s41586-025-08985-1) of mammalian brain tissue shows a route to mapping wiring and molecular identity together. Reconstruction pipelines are removing the manual-correction bottleneck: Janelia's [PATHFINDER](https://www.janelia.org/publication/accelerating-neuron-reconstruction-with-pathfinder) uses AI to segment volumetric image data and assemble neuron reconstructions with far less human proofreading. And modeling work is beginning to translate static structure into dynamics: PL-supported research on [compiling molecular ultrastructure into neural dynamics](/publications/molecular-ultrastructure-neural-dynamics/) proposes mapping ultrastructural data to the physiological parameters that govern neural activity. PL has also laid out [how a complete human connectome could be obtained at synaptic resolution within the next decade](/publications/how-to-obtain-complete-human-connectome/).
 
-### The inflection point: memory retrieval in simulation
-
-The most catalytic milestone may be a simple one. If a reconstructed mouse brain can be simulated and reliably reproduce a learned behavior or memory from its biological counterpart in a virtual environment, whole-brain emulation moves from speculation to demonstration. That result would establish a concrete benchmark for the field and change how researchers, funders, and policymakers view the possibility and impact of emulation.
+<div class="inflection">
+<div class="inflection-head"><span class="inflection-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></span><span class="inflection-eyebrow">Inflection point</span></div>
+<p class="inflection-title">Memory retrieval in simulation</p>
+<p class="inflection-body">The most catalytic milestone may be a simple one. If a reconstructed mouse brain can be simulated and reliably reproduce a learned behavior or memory from its biological counterpart in a virtual environment, whole-brain emulation moves from speculation to demonstration. That result would establish a concrete benchmark for the field and change how researchers, funders, and policymakers view the possibility and impact of emulation.</p>
+</div>
 
 ## The 2030 milestones we are working toward
 
 Field-building needs shared targets. We are organizing PL Neuro's work around three measurable milestones that mark real progress across the stack:
 
-<ol class="os-list">
-  <li><span class="os-num">1</span><span><strong>10,000 invasive high-bandwidth neural implants in humans</strong> — multiple devices with clinical approval, and a first invasive consumer use case.</span></li>
-  <li><span class="os-num">2</span><span><strong>100,000,000 hours of human neural data</strong> — across cognitive tasks and recording-device types, enough to unlock neural foundation models for prediction, translation, and fill-in, and to pair cheap noninvasive readout hardware (e.g. EEG) with bidirectional implants for closed-loop control.</span></li>
-  <li><span class="os-num">3</span><span><strong>1 complete mouse-brain connectome</strong> — a foundation for new architectures and learning rules, and a major step toward whole-brain emulation.</span></li>
-</ol>
+<div class="milestones">
+  <div class="milestone"><span class="milestone-figure">10,000</span><div class="milestone-body"><strong>invasive high-bandwidth neural implants in humans</strong> — multiple devices with clinical approval, and a first invasive consumer use case.</div></div>
+  <div class="milestone"><span class="milestone-figure">100M</span><div class="milestone-body"><strong>hours of human neural data</strong> — across cognitive tasks and recording-device types, enough to unlock neural foundation models for prediction, translation, and fill-in, and to pair cheap noninvasive readout hardware (e.g. EEG) with bidirectional implants for closed-loop control.</div></div>
+  <div class="milestone"><span class="milestone-figure">1</span><div class="milestone-body"><strong>complete mouse-brain connectome</strong> — a foundation for new architectures and learning rules, and a major step toward whole-brain emulation.</div></div>
+</div>
 
 Reaching these milestones would move neurotechnology from isolated demonstrations to a compounding platform: bidirectional implants plus neural foundation models make closed-loop control possible, which opens a new therapeutic category and, eventually, true neural augmentation, along with AI systems that think like humans rather than only behave like them.
 
