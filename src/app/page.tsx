@@ -140,7 +140,7 @@ export default async function HomePage() {
           />
         </div>
 
-        <div className="relative z-10">
+        <div className="relative z-10 -mx-3 rounded-2xl bg-white/70 px-3 py-4 backdrop-blur-[2px] dark:bg-neutral-900/60 md:mx-0 md:rounded-none md:bg-transparent md:px-0 md:py-0 md:backdrop-blur-0 md:dark:bg-transparent">
           <p className="text-sm text-gray-500 uppercase tracking-widest mb-6 font-medium">
             Protocol Labs Research &amp; Development
           </p>
