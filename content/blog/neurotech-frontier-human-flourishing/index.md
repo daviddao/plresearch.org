@@ -23,7 +23,7 @@ We focus on three opportunity spaces that could reshape both neuroscience and co
 <ol class="os-list">
   <li><span class="os-num">1</span><span><strong>Neural Augmentation</strong> = high-bandwidth, bidirectional interfaces between brains and computers (BCI)</span></li>
   <li><span class="os-num">2</span><span><strong>Biologically Inspired Intelligence</strong> = AI systems that learn from how brains work (NeuroAI)</span></li>
-  <li><span class="os-num">3</span><span><strong>Whole-Organism Emulation</strong> = computational models that reproduce the behavior of biological organisms (WBE)</span></li>
+  <li><span class="os-num">3</span><span><strong>Whole-Organism Emulation</strong> = computational models that reproduce the behavior of biological organisms (WOE)</span></li>
 </ol>
 
 These areas form a stack. Advances in neuroscience generate new data and understanding. Those insights enable more capable AI systems and neurotechnologies. Progress across the stack opens new possibilities for augmenting human cognition, and each layer feeds the next: better recording produces better data, better data trains better models, and better models improve both the interfaces we build and the emulations we can run.
@@ -96,7 +96,7 @@ Large-scale neural data is reaching new resolution: the [MICrONS project](https:
 <p class="inflection-body">A second possibility is that energy constraints push the AI industry toward biologically inspired hardware and algorithms. If brain-inspired systems achieve orders-of-magnitude improvements in efficiency, neuroscience could become a core driver of future AI progress.</p>
 </div>
 
-<h2 class="os-heading">Opportunity Space <span class="os-num">3</span> Whole-Organism Emulation (WBE)</h2>
+<h2 class="os-heading">Opportunity Space <span class="os-num">3</span> Whole-Organism Emulation (WOE)</h2>
 
 <figure class="post-figure os-banner"><img src="/images/opportunity-spaces/whole-organism-emulation.jpg" alt="Whole-Organism Emulation" /></figure>
 
@@ -120,7 +120,7 @@ High-throughput connectomics is getting cheaper and faster: a Nature study on [l
 <div class="inflection">
 <div class="inflection-head"><span class="inflection-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg></span><span class="inflection-eyebrow">Inflection point</span></div>
 <p class="inflection-title">Memory retrieval in simulation</p>
-<p class="inflection-body">The most catalytic milestone may be a simple one. If a reconstructed mouse brain can be simulated and reliably reproduce a learned behavior or memory from its biological counterpart in a virtual environment, whole-brain emulation moves from speculation to demonstration. That result would establish a concrete benchmark for the field and change how researchers, funders, and policymakers view the possibility and impact of emulation.</p>
+<p class="inflection-body">The most catalytic milestone may be a simple one. If a reconstructed mouse brain can be simulated and reliably reproduce a learned behavior or memory from its biological counterpart in a virtual environment, whole-organism emulation moves from speculation to demonstration. That result would establish a concrete benchmark for the field and change how researchers, funders, and policymakers view the possibility and impact of emulation.</p>
 </div>
 
 ## The 2030 milestones we are working toward
@@ -130,7 +130,7 @@ Field-building needs shared targets. We are organizing PL Neuro's work around th
 <div class="milestones">
   <div class="milestone"><span class="milestone-figure">10,000</span><div class="milestone-body"><strong>invasive high-bandwidth neural implants in humans</strong> — multiple devices with clinical approval, and a first invasive consumer use case.</div></div>
   <div class="milestone"><span class="milestone-figure">100M</span><div class="milestone-body"><strong>hours of human neural data</strong> — across cognitive tasks and recording-device types, enough to unlock neural foundation models for prediction, translation, and fill-in, and to pair cheap noninvasive readout hardware (e.g. EEG) with bidirectional implants for closed-loop control.</div></div>
-  <div class="milestone"><span class="milestone-figure">1</span><div class="milestone-body"><strong>complete mouse-brain connectome</strong> — a foundation for new architectures and learning rules, and a major step toward whole-brain emulation.</div></div>
+  <div class="milestone"><span class="milestone-figure">1</span><div class="milestone-body"><strong>complete mouse-brain connectome</strong> — a foundation for new architectures and learning rules, and a major step toward whole-organism emulation.</div></div>
 </div>
 
 Reaching these milestones would move neurotechnology from isolated demonstrations to a compounding platform: bidirectional implants plus neural foundation models make closed-loop control possible, which opens a new therapeutic category and, eventually, true neural augmentation, along with AI systems that think like humans rather than only behave like them.
