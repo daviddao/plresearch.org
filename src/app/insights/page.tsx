@@ -183,8 +183,17 @@ export default async function InsightsPage() {
   // dashboard#radar). Falls back to the locally-computed pool if the service is
   // unreachable so the page always renders.
   const curated = await fetchCuratedRadar(6)
-  const radarPool: RadarItem[] = curated?.items ?? fallbackRadarPool
+  const rawRadarPool: RadarItem[] = curated?.items ?? fallbackRadarPool
   const radarEdition = curated?.edition ?? fallbackEdition
+
+  // Always surface PL R&D's own output (talks, publications, posts on PL
+  // properties) ahead of third-party "field signals", while preserving each
+  // group's existing curator/date order. Array.sort is stable, so items keep
+  // their relative order within the PL and signal groups.
+  const isFieldSignal = (it: RadarItem) => it.type === 'Signal'
+  const radarPool: RadarItem[] = [...rawRadarPool].sort(
+    (a, b) => Number(isFieldSignal(a)) - Number(isFieldSignal(b)),
+  )
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
