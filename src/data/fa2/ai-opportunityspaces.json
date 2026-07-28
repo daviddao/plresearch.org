@@ -7,7 +7,7 @@
     {
       "id": "open-compute-networks",
       "title": "Open Compute Networks",
-      "tagline": "Distributed AI training and inference, sited where power is, beyond the hyperscalers",
+      "tagline": "Distributed AI training and inference across compute hardware, energy grids, and sovereign regions",
       "image": "/images/opportunity-spaces/open-compute-networks.jpg",
       "description": "AI compute infrastructure is concentrated within a handful of hyperscalers and large labs, limiting experimentation and participation. The binding constraint is increasingly power, not chips: new data centers face multi-year grid interconnection queues and transformer and turbine backlogs, while the cheapest new generation, wind and solar, sits stranded and curtailed where the grid cannot absorb it. Distributed compute markets can place capacity where power is, providing scalable access to training and inference across decentralized infrastructure rather than a handful of centralized clouds.",
       "inflectionPoint": "A decentralized compute network trains a competitive model—demonstrating that distributed infrastructure can match centralized systems for meaningful AI workloads, breaking the assumption that only hyperscalers can develop frontier AI.",
