@@ -274,7 +274,7 @@ Areas we find particularly promising include:
 
 ### Progress so far / case studies of momentum
 
-Transparent measurement of ecological outcomes is being advanced by [GainForest](https://www.gainforest.earth/), which combines AI, remote sensing, and community monitoring; it reports more than 1,160 certified organizations and roughly 48,000 observations. Verification tied to energy production and incentives is being tested by [Glow](https://glow.org/), which reports more than 150 audited solar farms, pointing toward infrastructure that can be financed and rewarded through transparent data. As these systems get better at sensing, reporting, and responding in real time, verification can move from a retrospective audit to a live infrastructure layer.
+Transparent measurement of ecological outcomes is being advanced by [GainForest](https://www.gainforest.earth/), which combines AI, remote sensing, and community monitoring; it reports more than 1,160 certified organizations and roughly 48,000 observations. Verification tied to energy production and incentives is being tested by [Glow](https://glow.org/), which reports more than 100 audited solar farms, pointing toward infrastructure that can be financed and rewarded through transparent data. As these systems get better at sensing, reporting, and responding in real time, verification can move from a retrospective audit to a live infrastructure layer.
 
 ### The Inflection Point: Verification Becomes Shared Trustworthy Infrastructure
 
