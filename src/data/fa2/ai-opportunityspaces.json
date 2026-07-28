@@ -16,7 +16,7 @@
         "New markets for compute coordination and spot pricing emerge",
         "Startups build training pipelines on distributed infrastructure",
         "Open compute becomes a viable alternative for research labs and independent developers",
-        "Compute capacity co-located with stranded or curtailed renewable generation, bypassing grid interconnection queues"
+        "Compute capacity co-located with renewable energy generation, bypassing grid bottlenecks"
       ],
       "shift": "AI infrastructure becomes globally distributed. Model training moves from centralized labs to open, coordinated compute markets.",
       "subfields": ["Distributed Compute", "Decentralized AI Infrastructure", "Compute Coordination", "Energy-Sited Compute"],
