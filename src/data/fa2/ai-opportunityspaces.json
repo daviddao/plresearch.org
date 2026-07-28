@@ -7,40 +7,40 @@
     {
       "id": "open-compute-networks",
       "title": "Open Compute Networks",
-      "tagline": "Distributed AI training and inference across compute hardware, energy grids, and sovereign regions",
+      "tagline": "Decentralized AI training and inference across compute hardware, energy grids, and sovereign regions",
       "image": "/images/opportunity-spaces/open-compute-networks.jpg",
-      "description": "AI compute infrastructure is concentrated within a handful of hyperscalers and large labs, limiting experimentation and participation. The binding constraint is increasingly power, not chips: new data centers face multi-year grid interconnection queues and transformer and turbine backlogs, while the cheapest new generation, wind and solar, sits stranded and curtailed where the grid cannot absorb it. Distributed compute markets can place capacity where power is, providing scalable access to training and inference across decentralized infrastructure rather than a handful of centralized clouds.",
-      "inflectionPoint": "A decentralized compute network trains a competitive model—demonstrating that distributed infrastructure can match centralized systems for meaningful AI workloads, breaking the assumption that only hyperscalers can develop frontier AI.",
+      "description": "AI compute infrastructure is concentrated within a handful of hyperscalers and large labs, limiting experimentation and participation. That concentration also lets usable compute sit idle across edge environments. Additionally, a growing set of regions and institutions look for AI infrastructure they control rather than rent from a few central providers. Decentralized compute markets could pool capacity across where power is available, harnessing compute at the edge, and giving regions sovereign alternatives.",
+      "inflectionPoint": "A decentralized compute network trains a competitive model—demonstrating that decentralized infrastructure can match centralized systems for meaningful AI workloads, breaking the assumption that only hyperscalers can develop frontier AI.",
       "tippingSignals": [
         "Decentralized compute networks training meaningful models at competitive cost",
         "New markets for compute coordination and spot pricing emerge",
-        "Startups build training pipelines on distributed infrastructure",
+        "Startups build training pipelines on decentralized infrastructure",
         "Open compute becomes a viable alternative for research labs and independent developers",
         "Compute capacity co-located with renewable energy generation, bypassing grid bottlenecks"
       ],
-      "shift": "AI infrastructure becomes globally distributed. Model training moves from centralized labs to open, coordinated compute markets.",
-      "subfields": ["Distributed Compute", "Decentralized AI Infrastructure", "Compute Coordination", "Energy-Sited Compute"],
+      "shift": "AI infrastructure becomes globally decentralized. Model training moves from centralized labs to open, coordinated compute markets.",
+      "subfields": ["Decentralized Compute", "Decentralized AI Infrastructure", "Compute Coordination", "Energy-Sited Compute"],
       "keyAssumptions": [
-        "Concentration of AI infrastructure is the primary competitive moat. Whoever controls compute controls who can build frontier AI. Distributed alternatives must reach performance and cost parity to meaningfully shift this dynamic.",
-        "Supply-side coordination is the hard problem. Building distributed compute networks that maintain reliability, consistent performance, and economic sustainability requires solving hard mechanism design problems that pure technology alone does not address.",
-        "Power, not chips, is becoming the binding constraint. Grid interconnection queues run years in the largest data center markets, and transformers and gas turbines are back-ordered, while the cheapest new generation, wind and solar, is stranded or curtailed where transmission cannot move it. Compute is easier to relocate than power, so the strategic move is to site compute at stranded and curtailed energy rather than wait for the grid to reach centralized clusters.",
+        "Concentration of AI infrastructure is the primary competitive moat. Whoever controls compute controls who can build frontier AI. Decentralized alternatives must reach performance and cost parity to meaningfully shift this dynamic.",
+        "Supply-side coordination is the hard problem. Building decentralized compute networks that maintain reliability, consistent performance, and economic sustainability requires solving hard mechanism design problems that pure technology alone does not address.",
+        "Multiple pressures are pushing compute out of centralized clusters. Power and grid interconnection are increasingly as binding as chips—queues run years and new generation sits stranded—but they are not the only force: sovereign demand for infrastructure independent of a few providers, and usable compute stranded across edge environments, all reward architectures that decentralize rather than concentrate. Compute is easier to relocate than power, politics, or hardware already in the field, so the strategic move is to coordinate capacity where it already exists rather than wait for the grid, or a single provider, to serve centralized clusters.",
         "Open infrastructure enables open innovation. When AI training infrastructure is permissionless, independent researchers, small labs, and new entrants can experiment and innovate without depending on large-scale capital or hyperscaler access.",
-        "The window is open but may close quickly. As AI infrastructure consolidation accelerates, the opportunity to establish open alternatives narrows. Distributed compute must demonstrate viability before centralized lock-in becomes irreversible."
+        "The window is open but may close quickly. As AI infrastructure consolidation accelerates, the opportunity to establish open alternatives narrows. Decentralized compute must demonstrate viability before centralized lock-in becomes irreversible."
       ],
       "observations": [
-        "Centralization accelerates as model scale grows. The compute requirements for frontier models grow faster than distributed alternatives can scale, creating a widening gap between centralized and decentralized capabilities.",
-        "Reliability and performance variance remains a major barrier. Distributed compute networks struggle to offer the consistent SLAs that production AI workloads require, limiting adoption to experimental and non-critical use cases.",
-        "Speculative token design undermines real utility. Many distributed compute projects have been designed around token incentives rather than genuine infrastructure utility, eroding trust and slowing adoption.",
-        "No shared standards for compute coordination. Fragmented protocols, APIs, and orchestration layers prevent interoperability between distributed compute networks.",
-        "The grid is the real bottleneck for centralized compute. Roughly a fifth of planned data center projects face delays from grid strain, interconnection queues reach seven to ten years in markets like Northern Virginia and the Netherlands, and hyperscalers cluster new capacity in the same congested regions, compounding outage risk. Stranded and curtailed renewable generation is abundant but cannot reach these clusters."
+        "Centralization accelerates as model scale grows. The compute requirements for frontier models grow faster than decentralized alternatives can scale, creating a widening gap between centralized and decentralized capabilities.",
+        "Reliability and performance variance remains a major barrier. Decentralized compute networks struggle to offer the consistent SLAs that production AI workloads require, limiting adoption to experimental and non-critical use cases.",
+        "Speculative token design undermines real utility. Many decentralized compute projects have been designed around token incentives rather than genuine infrastructure utility, eroding trust and slowing adoption.",
+        "No shared standards for compute coordination. Fragmented protocols, APIs, and orchestration layers prevent interoperability between decentralized compute networks.",
+        "Centralized compute faces compounding structural limits. Grid strain delays roughly a fifth of planned data center projects, and interconnection queues reach a decade in some markets; at the same time, reliance on a few providers leaves regions without a sovereign fallback, and large amounts of usable compute sit idle across edge environments. Decentralized coordination can turn power, sovereignty, and stranded capacity into supply."
       ],
-      "theOpportunity": "Distributed compute networks become viable infrastructure for meaningful AI training workloads, sited where power is cheap and available rather than where the grid is already congested. Compute follows power: networks place training and inference at stranded and curtailed renewable generation, turning an energy-siting problem into a coordination problem that PL's work on decentralized networks can help address. Open compute markets attract independent researchers, startups, and eventually mid-tier labs seeking alternatives to hyperscaler pricing. PL's role is to support the research and early builders exploring compute coordination at this scale, in a market that today prices AI's compute layer but not its power layer.",
+      "theOpportunity": "Decentralized compute networks become viable infrastructure for meaningful AI training and inference by pooling capacity across power-rich sites the grid can't serve, sovereign infrastructure that regions and institutions control rather than rent, and compute across edge environments. The shared problem across all three is coordination—matching demand to decentralized supply reliably. Open compute markets attract independent researchers, startups, and eventually mid-tier labs seeking alternatives to hyperscaler pricing and control. PL's role is to support the research and early builders coordinating this capacity.",
       "fieldSignals": [
-        { "kpi": "Distributed Training Milestones", "measurement": "# of competitive AI models trained on distributed compute infrastructure" },
-        { "kpi": "Compute Network Utilization", "measurement": "Sustained, non-speculative usage across distributed compute networks" },
-        { "kpi": "Cost Competitiveness", "measurement": "Price per GPU-hour on distributed networks vs. hyperscaler equivalents" },
-        { "kpi": "Ecosystem Businesses", "measurement": "# of startups building AI products on distributed compute rather than hyperscalers" },
-        { "kpi": "Open Standards Adoption", "measurement": "# of distributed compute networks using shared coordination protocols" },
+        { "kpi": "Decentralized Training Milestones", "measurement": "# of competitive AI models trained on decentralized compute infrastructure" },
+        { "kpi": "Compute Network Utilization", "measurement": "Sustained, non-speculative usage across decentralized compute networks" },
+        { "kpi": "Cost Competitiveness", "measurement": "Price per GPU-hour on decentralized networks vs. hyperscaler equivalents" },
+        { "kpi": "Ecosystem Businesses", "measurement": "# of startups building AI products on decentralized compute rather than hyperscalers" },
+        { "kpi": "Open Standards Adoption", "measurement": "# of decentralized compute networks using shared coordination protocols" },
         { "kpi": "Energy-Sited Capacity", "measurement": "GW of compute co-located with stranded or curtailed renewable generation, bypassing grid interconnection" }
       ]
     },
@@ -98,7 +98,7 @@
       "subfields": ["Robotics Data Networks", "Embodied AI", "Simulation-to-Real", "Robotics Infrastructure"],
       "keyAssumptions": [
         "The data bottleneck is the primary constraint on embodied AI progress. Unlike language models that could train on existing internet data, embodied AI requires data from physical interaction that does not yet exist at the scale needed for breakthrough capabilities.",
-        "Data networks, not individual robots, are the strategic asset. The value is not in any single robot platform but in the network infrastructure that aggregates, normalizes, and distributes training data across robotics ecosystems.",
+        "Data networks, not individual robots, are the strategic asset. The value is not in any single robot platform but in the network infrastructure that aggregates, normalizes, and decentralized training data across robotics ecosystems.",
         "Open data ecosystems prevent robotics from becoming a walled garden. If robotics data is controlled by a handful of platforms, the embodied AI ecosystem will centralize around their capabilities and business models.",
         "PL can combine robotics networks, data networks, and storage infrastructure uniquely. The combination of IPFS/Filecoin storage infrastructure with network coordination and open data market design is a structural advantage no other actor has, one that positions PL to help an open version of the data flywheel emerge rather than leaving it captured by any single robot platform."
       ],
