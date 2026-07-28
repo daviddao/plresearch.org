@@ -3,9 +3,9 @@ import EditPageButton from '@/components/EditPageButton'
 import { PageEditHistoryByline } from '@/components/EditHistoryByline'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import { areas, publications, talks } from '@/lib/content'
+import { areas, publications, talks, listedBlogPosts as blogPosts } from '@/lib/content'
 import { FOCUS_AREA_DESCRIPTIONS, type FocusAreaSlug } from '@/lib/focus-area-descriptions'
-import { stripFaPrefix } from '@/lib/format'
+import { stripFaPrefix, formatDate } from '@/lib/format'
 import { AreaIcon, type AreaIconType } from '@/components/AreaIcons'
 import AreaHeroGraphic from '@/components/AreaHeroGraphic'
 import AreaHeroActions from '@/components/AreaHeroActions'
@@ -115,8 +115,57 @@ export default async function AreaPage({ params }: Props) {
   const leads = area.leads
   const advisors = area.advisors
 
-  const areaPubs = publications.filter((p) => p.areas.includes(slug)).slice(0, 8)
-  const areaTalks = talks.filter((t) => t.areas.includes(slug)).slice(0, 6)
+  // Unified "Insights" feed for this focus area — the same mix of blog posts,
+  // publications, and talks/podcasts surfaced on /insights, newest first.
+  type AreaInsight = {
+    key: string
+    href: string
+    external: boolean
+    title: string
+    type: string
+    meta: string
+    date: string
+  }
+  const areaInsights: AreaInsight[] = [
+    ...blogPosts
+      .filter((b) => b.areas?.includes(slug))
+      .map((b) => ({
+        key: `blog-${b.slug}`,
+        href: b.external_url || `/blog/${b.slug}/`,
+        external: !!b.external_url,
+        title: b.title,
+        type: 'Blog',
+        meta: [b.external_url ? 'protocol.ai' : null, formatDate(b.date)].filter(Boolean).join(' · '),
+        date: b.date || '',
+      })),
+    ...publications
+      .filter((p) => p.areas?.includes(slug))
+      .map((p) => ({
+        key: `pub-${p.slug}`,
+        href: `/publications/${p.slug}/`,
+        external: false,
+        title: p.title,
+        type: 'Publication',
+        meta: [p.venue, formatDate(p.date)].filter(Boolean).join(' · '),
+        date: p.date || '',
+      })),
+    ...talks
+      .filter((t) => t.areas?.includes(slug))
+      .map((t) => {
+        const isPodcast = /podcast/i.test(`${t.venue} ${t.venue_location}`)
+        return {
+          key: `talk-${t.slug}`,
+          href: `/talks/${t.slug}/`,
+          external: false,
+          title: t.title,
+          type: isPodcast ? 'Podcast' : 'Talk',
+          meta: [t.venue, formatDate(t.date)].filter(Boolean).join(' · '),
+          date: t.date || '',
+        }
+      }),
+  ]
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0))
+    .slice(0, 6)
 
   const { meta: oppMeta, cards: opportunities } = await loadOpportunityCards(slug)
 
@@ -232,46 +281,35 @@ export default async function AreaPage({ params }: Props) {
         </section>
       )}
 
-      {/* Publications */}
-      {areaPubs.length > 0 && (
-        <div className="mb-12 pb-12 border-b border-gray-100">
-          <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Publications</h2>
-          <div className="divide-y divide-gray-100">
-            {areaPubs.map((p) => (
-              <div key={p.slug} className="py-4">
-                <Link href={`/publications/${p.slug}`} className="text-base text-black hover:text-blue transition-colors">
-                  {p.title}
-                </Link>
-                <div className="text-sm text-gray-400 mt-1">
-                  {p.venue}{p.date && ` · ${new Date(p.date).getFullYear()}`}
-                </div>
-              </div>
-            ))}
-          </div>
-          <Link href="/publications" className="text-sm text-blue hover:underline mt-6 inline-block">
-            All publications →
-          </Link>
-        </div>
-      )}
-
-      {/* Talks */}
-      {areaTalks.length > 0 && (
+      {/* Insights — latest posts, publications, and talks for this focus area */}
+      {areaInsights.length > 0 && (
         <div className="mb-10">
-          <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Talks</h2>
+          <h2 className="text-sm text-gray-500 uppercase tracking-wide mb-6">Insights</h2>
           <div className="divide-y divide-gray-100">
-            {areaTalks.map((t) => (
-              <div key={t.slug} className="py-4">
-                <Link href={`/talks/${t.slug}`} className="text-base text-black hover:text-blue transition-colors">
-                  {t.title}
-                </Link>
+            {areaInsights.map((item) => (
+              <div key={item.key} className="py-4">
+                {item.external ? (
+                  <a
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-base text-black hover:text-blue transition-colors"
+                  >
+                    {item.title}
+                  </a>
+                ) : (
+                  <Link href={item.href} className="text-base text-black hover:text-blue transition-colors">
+                    {item.title}
+                  </Link>
+                )}
                 <div className="text-sm text-gray-400 mt-1">
-                  {t.venue}{t.date && ` · ${new Date(t.date).getFullYear()}`}
+                  {[item.type, item.meta].filter(Boolean).join(' · ')}
                 </div>
               </div>
             ))}
           </div>
-          <Link href="/talks" className="text-sm text-blue hover:underline mt-6 inline-block">
-            All talks →
+          <Link href="/insights/" className="text-sm text-blue hover:underline mt-6 inline-block">
+            All insights →
           </Link>
         </div>
       )}
