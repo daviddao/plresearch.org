@@ -7,6 +7,10 @@ authors:
 cover_image: "/images/blog/neurotechnology-hero.webp"
 areas:
   - neurotech
+# Live at its URL, but kept out of the carousel, insights/blog listings,
+# sitemap, RSS feed, and search index (and set to noindex). Flip to false
+# (or remove) to publish it publicly.
+unlisted: true
 ---
 <figure class="post-figure post-hero"><img src="/images/blog/neurotechnology-hero.webp" alt="Neurotechnology: bridging minds and machines for human flourishing." /></figure>
 
