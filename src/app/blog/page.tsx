@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { blogPosts, focusAreaDefs } from '@/lib/content'
+import { listedBlogPosts as blogPosts, focusAreaDefs } from '@/lib/content'
 import { formatDate } from '@/lib/format'
 import Breadcrumb from '@/components/Breadcrumb'
 import BackToInsights from '@/components/BackToInsights'
@@ -46,6 +46,7 @@ export default async function BlogPage() {
         title: post.title,
         description: post.summary,
         areas: post.areas ?? [],
+        image: post.coverImage || '',
       }
     }),
     ...atprotoPosts.map((post) => {
@@ -59,6 +60,7 @@ export default async function BlogPage() {
         title: post.title,
         description: post.description ?? undefined,
         areas: [] as string[],
+        image: '',
       }
     }),
   ]

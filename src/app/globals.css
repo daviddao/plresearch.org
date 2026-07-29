@@ -8,9 +8,44 @@
   &::-webkit-scrollbar { display: none; }
 }
 
+/* ===== Aileron (self-hosted, static @font-face — avoids next/font
+   CSS-variable scoping issues where --font-body inherits an unresolved
+   var() before the body-scoped custom property is defined) ===== */
+@font-face {
+  font-family: 'Aileron';
+  src: url('/fonts/Aileron-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('/fonts/Aileron-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('/fonts/Aileron-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aileron';
+  src: url('/fonts/Aileron-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ===== Theme (Tailwind v4 CSS-first config) ===== */
 @theme {
-  --font-body: var(--font-inter), sans-serif;
+  --font-body: 'Aileron', sans-serif;
   --font-serif: var(--font-serif), Georgia, "Times New Roman", serif;
 
   --breakpoint-sm: 640px;
@@ -262,6 +297,429 @@ ul:not([class]) li li {
 
 .page-content figure {
   padding-bottom: 1rem;
+}
+
+/* ===== Blog: designed focus-area tiles & three-question cards ===== */
+.page-content .fa-grid,
+.page-content .q-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin: 0.5rem 0 1.5rem;
+}
+@media (min-width: 640px) {
+  .page-content .fa-grid { grid-template-columns: 1fr 1fr; }
+  .page-content .q-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.page-content .fa-tile {
+  border: 1px solid #e6e8ec;
+  border-radius: 0.75rem;
+  background: var(--color-white);
+  padding: 1.1rem 1.2rem;
+}
+.page-content .fa-eyebrow {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gray-500);
+  margin-bottom: 0.25rem;
+}
+.page-content .fa-title {
+  font-weight: 600;
+  color: var(--color-black);
+  margin-bottom: 0.3rem;
+}
+.page-content .q-card {
+  border: 1px solid #e6e8ec;
+  border-radius: 0.75rem;
+  background: var(--color-gray-100);
+  padding: 1.2rem;
+}
+.page-content .q-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 9999px;
+  background: var(--color-blue);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 0.55rem;
+}
+.page-content .q-q {
+  font-weight: 600;
+  color: var(--color-black);
+  line-height: 1.3;
+  margin-bottom: 0.3rem;
+}
+.page-content .fa-tile p,
+.page-content .q-card p {
+  margin: 0;
+  padding-bottom: 0;
+  color: var(--color-gray-600);
+  font-size: var(--font-size-sm);
+  line-height: 1.55;
+}
+
+/* ===== Blog: opportunity-space stack (numbered bubbles + loop diagram) ===== */
+/* Numbered bubble — shared style used by the list above the diagram and by
+   the bubbles inside the SVG, so the two read as one system. */
+.page-content .os-list {
+  list-style: none;
+  margin: 0.75rem 0 1.5rem;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.page-content .os-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  line-height: 1.45;
+}
+.page-content .os-num {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 9999px;
+  background: var(--color-blue);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 0.05rem;
+}
+.page-content .os-list li > span:last-child {
+  color: var(--color-gray-600);
+}
+.page-content .os-list li strong {
+  color: var(--color-black);
+  font-weight: 600;
+}
+
+/* The feedback-loop "stack" diagram (inline SVG). */
+.page-content .loop-diagram {
+  margin: 0.5rem 0 1rem;
+}
+.page-content .loop-diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 460px;
+  margin: 0 auto;
+}
+/* Two-column figure: diagram on the left, explanatory copy on the right. */
+.page-content .stack-figure {
+  margin: 1rem 0 1.5rem;
+}
+@media (min-width: 768px) {
+  .page-content .stack-figure {
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+  .page-content .stack-figure-viz {
+    flex: 0 0 46%;
+  }
+  .page-content .stack-figure-copy {
+    flex: 1;
+  }
+}
+.page-content .stack-figure .loop-diagram {
+  margin: 0;
+}
+.page-content .stack-figure-copy p {
+  padding-bottom: 0.75rem;
+}
+.page-content .stack-figure-copy p:last-child {
+  padding-bottom: 0;
+}
+.page-content .stack-figure-copy .loop-caption {
+  text-align: left;
+  margin: 0 0 0.75rem;
+  max-width: none;
+}
+/* Numbered section headings + opportunity-space banner images. */
+/* Number ball sits inline in the heading, replacing the numeral. */
+.page-content .os-heading .os-num {
+  width: 1.6rem;
+  height: 1.6rem;
+  font-size: 0.85rem;
+  line-height: 1;
+  margin: 0 0.18rem;
+  vertical-align: middle;
+  position: relative;
+  top: -0.08em;
+}
+.page-content .os-banner {
+  margin-top: 0.25rem;
+}
+.page-content .os-banner img {
+  aspect-ratio: 3 / 1;
+  object-fit: cover;
+}
+.page-content .loop-box {
+  fill: var(--color-white);
+  stroke: var(--color-gray-500);
+  stroke-opacity: 0.3;
+  stroke-width: 1;
+}
+/* Digital Public Infrastructure — the substrate the other layers run on. */
+.page-content .loop-substrate {
+  fill: var(--color-gray-100);
+  stroke: var(--color-gray-500);
+  stroke-opacity: 0.22;
+  stroke-width: 1;
+}
+.page-content .loop-pill {
+  fill: var(--color-blue);
+}
+.page-content .loop-pill-text {
+  fill: #fff;
+  font-weight: 600;
+}
+/* Verification feedback path — the loop that closes back to governance. */
+.page-content .loop-verify {
+  fill: none;
+  stroke: #16a34a;
+  stroke-width: 2;
+}
+.page-content .loop-verify-head {
+  fill: #16a34a;
+}
+html.dark .page-content .loop-verify {
+  stroke: #4ade80;
+}
+html.dark .page-content .loop-verify-head {
+  fill: #4ade80;
+}
+.page-content .loop-bubble {
+  fill: var(--color-blue);
+}
+.page-content .loop-bubble-num {
+  fill: #fff;
+  font-weight: 700;
+}
+.page-content .loop-title {
+  fill: var(--color-black);
+  font-weight: 600;
+}
+.page-content .loop-desc {
+  fill: var(--color-gray-500);
+}
+.page-content .loop-flow {
+  fill: none;
+  stroke: var(--color-blue);
+  stroke-opacity: 0.55;
+  stroke-width: 2;
+}
+.page-content .loop-flow-head {
+  fill: var(--color-blue);
+  fill-opacity: 0.55;
+}
+.page-content .loop-label {
+  fill: var(--color-gray-500);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.page-content .loop-caption {
+  margin: 0 auto 1.5rem;
+  max-width: 680px;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ===== Blog: collapsible live-dashboard embed ===== */
+.page-content details.fa2-dashboard {
+  border: 1px solid #e6e8ec;
+  border-radius: 0.75rem;
+  background: var(--color-white);
+  margin: 1.5rem 0;
+  overflow: hidden;
+}
+html.dark .page-content details.fa2-dashboard {
+  border-color: rgb(255 255 255 / 0.12);
+}
+.page-content details.fa2-dashboard > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 1.1rem;
+  font-weight: 600;
+  color: var(--color-black);
+  user-select: none;
+}
+.page-content details.fa2-dashboard > summary::-webkit-details-marker {
+  display: none;
+}
+.page-content details.fa2-dashboard > summary .fa2-chev {
+  flex: 0 0 auto;
+  transition: transform 0.15s ease;
+  color: var(--color-gray-500);
+}
+.page-content details.fa2-dashboard[open] > summary .fa2-chev {
+  transform: rotate(90deg);
+}
+.page-content details.fa2-dashboard > summary .fa2-sub {
+  font-weight: 400;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+}
+.page-content details.fa2-dashboard > summary .fa2-cta {
+  margin-left: auto;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-blue);
+}
+.page-content details.fa2-dashboard[open] > summary .fa2-cta {
+  display: none;
+}
+.page-content details.fa2-dashboard .fa2-body {
+  padding: 0.25rem 1.1rem 1.1rem;
+}
+/* Neutralize each partner component's own section chrome (divider + big
+   bottom margin) when it sits inside a collapsible. */
+.page-content details.fa2-dashboard .fa2-body > div {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+.page-content .fa2-dashboard-group {
+  margin: 1.5rem 0;
+}
+.page-content .fa2-dashboard-group .fa2-dashboard {
+  margin: 0 0 0.6rem;
+}
+.page-content .fa2-dashboard-note {
+  margin-top: 0.5rem;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+}
+
+/* ===== Blog: responsive figures ===== */
+.page-content img {
+  max-width: 100%;
+  height: auto;
+}
+.page-content .post-figure {
+  margin: 0.5rem 0 1.5rem;
+}
+.page-content .post-figure img {
+  display: block;
+  width: 100%;
+  border: 1px solid #e6e8ec;
+  border-radius: 0.75rem;
+  background: var(--color-white);
+}
+.page-content .post-figure figcaption {
+  margin-top: 0.55rem;
+  font-size: 0.8rem;
+  color: var(--color-gray-500);
+  text-align: center;
+}
+.page-content .post-hero {
+  margin: 0 0 2rem;
+}
+.page-content .post-hero img {
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+/* ===== Blog: CSS-only tabbed case studies ===== */
+.page-content .cs-tabs {
+  margin: 0.75rem 0 1.5rem;
+}
+.page-content .cs-radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.page-content .cs-tablist {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  border-bottom: 1px solid #e6e8ec;
+  margin-bottom: 1.1rem;
+}
+.page-content .cs-tab {
+  cursor: pointer;
+  padding: 0.5rem 0.15rem;
+  margin-bottom: -1px;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--color-gray-500);
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.page-content .cs-tab:hover {
+  color: var(--color-black);
+}
+.page-content .cs-radio:focus-visible + .cs-radio + .cs-tablist .cs-tab,
+.page-content .cs-radio:focus-visible ~ .cs-tablist .cs-tab {
+  outline: none;
+}
+.page-content #cs-1:checked ~ .cs-tablist .cs-tab[for="cs-1"],
+.page-content #cs-2:checked ~ .cs-tablist .cs-tab[for="cs-2"] {
+  color: var(--color-black);
+  border-bottom-color: var(--color-blue);
+}
+.page-content .cs-panels {
+  border: 1px solid #e6e8ec;
+  border-radius: 0.75rem;
+  background: var(--color-white);
+  padding: 1.25rem 1.35rem;
+}
+.page-content .cs-panel {
+  display: none;
+}
+.page-content #cs-1:checked ~ .cs-panels .cs-panel:nth-child(1),
+.page-content #cs-2:checked ~ .cs-panels .cs-panel:nth-child(2) {
+  display: block;
+}
+.page-content .cs-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.15rem;
+  padding: 0.7rem 0;
+  border-top: 1px solid #f0f1f3;
+}
+.page-content .cs-row:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.page-content .cs-row:last-child {
+  padding-bottom: 0;
+}
+@media (min-width: 640px) {
+  .page-content .cs-row {
+    grid-template-columns: 160px 1fr;
+    gap: 1.25rem;
+  }
+}
+.page-content .cs-key {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: var(--color-gray-500);
+  padding-top: 0.12rem;
+}
+.page-content .cs-val {
+  color: var(--color-gray-600);
+  font-size: var(--font-size-sm);
+  line-height: 1.55;
 }
 
 /* Minimal markdown rendered from editable page text. */

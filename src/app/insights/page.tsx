@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { sections, publications, talks, blogPosts, areas, focusAreaDefs } from '@/lib/content'
+import { sections, publications, talks, listedBlogPosts as blogPosts, areas, focusAreaDefs } from '@/lib/content'
 import Breadcrumb from '@/components/Breadcrumb'
 import EditPageButton from '@/components/EditPageButton'
 import { PageEditHistoryByline } from '@/components/EditHistoryByline'
@@ -7,6 +7,7 @@ import MarkdownContent from '@/components/MarkdownContent'
 import InsightsExplorer, { type InsightSection, type AreaDef } from '@/components/InsightsExplorer'
 import PLRadar, { type RadarItem } from '@/components/PLRadar'
 import { FIELD_SIGNALS } from '@/lib/radar-signals'
+import { fetchCuratedRadar } from '@/lib/radar-curator'
 import { fetchPage, getSection } from '@/lib/indexer'
 import { formatDate } from '@/lib/format'
 
@@ -62,6 +63,7 @@ export default async function InsightsPage({
           title: post.title,
           description: post.summary,
           areas: post.areas ?? [],
+          image: post.coverImage || '',
           date: post.date || '',
         }
       }),
@@ -78,6 +80,7 @@ export default async function InsightsPage({
         eyebrow: [p.venue, formatDate(p.date)].filter(Boolean).join(' · '),
         title: p.title,
         areas: p.areas ?? [],
+        image: '/images/publication-cover.png',
         date: p.date || '',
       })),
     },
@@ -94,6 +97,7 @@ export default async function InsightsPage({
         title: t.title,
         description: t.abstract,
         areas: t.areas ?? [],
+        image: youtubeThumb(t.html) || (/podcast/i.test(`${t.venue} ${t.venue_location}`) ? '/images/podcast.webp' : ''),
         date: t.date || '',
       })),
     },
@@ -166,17 +170,35 @@ export default async function InsightsPage({
   })).sort(byDateDesc)
 
   // Reserve one slot for the newest field signal so the Radar always carries at
-  // least one external read, then fill the rest with our newest content.
+  // least one external read, then fill the rest with our newest content. This is
+  // the FALLBACK cut, used only if the live curator service is unreachable.
   const signalItems = signalPool.slice(0, 1)
-  const radarPool: RadarItem[] = [...contentPool.slice(0, 6 - signalItems.length), ...signalItems]
+  const fallbackRadarPool: RadarItem[] = [...contentPool.slice(0, 6 - signalItems.length), ...signalItems]
     .sort(byDateDesc)
     .map(({ _sort, ...item }) => ({ ...item, date: formatDate(item.date) }))
 
-  const radarEdition = (() => {
-    const newest = radarPool[0]?.date
+  const fallbackEdition = (() => {
+    const newest = fallbackRadarPool[0]?.date
     const d = newest ? new Date(newest) : new Date()
     return `${d.toLocaleDateString('en-US', { month: 'long' })} Radar`
   })()
+
+  // Prefer the live, crowd-curated Radar — whatever curators have voted onto the
+  // current edition in the dashboard (https://plrd-radar-curator.fly.dev/
+  // dashboard#radar). Falls back to the locally-computed pool if the service is
+  // unreachable so the page always renders.
+  const curated = await fetchCuratedRadar(6)
+  const rawRadarPool: RadarItem[] = curated?.items ?? fallbackRadarPool
+  const radarEdition = curated?.edition ?? fallbackEdition
+
+  // Always surface PL R&D's own output (talks, publications, posts on PL
+  // properties) ahead of third-party "field signals", while preserving each
+  // group's existing curator/date order. Array.sort is stable, so items keep
+  // their relative order within the PL and signal groups.
+  const isFieldSignal = (it: RadarItem) => it.type === 'Signal'
+  const radarPool: RadarItem[] = [...rawRadarPool].sort(
+    (a, b) => Number(isFieldSignal(a)) - Number(isFieldSignal(b)),
+  )
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">

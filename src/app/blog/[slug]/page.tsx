@@ -4,8 +4,18 @@ import { blogPosts } from '@/lib/content'
 import { formatDate } from '@/lib/format'
 import AuthorCard from '@/components/AuthorCard'
 import Breadcrumb from '@/components/Breadcrumb'
+import Fa2LiveDashboardEmbed from '@/components/Fa2LiveDashboardEmbed'
 
 type Props = { params: Promise<{ slug: string }> }
+
+// Marker a post can drop into its body to pull the live FA2 impact dashboard
+// inline at that exact spot. The build passes raw HTML through untouched, so
+// the empty div survives and we split on it here.
+const FA2_DASHBOARD_MARKER = '<div id="fa2-live-dashboard"></div>'
+
+// Refresh embedded live data on the same 60s window as the standalone
+// dashboard page. Harmless for static posts (they just re-render).
+export const revalidate = 60
 
 export function generateStaticParams() {
   return blogPosts.map((p) => ({ slug: p.slug }))
@@ -17,15 +27,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: 'Not Found' }
   // External stubs live on their original home — point search engines there.
   const canonical = post.external_url || `/blog/${post.slug}/`
+  const metaDescription = post.description || post.summary
   return {
     title: post.title,
-    description: post.summary,
+    description: metaDescription,
     alternates: { canonical },
+    // Unlisted/preview posts render but must stay out of every index.
+    robots: post.unlisted
+      ? { index: false, follow: false, googleBot: { index: false, follow: false } }
+      : undefined,
     openGraph: {
       type: 'article',
       url: canonical,
       title: post.title,
-      description: post.summary,
+      description: metaDescription,
       publishedTime: post.date || undefined,
       authors: post.authors,
       images: post.coverImage ? [post.coverImage] : undefined,
@@ -44,7 +59,7 @@ export default async function BlogPostPage({ params }: Props) {
       <div className="mt-6 mb-2 text-sm text-gray-500">
         {formatDate(post.date)}
       </div>
-      <h1 className="text-lg md:text-[32px] mb-6 leading-tight font-semibold">
+      <h1 className="text-lg md:text-[32px] mb-6 leading-tight font-semibold max-w-3xl">
         {post.title}
       </h1>
       {post.authors.length > 0 && (
@@ -54,9 +69,25 @@ export default async function BlogPostPage({ params }: Props) {
           ))}
         </div>
       )}
-      {post.html && (
-        <div className="page-content text-base text-gray-700 leading-relaxed max-w-3xl" dangerouslySetInnerHTML={{ __html: post.html }} />
-      )}
+      {post.html && renderBody(post.html)}
+    </div>
+  )
+}
+
+// Render the post body, splicing the live dashboard in at the marker if present.
+function renderBody(html: string) {
+  const cls =
+    'page-content text-base text-gray-700 leading-relaxed max-w-3xl'
+  if (!html.includes(FA2_DASHBOARD_MARKER)) {
+    return <div className={cls} dangerouslySetInnerHTML={{ __html: html }} />
+  }
+  const [before, after] = html.split(FA2_DASHBOARD_MARKER)
+  return (
+    <div className={cls}>
+      <div dangerouslySetInnerHTML={{ __html: before }} />
+      {/* Themed collapsibles, each collapsed by default. */}
+      <Fa2LiveDashboardEmbed />
+      <div dangerouslySetInnerHTML={{ __html: after }} />
     </div>
   )
 }
