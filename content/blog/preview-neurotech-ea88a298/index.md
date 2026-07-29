@@ -4,6 +4,7 @@ date: 2026-07-27
 summary: "An overview of PL R&D's Neurotechnology focus area — brain-computer interfaces, biologically inspired AI, and whole-organism emulation — the three opportunity spaces we are backing, the inflection points we believe are within reach, and the 2030 milestones we are working toward."
 authors:
   - sean-escola
+  - david-markowitz
 cover_image: "/images/blog/neurotechnology-hero.webp"
 areas:
   - neurotech
