@@ -55,6 +55,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
+      {post.unlisted && <PreviewBanner />}
       <Breadcrumb items={[{ label: 'Blog', href: '/blog/' }, { label: post.title }]} />
       <div className="mt-6 mb-2 text-sm text-gray-500">
         {formatDate(post.date)}
@@ -70,6 +71,17 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       )}
       {post.html && renderBody(post.html)}
+    </div>
+  )
+}
+
+// Sticky bar shown only on unlisted/preview posts, making it obvious the page
+// is a private preview and not a published, discoverable post.
+function PreviewBanner() {
+  return (
+    <div className="sticky top-0 z-50 -mx-6 mb-6 flex items-center justify-center gap-2 border-b border-amber-300 bg-amber-100 px-6 py-2 text-sm font-medium text-amber-900">
+      <span aria-hidden="true">🔒</span>
+      <span>Preview only — unlisted draft, not publicly linked. Please don’t share.</span>
     </div>
   )
 }
