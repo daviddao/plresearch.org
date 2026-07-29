@@ -62,6 +62,8 @@ export type BlogPost = {
   title: string
   date: string
   summary: string
+  /** Optional dedicated meta/OG description; falls back to `summary` when empty. */
+  description?: string
   authors: string[]
   /** Focus-area slugs (e.g. 'neurotech') — drives the Insights focus-area filter. */
   areas: string[]
@@ -75,6 +77,12 @@ export type BlogPost = {
    */
   coverImage: string
   html: string
+  /**
+   * When true the post still renders at its URL but is hidden from every
+   * listing, the sitemap, RSS, the search index, and is marked noindex —
+   * i.e. reachable only via its (deliberately cryptic) direct link.
+   */
+  unlisted?: boolean
 }
 
 export type Area = {
@@ -119,6 +127,8 @@ export const authors = authorsData as Author[]
 export const talks = talksData as Talk[]
 export const tutorials = tutorialsData as Tutorial[]
 export const blogPosts = blogData as BlogPost[]
+/** Blog posts safe to surface in listings (excludes unlisted/preview posts). */
+export const listedBlogPosts = blogPosts.filter((b) => !b.unlisted)
 export const areas = areasData as Area[]
 
 /**

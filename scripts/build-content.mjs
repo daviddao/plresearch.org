@@ -250,11 +250,13 @@ async function buildBlog() {
       title: b.title || '',
       date: b.date || '',
       summary: b.summary || '',
+      description: b.description || '',
       authors: b.authors || [],
       areas: b.areas || [],
       external_url: b.external_url || '',
       coverImage,
       html: renderMd(b.content),
+      unlisted: b.unlisted === true,
     })
   }
 
@@ -356,7 +358,7 @@ function buildFeed(publications, talks, blog) {
     })),
     // Blog posts: external stubs (e.g. protocol.ai imports) link to their
     // original URL; native posts link to /blog/<slug>/ on plresearch.org.
-    ...blog.slice(0, 20).map((b) => ({
+    ...blog.filter((b) => !b.unlisted).slice(0, 20).map((b) => ({
       title: b.title,
       link: b.external_url || `${baseUrl}/blog/${b.slug}/`,
       date: b.date,
@@ -411,8 +413,8 @@ function buildSearchIndex(publications, talks, authors, blog, tutorials, areas) 
       type: 'author',
       relpermalink: `/authors/${a.slug}/`,
     })),
-    // Blog posts
-    ...blog.map((b) => ({
+    // Blog posts (unlisted/preview posts stay out of search)
+    ...blog.filter((b) => !b.unlisted).map((b) => ({
       title: b.title,
       summary: (b.summary || '').slice(0, 500),
       date: b.date,
@@ -446,7 +448,7 @@ function buildSearchIndex(publications, talks, authors, blog, tutorials, areas) 
     { title: 'Focus Areas', summary: 'Research focus areas driving breakthroughs in computing', date: '', type: 'page', relpermalink: '/areas/' },
     // FA2 sub-pages
     { title: 'Economies & Governance', summary: 'Building crypto-native economic and governance infrastructure', date: '', type: 'area', relpermalink: '/areas/economies-governance/' },
-    { title: 'Opportunity Spaces', summary: 'Convergence zones for systemic change in economies and governance', date: '', type: 'page', relpermalink: '/areas/economies-governance/opportunity-spaces/' },
+    { title: 'Opportunity Spaces', summary: 'Convergence zones for systemic change in economies and governance', date: '', type: 'page', relpermalink: '/areas/economies-governance/#opportunity-spaces' },
     { title: 'FA2 Subareas', summary: 'Nine interconnected subfields for economies and governance', date: '', type: 'page', relpermalink: '/areas/economies-governance/subareas/' },
     { title: 'Impact Dashboard', summary: 'Ecosystem impact metrics across villages and funding', date: '', type: 'page', relpermalink: '/areas/economies-governance/impact/' },
     { title: 'Project Explorer', summary: '242+ teams building decentralized coordination and public goods', date: '', type: 'page', relpermalink: '/areas/economies-governance/projects/' },

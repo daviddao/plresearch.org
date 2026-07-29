@@ -7,50 +7,54 @@
     {
       "id": "open-compute-networks",
       "title": "Open Compute Networks",
-      "tagline": "Distributed infrastructure for AI training and inference beyond the hyperscalers",
-      "image": "/images/fa2/opportunity-spaces/open-compute-networks.jpg",
-      "description": "AI compute infrastructure is concentrated within a handful of hyperscalers and large labs, limiting experimentation and participation. Distributed compute markets can provide scalable access to training and inference capacity—enabling AI development to happen across decentralized infrastructure rather than a handful of centralized clouds.",
-      "inflectionPoint": "A decentralized compute network trains a competitive model—demonstrating that distributed infrastructure can match centralized systems for meaningful AI workloads, breaking the assumption that only hyperscalers can develop frontier AI.",
+      "tagline": "Decentralized AI training and inference across compute hardware, energy grids, and sovereign regions",
+      "image": "/images/opportunity-spaces/open-compute-networks.jpg",
+      "description": "AI compute infrastructure is concentrated within a handful of hyperscalers and large labs, limiting experimentation and participation. That concentration also lets usable compute sit idle across edge environments. Additionally, a growing set of regions and institutions look for AI infrastructure they control rather than rent from a few central providers. Decentralized compute markets could pool capacity across where power is available, harnessing compute at the edge, and giving regions sovereign alternatives.",
+      "inflectionPoint": "A decentralized compute network trains a competitive model—demonstrating that decentralized infrastructure can match centralized systems for meaningful AI workloads, breaking the assumption that only hyperscalers can develop frontier AI.",
       "tippingSignals": [
         "Decentralized compute networks training meaningful models at competitive cost",
         "New markets for compute coordination and spot pricing emerge",
-        "Startups build training pipelines on distributed infrastructure",
-        "Open compute becomes a viable alternative for research labs and independent developers"
+        "Startups build training pipelines on decentralized infrastructure",
+        "Open compute becomes a viable alternative for research labs and independent developers",
+        "Compute capacity co-located with renewable energy generation, bypassing grid bottlenecks"
       ],
-      "shift": "AI infrastructure becomes globally distributed. Model training moves from centralized labs to open, coordinated compute markets.",
-      "subfields": ["Distributed Compute", "Decentralized AI Infrastructure", "Compute Coordination"],
+      "shift": "AI infrastructure becomes globally decentralized. Model training moves from centralized labs to open, coordinated compute markets.",
+      "subfields": ["Decentralized Compute", "Decentralized AI Infrastructure", "Compute Coordination", "Energy-Sited Compute"],
       "keyAssumptions": [
-        "Concentration of AI infrastructure is the primary competitive moat. Whoever controls compute controls who can build frontier AI. Distributed alternatives must reach performance and cost parity to meaningfully shift this dynamic.",
-        "Supply-side coordination is the hard problem. Building distributed compute networks that maintain reliability, consistent performance, and economic sustainability requires solving hard mechanism design problems that pure technology alone does not address.",
+        "Concentration of AI infrastructure is the primary competitive moat. Whoever controls compute controls who can build frontier AI. Decentralized alternatives must reach performance and cost parity to meaningfully shift this dynamic.",
+        "Supply-side coordination is the hard problem. Building decentralized compute networks that maintain reliability, consistent performance, and economic sustainability requires solving hard mechanism design problems that pure technology alone does not address.",
+        "Multiple pressures are pushing compute out of centralized clusters. Power and grid interconnection are increasingly as binding as chips—queues run years and new generation sits stranded—but they are not the only force: sovereign demand for infrastructure independent of a few providers, and usable compute stranded across edge environments, all reward architectures that decentralize rather than concentrate. Compute is easier to relocate than power, politics, or hardware already in the field, so the strategic move is to coordinate capacity where it already exists rather than wait for the grid, or a single provider, to serve centralized clusters.",
         "Open infrastructure enables open innovation. When AI training infrastructure is permissionless, independent researchers, small labs, and new entrants can experiment and innovate without depending on large-scale capital or hyperscaler access.",
-        "The window is open but may close quickly. As AI infrastructure consolidation accelerates, the opportunity to establish open alternatives narrows. Distributed compute must demonstrate viability before centralized lock-in becomes irreversible."
+        "The window is open but may close quickly. As AI infrastructure consolidation accelerates, the opportunity to establish open alternatives narrows. Decentralized compute must demonstrate viability before centralized lock-in becomes irreversible."
       ],
       "observations": [
-        "Centralization accelerates as model scale grows. The compute requirements for frontier models grow faster than distributed alternatives can scale, creating a widening gap between centralized and decentralized capabilities.",
-        "Reliability and performance variance remains a major barrier. Distributed compute networks struggle to offer the consistent SLAs that production AI workloads require, limiting adoption to experimental and non-critical use cases.",
-        "Speculative token design undermines real utility. Many distributed compute projects have been designed around token incentives rather than genuine infrastructure utility, eroding trust and slowing adoption.",
-        "No shared standards for compute coordination. Fragmented protocols, APIs, and orchestration layers prevent interoperability between distributed compute networks."
+        "Centralization accelerates as model scale grows. The compute requirements for frontier models grow faster than decentralized alternatives can scale, creating a widening gap between centralized and decentralized capabilities.",
+        "Reliability and performance variance remains a major barrier. Decentralized compute networks struggle to offer the consistent SLAs that production AI workloads require, limiting adoption to experimental and non-critical use cases.",
+        "Speculative token design undermines real utility. Many decentralized compute projects have been designed around token incentives rather than genuine infrastructure utility, eroding trust and slowing adoption.",
+        "No shared standards for compute coordination. Fragmented protocols, APIs, and orchestration layers prevent interoperability between decentralized compute networks.",
+        "Centralized compute faces compounding structural limits. Grid strain delays roughly a fifth of planned data center projects, and interconnection queues reach a decade in some markets; at the same time, reliance on a few providers leaves regions without a sovereign fallback, and large amounts of usable compute sit idle across edge environments. Decentralized coordination can turn power, sovereignty, and stranded capacity into supply."
       ],
-      "theOpportunity": "Distributed compute networks become viable infrastructure for meaningful AI training workloads. Open compute markets attract independent researchers, startups, and eventually mid-tier labs seeking alternatives to hyperscaler pricing. PL's infrastructure experience—bootstrapping global decentralized networks—becomes directly applicable to compute coordination at scale.",
+      "theOpportunity": "Decentralized compute networks become viable infrastructure for meaningful AI training and inference by pooling capacity across power-rich sites the grid can't serve, sovereign infrastructure that regions and institutions control rather than rent, and compute across edge environments. The shared problem across all three is coordination—matching demand to decentralized supply reliably. Open compute markets attract independent researchers, startups, and eventually mid-tier labs seeking alternatives to hyperscaler pricing and control. PL's role is to support the research and early builders coordinating this capacity.",
       "fieldSignals": [
-        { "kpi": "Distributed Training Milestones", "measurement": "# of competitive AI models trained on distributed compute infrastructure" },
-        { "kpi": "Compute Network Utilization", "measurement": "Sustained, non-speculative usage across distributed compute networks" },
-        { "kpi": "Cost Competitiveness", "measurement": "Price per GPU-hour on distributed networks vs. hyperscaler equivalents" },
-        { "kpi": "Ecosystem Businesses", "measurement": "# of startups building AI products on distributed compute rather than hyperscalers" },
-        { "kpi": "Open Standards Adoption", "measurement": "# of distributed compute networks using shared coordination protocols" }
+        { "kpi": "Decentralized Training Milestones", "measurement": "# of competitive AI models trained on decentralized compute infrastructure" },
+        { "kpi": "Compute Network Utilization", "measurement": "Sustained, non-speculative usage across decentralized compute networks" },
+        { "kpi": "Cost Competitiveness", "measurement": "Price per GPU-hour on decentralized networks vs. hyperscaler equivalents" },
+        { "kpi": "Ecosystem Businesses", "measurement": "# of startups building AI products on decentralized compute rather than hyperscalers" },
+        { "kpi": "Open Standards Adoption", "measurement": "# of decentralized compute networks using shared coordination protocols" },
+        { "kpi": "Energy-Sited Capacity", "measurement": "GW of compute co-located with stranded or curtailed renewable generation, bypassing grid interconnection" }
       ]
     },
     {
       "id": "agent-coordination-infrastructure",
       "title": "Agent Coordination Infrastructure",
       "tagline": "Identity, reputation, and coordination protocols for persistent autonomous agents",
-      "image": "/images/fa2/opportunity-spaces/agent-coordination-infrastructure.jpg",
+      "image": "/images/opportunity-spaces/agent-coordination-infrastructure.jpg",
       "description": "Agents currently operate as isolated tools rather than persistent entities capable of coordination, negotiation, and cooperation. The emergence of large-scale agent economies depends on open protocols for agent identity, reputation, task coordination, and skill exchange—infrastructure that no single lab or platform should control.",
       "inflectionPoint": "Large numbers of long-running autonomous agents coordinate across organizational boundaries through open protocols—demonstrating that agent economies can emerge without centralized orchestration as the primary coordination mechanism.",
       "tippingSignals": [
         "Long-running autonomous agents operating in production across multiple systems",
-        "Machine-to-machine economic activity on open coordination rails",
-        "Agent-native marketplaces for services, capabilities, and data exchange",
+        "Agents negotiating and delegating tasks to each other across organizational boundaries",
+        "Shared discovery and capability-advertisement protocols adopted across agent frameworks",
         "Reputation portable across agent ecosystems without losing value"
       ],
       "shift": "Agents move from isolated tools to persistent economic actors. Digital economies become increasingly mediated by autonomous systems operating on open coordination infrastructure.",
@@ -65,37 +69,38 @@
         "Current agent frameworks are proprietary or tightly coupled. LangChain, AutoGPT, and similar frameworks provide orchestration but not open coordination. Agents built on these frameworks cannot easily interoperate or coordinate across organizational boundaries.",
         "No standardized agent identity layer exists. Each platform or framework defines its own notion of agent identity, making it impossible to carry reputation or credentials across systems.",
         "Reputation is the unsolved problem. Agents need to earn trust over time, but existing reputation systems were designed for humans or for closed platforms. Portable, adversarially robust agent reputation remains an open research and engineering problem.",
-        "Economic coordination for agents is a new design space. Existing payment rails, contracts, and market mechanisms assume human or corporate participants. Agent-native economic infrastructure requires new primitives."
+        "Task and workflow coordination for agents is a new design space. Existing orchestration assumes a single operator or tightly coupled services; multi-agent negotiation, delegation, and task allocation across trust boundaries need new primitives."
       ],
-      "theOpportunity": "Open protocols for agent identity, reputation, coordination, and skill exchange emerge as shared infrastructure across the agent ecosystem. Agents built on different platforms can coordinate, negotiate, and transact through shared rails. PL's expertise in decentralized network bootstrapping and crypto-economic coordination becomes directly applicable to the emerging agent economy.",
+      "theOpportunity": "Open protocols for agent identity, reputation, coordination, and skill exchange emerge as shared infrastructure across the agent ecosystem. Agents built on different platforms can coordinate, negotiate, and delegate work through shared rails. PL's expertise in decentralized network bootstrapping and crypto-economic coordination becomes directly applicable to the emerging agent economy.",
       "fieldSignals": [
         { "kpi": "Agent Identity Deployments", "measurement": "# of autonomous agents with persistent, portable identity operating across systems" },
         { "kpi": "Cross-Platform Coordination", "measurement": "# of documented agent-to-agent interactions across organizational boundaries on open rails" },
         { "kpi": "Reputation Systems", "measurement": "# of agent ecosystems with portable, adversarially robust reputation infrastructure" },
         { "kpi": "Open Protocol Adoptions", "measurement": "# of agent frameworks implementing shared coordination protocols" },
-        { "kpi": "Agent Marketplaces", "measurement": "# of agent-native marketplaces for services, capabilities, or data exchange" }
+        { "kpi": "Capability Discovery", "measurement": "# of agents advertising and discovering capabilities through shared coordination protocols" }
       ]
     },
     {
       "id": "embodied-ai-robotics-data",
       "title": "Embodied AI & Robotics Data Networks",
       "tagline": "Robot fleets generating the continuous real-world training data that embodied intelligence requires",
-      "image": "/images/fa2/opportunity-spaces/embodied-ai-robotics-data.jpg",
+      "image": "/images/opportunity-spaces/embodied-ai-robotics-data.jpg",
       "description": "Embodied AI systems require vast quantities of real-world interaction data that is today scarce, fragmented, and expensive to generate. Large-scale robotics networks capable of generating continuous training data streams are the missing infrastructure for embodied intelligence—and the foundation for automation across industries.",
       "inflectionPoint": "Robotics datasets rival internet-scale datasets in size and diversity, enabling embodied AI to demonstrate the complete behavioral repertoire required for deployment across real-world industrial and service environments.",
       "tippingSignals": [
         "Large robot fleets deployed generating continuous real-world training data",
         "Robotics datasets reaching internet-scale in size and diversity",
         "Robotics-as-a-service companies forming around data generation infrastructure",
-        "Embodied AI demonstrating capability transfer from simulation to real-world environments"
+        "Embodied AI demonstrating capability transfer from simulation to real-world environments",
+        "Data from deployed fleets measurably improving embodied models, which drives further deployment"
       ],
-      "shift": "Embodied intelligence becomes economically viable across industries. The physical world becomes continuously instrumented for AI training.",
+      "shift": "Embodied intelligence becomes economically viable across industries. The physical world becomes continuously instrumented for AI training, and each deployed fleet makes the next one cheaper as shared data compounds.",
       "subfields": ["Robotics Data Networks", "Embodied AI", "Simulation-to-Real", "Robotics Infrastructure"],
       "keyAssumptions": [
         "The data bottleneck is the primary constraint on embodied AI progress. Unlike language models that could train on existing internet data, embodied AI requires data from physical interaction that does not yet exist at the scale needed for breakthrough capabilities.",
-        "Data networks, not individual robots, are the strategic asset. The value is not in any single robot platform but in the network infrastructure that aggregates, normalizes, and distributes training data across robotics ecosystems.",
+        "Data networks, not individual robots, are the strategic asset. The value is not in any single robot platform but in the network infrastructure that aggregates, normalizes, and decentralized training data across robotics ecosystems.",
         "Open data ecosystems prevent robotics from becoming a walled garden. If robotics data is controlled by a handful of platforms, the embodied AI ecosystem will centralize around their capabilities and business models.",
-        "PL can combine robotics networks, data networks, and storage infrastructure uniquely. The combination of IPFS/Filecoin storage infrastructure with network coordination and open data market design is a structural advantage no other actor has."
+        "PL can combine robotics networks, data networks, and storage infrastructure uniquely. The combination of IPFS/Filecoin storage infrastructure with network coordination and open data market design is a structural advantage no other actor has, one that positions PL to help an open version of the data flywheel emerge rather than leaving it captured by any single robot platform."
       ],
       "observations": [
         "Robotics platforms risk becoming proprietary walled gardens. Current robotics companies are racing to build closed ecosystems, limiting data sharing and creating the same winner-take-all dynamics that characterized the early web.",
@@ -103,20 +108,21 @@
         "No shared data standards for robotics training. Fragmented data formats, coordinate systems, and annotation standards prevent data generated by different robot platforms from being used interoperably.",
         "Capital requirements for robotics data generation are high. Deploying robot fleets at the scale needed to generate training data requires capital structures different from software-only AI development."
       ],
-      "theOpportunity": "Open robotics data networks generate continuous streams of real-world training data, accessible to researchers, startups, and labs that cannot afford proprietary robot fleets. Data cooperatives and shared data infrastructure emerge, enabling competitive embodied AI development without requiring each actor to build their own physical infrastructure from scratch.",
+      "theOpportunity": "Open robotics data networks generate continuous streams of real-world training data, accessible to researchers, startups, and labs that cannot afford proprietary robot fleets. Deployment and data generation form a single self-reinforcing loop: deployed fleets generate real-world interaction data, that data helps train better embodied AI models, better models make deployment cheaper and more capable/valuable, which help scale and accelerate fleet deployment. Whoever unlocks that loop compounds fastest. By supporting research and builders across data storage, network coordination, and market design, PL can help the open version of that loop emerge and compound.",
       "fieldSignals": [
         { "kpi": "Robot Fleet Scale", "measurement": "# of robots deployed in real-world environments generating open training data" },
         { "kpi": "Dataset Scale", "measurement": "Volume and diversity of open robotics training datasets relative to internet-scale benchmarks" },
         { "kpi": "Data Network Participants", "measurement": "# of research labs, startups, and companies contributing to or consuming shared robotics data" },
         { "kpi": "Open Standard Adoptions", "measurement": "# of robotics platforms implementing shared data formats and annotation standards" },
-        { "kpi": "Sim-to-Real Transfer", "measurement": "Benchmarked capability transfer from simulation to real-world environments" }
+        { "kpi": "Sim-to-Real Transfer", "measurement": "Benchmarked capability transfer from simulation to real-world environments" },
+        { "kpi": "Data Flywheel Velocity", "measurement": "Rate at which data from deployed fleets improves model performance and triggers new deployment" }
       ]
     },
     {
       "id": "agent-native-economic-infrastructure",
       "title": "Agent-Native Economic Infrastructure",
       "tagline": "Financial and coordination systems designed from the ground up for machine participants",
-      "image": "/images/fa2/opportunity-spaces/agent-native-economic-infrastructure.jpg",
+      "image": "/images/opportunity-spaces/agent-native-economic-infrastructure.jpg",
       "description": "Existing digital economies are designed for human participation. Autonomous agents lack the infrastructure for autonomous payments, contracting, and coordination—primitives that are prerequisites for agent economies to emerge. New financial and coordination systems designed for machine participants must be built before agent economies arrive at scale.",
       "inflectionPoint": "Autonomous organizations composed primarily of AI agents emerge, completing transactions, managing resources, and coordinating production without requiring human intermediation at each step.",
       "tippingSignals": [
@@ -126,7 +132,7 @@
         "Agents entering and enforcing contracts without human intermediation"
       ],
       "shift": "Agents become permanent participants in economic systems. The agent economy becomes a distinct economic category rather than an extension of human-operated systems.",
-      "subfields": ["Agent Payments", "Autonomous Organizations", "Agent Marketplaces", "Machine-to-Machine Coordination"],
+      "subfields": ["Agent Payments", "Autonomous Organizations", "Agent Marketplaces", "Machine-to-Machine Commerce"],
       "keyAssumptions": [
         "Human-centric financial infrastructure will not adapt to agent needs fast enough. ACH, SWIFT, and existing payment rails are too slow, too expensive, and too dependent on human identity verification for agent economies to operate on them effectively.",
         "Crypto-economic primitives are the natural substrate for agent economies. Permissionless transactions, programmable contracts, and on-chain settlement are well-matched to the requirements of autonomous agents operating at machine speed.",

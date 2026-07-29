@@ -1,15 +1,13 @@
 import type { Metadata } from 'next'
-import { Inter, Newsreader } from 'next/font/google'
+import { Newsreader } from 'next/font/google'
 import { siteConfig } from '@/lib/site-config'
 import { AuthProvider } from '@/lib/atproto'
 import SiteShell from '@/components/SiteShell'
 import GoatCounter from '@/components/GoatCounter'
+import CookieConsent from '@/components/CookieConsent'
+import { GoogleAnalytics } from '@next/third-parties/google'
+import { COOKIE_CONSENT_ENABLED } from '@/lib/cookie-consent'
 import './globals.css'
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-})
 
 const newsreader = Newsreader({
   subsets: ['latin'],
@@ -25,10 +23,16 @@ export const metadata: Metadata = {
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.baseUrl),
   alternates: {
-    canonical: '/',
+    // No site-wide canonical: a root-level canonical to '/' is inherited by
+    // every page that doesn't set its own, which points all subpages at the
+    // homepage and deindexes them. Each page declares its own canonical; the
+    // homepage sets canonical: '/' in src/app/page.tsx.
     types: {
       'application/rss+xml': '/feed.xml',
     },
+  },
+  verification: {
+    google: 'XG_TWMgF2o6dAIwddnRHH3bXN6ewPoC6Savtyb_cltU',
   },
   robots: {
     index: true,
@@ -99,7 +103,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${newsreader.variable} font-body min-w-[320px] text-base text-black leading-normal antialiased`}>
+      <body className={`${newsreader.variable} font-body min-w-[320px] text-base text-black leading-normal antialiased`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
@@ -112,6 +116,13 @@ export default function RootLayout({
           <SiteShell>{children}</SiteShell>
         </AuthProvider>
         <GoatCounter />
+        {process.env.NEXT_PUBLIC_GA_ID &&
+          (COOKIE_CONSENT_ENABLED ? (
+            <CookieConsent gaId={process.env.NEXT_PUBLIC_GA_ID} />
+          ) : (
+            // Banner disabled: load analytics directly.
+            <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+          ))}
       </body>
     </html>
   )

@@ -553,6 +553,13 @@
     "relpermalink": "/publications/benet2014/"
   },
   {
+    "title": "Allison Duettmann — Why We Don't Have to Die: Cryonics, Uploading, and Existential Hope",
+    "summary": "Juan Benet speaks with Allison Duettmann, CEO of the Foresight Institute, about why cryonics and mind emulation could mean we don't have to die, how whole-brain emulation and connectomics could keep humans compatible with superintelligent AI, how nanotechnology could rebuild the physical world, and the case for Existential Hope — imagining flourishing futures as a precondition for building them.",
+    "date": "2026-07-21T00:00:00.000Z",
+    "type": "talk",
+    "relpermalink": "/talks/jbp-allison-duettmann/"
+  },
+  {
     "title": "Can Quadratic Funding Go Mainstream? Ma Earth, Hypercerts & the Future of Public Goods",
     "summary": "Kevin Owocki sits down with Matthew Monahan (Ma Earth) and Holke Brammer (Hypercerts Foundation) to discuss a bold new experiment: a $1 million Quadratic Funding round designed to bring public goods funding beyond the crypto ecosystem and into the mainstream.",
     "date": "2026-06-30T00:00:00.000Z",
@@ -1680,6 +1687,20 @@
     "relpermalink": "/authors/zixuan-zhang/"
   },
   {
+    "title": "Programmable Economies & Governance: Upgrading Society's Operating System",
+    "summary": "An overview of PL R&D's Programmable Economies & Governance focus area — the programmable infrastructure societies use to decide, allocate, verify, and coordinate — and the four opportunity spaces and inflection points we believe are within reach.",
+    "date": "2026-07-23T00:00:00.000Z",
+    "type": "blog",
+    "relpermalink": "/blog/better-economies-governance-systems/"
+  },
+  {
+    "title": "How PL R&D Accelerates Breakthroughs",
+    "summary": "The first in a series: how PL R&D moves frontier ideas from open research into deployed systems across four focus areas — how we drive, measure, and sustain breakthroughs, and what our track record teaches us.",
+    "date": "2026-07-14T00:00:00.000Z",
+    "type": "blog",
+    "relpermalink": "/blog/how-pl-rd-accelerates-breakthroughs/"
+  },
+  {
     "title": "Announcing the Juan Benet Podcast: Launching With First Guest Max Hodak, CEO of Science Corp",
     "summary": "Juan Benet Podcast launches with Max Hodak on neurotech, brain interfaces, Fast R&D, and more.",
     "date": "2026-04-08T00:00:00.000Z",
@@ -1852,7 +1873,7 @@
     "summary": "Convergence zones for systemic change in economies and governance",
     "date": "",
     "type": "page",
-    "relpermalink": "/areas/economies-governance/opportunity-spaces/"
+    "relpermalink": "/areas/economies-governance/#opportunity-spaces"
   },
   {
     "title": "FA2 Subareas",
