@@ -18,6 +18,8 @@ const TABS = [
   { id: 'alumni',     label: 'Alumni' },
 ]
 
+const AUTHOR_PHOTO_CLASS = 'w-full h-full object-cover object-top grayscale group-hover:scale-[1.03] transition-transform duration-500'
+
 type Props = {
   heroTitle: string
   heroSubtitle: string
@@ -134,7 +136,7 @@ function LeaderCard({ author }: { author: typeof authors[number] }) {
             <img
               src={author.avatarPath}
               alt={author.name}
-              className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
+              className={AUTHOR_PHOTO_CLASS}
             />
           ) : (
             <div className="w-full h-full bg-gray-200" />
@@ -180,7 +182,7 @@ function AdvisorCard({ author }: { author: typeof authors[number] }) {
           <img
             src={author.avatarPath}
             alt={author.name}
-            className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
+            className={AUTHOR_PHOTO_CLASS}
           />
         ) : (
           <div className="w-full h-full bg-gray-200 flex items-center justify-center text-2xl font-semibold text-gray-400">
@@ -208,7 +210,7 @@ function AlumniCard({ author }: { author: typeof authors[number] }) {
           <img
             src={author.avatarPath}
             alt={author.name}
-            className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
+            className={AUTHOR_PHOTO_CLASS}
           />
         ) : (
           <div className="w-full h-full bg-gray-200" />
