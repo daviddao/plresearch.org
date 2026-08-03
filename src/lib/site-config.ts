@@ -35,7 +35,8 @@ export const mainNav: NavItem[] = [
       { name: 'Neurotech', url: '/areas/neurotech/' },
     ],
   },
-  { name: 'Impact', url: '/impact/' },
+  // 'Impact' is intentionally omitted from the nav: the impact experience is an
+  // unlisted draft, reachable only via the cryptic /impact-preview/<key>/ link.
   { name: 'Insights', url: '/insights/' },
   { name: 'Team', url: '/authors/' },
 ]

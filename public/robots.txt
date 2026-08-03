@@ -5,5 +5,8 @@ Disallow: /admin
 Disallow: /edit
 Disallow: /write
 Disallow: /api/
+# Unlisted drafts — shared by link only, not for indexing.
+Disallow: /impact
+Disallow: /impact-preview
 
 Sitemap: https://www.plrd.org/sitemap.xml
