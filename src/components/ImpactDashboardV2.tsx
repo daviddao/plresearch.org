@@ -63,9 +63,13 @@ const FA_ICON: Record<FocusAreaKey, AreaIconType> = {
 export default function ImpactDashboardV2({
   liveOutputs = {},
   marketSignals = {},
+  recordsByArea,
 }: {
   liveOutputs?: LiveOutputs
   marketSignals?: MarketSignals
+  /** Instrument records per focus area, precomputed server-side (static records
+   *  merged with any OpenAlex CSV readings). Falls back to the static set. */
+  recordsByArea?: Partial<Record<FocusAreaKey, InstrumentRecord[]>>
 }) {
   const [filter, setFilter] = useState<FocusAreaKey>('digital-human-rights')
   const [active, setActive] = useState<InflectionPoint | null>(null)
@@ -74,6 +78,7 @@ export default function ImpactDashboardV2({
   const [defInstrument, setDefInstrument] = useState<InstrumentId | null>(null)
 
   const visible = useMemo(() => INFLECTION_POINTS.filter((p) => p.area === filter), [filter])
+  const records = recordsByArea?.[filter] ?? instrumentsForArea(filter)
 
   return (
     <>
@@ -123,7 +128,7 @@ export default function ImpactDashboardV2({
             </span>
             <span className="text-[11px] text-gray-400">· Is the field speeding up?</span>
           </div>
-          <FieldVelocityBox area={filter} onOpen={() => setVelocityOpen(true)} />
+          <FieldVelocityBox records={records} onOpen={() => setVelocityOpen(true)} />
 
           {/* Inflection points — four cards in two rows, with live signals. */}
           <div className="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
@@ -157,7 +162,12 @@ export default function ImpactDashboardV2({
         />
       )}
       {velocityOpen && (
-        <VelocityModal area={filter} onClose={() => setVelocityOpen(false)} onOpenDef={setDefInstrument} />
+        <VelocityModal
+          area={filter}
+          records={records}
+          onClose={() => setVelocityOpen(false)}
+          onOpenDef={setDefInstrument}
+        />
       )}
       {defInstrument && (
         <InstrumentDefinitionModal id={defInstrument} onClose={() => setDefInstrument(null)} />
@@ -224,6 +234,11 @@ function DirectionChip({ direction, size = 'sm' }: { direction: Direction; size?
       {meta.label}
     </span>
   )
+}
+
+/** Show the date portion of an ISO string (the full value stays in provenance). */
+function shortDate(s?: string): string | undefined {
+  return s ? s.slice(0, 10) : s
 }
 
 type SeriesPoint = { x: number | string; y: number; lo?: number; hi?: number; reliable?: boolean }
@@ -372,7 +387,7 @@ function InstrumentCell({ record }: { record: InstrumentRecord }) {
           <span className="line-clamp-2 text-sm font-semibold leading-snug text-black">{record.value}</span>
           <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-gray-400">
             {record.direction && <DirectionChip direction={record.direction} />}
-            {record.asOf && <span className="tabular-nums">as of {record.asOf}</span>}
+            {record.asOf && <span className="tabular-nums">as of {shortDate(record.asOf)}</span>}
           </span>
         </>
       )}
@@ -389,8 +404,7 @@ function InstrumentCell({ record }: { record: InstrumentRecord }) {
   )
 }
 
-function FieldVelocityBox({ area, onOpen }: { area: FocusAreaKey; onOpen: () => void }) {
-  const records = instrumentsForArea(area)
+function FieldVelocityBox({ records, onOpen }: { records: InstrumentRecord[]; onOpen: () => void }) {
   return (
     <button
       type="button"
@@ -438,16 +452,17 @@ function SourceLinks({ sources }: { sources: { label: string; url: string }[] })
 
 function VelocityModal({
   area,
+  records,
   onClose,
   onOpenDef,
 }: {
   area: FocusAreaKey
+  records: InstrumentRecord[]
   onClose: () => void
   onOpenDef: (id: InstrumentId) => void
 }) {
   useModalChrome(onClose)
   const fa = FOCUS_AREAS.find((f) => f.key === area)!
-  const records = instrumentsForArea(area)
   return (
     <div
       role="dialog"
@@ -542,7 +557,7 @@ function VelocityModal({
                           {r.trend && <div className="mt-1 text-xs text-gray-500">{r.trend}</div>}
                           <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-gray-400">
                             {r.window && <span>window {r.window}</span>}
-                            {r.asOf && <span className="tabular-nums">as of {r.asOf}</span>}
+                            {r.asOf && <span className="tabular-nums">as of {shortDate(r.asOf)}</span>}
                           </div>
                         </div>
                       </div>

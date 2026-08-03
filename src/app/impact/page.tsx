@@ -6,6 +6,9 @@ import { fetchSimocracyStats } from '@/lib/simocracy'
 import { fetchGainforestStats } from '@/lib/gainforest'
 import { fetchGlowStats } from '@/lib/glow'
 import { resolveAllSignals } from '@/lib/market-signals'
+import { FOCUS_AREAS, type FocusAreaKey } from '@/lib/inflection-points'
+import { instrumentsForArea, withOpenAlex, type InstrumentRecord } from '@/lib/velocity-instruments'
+import { loadAllOpenAlex } from '@/lib/velocity-openalex'
 
 // The impact page reads field velocity: the interventions we run, the five
 // instruments we read a field's rate of change with, and the inflection points
@@ -61,6 +64,14 @@ export const metadata: Metadata = {
 
 export default async function ImpactPage() {
   const [liveOutputs, marketSignals] = await Promise.all([fetchLiveOutputs(), resolveAllSignals()])
+
+  // Merge any OpenAlex CSV readings (idea vintage + talent entry) into the static
+  // instrument records, per focus area. Parsed at build time; absent CSVs are a
+  // no-op, leaving the documented `unwired` records in place.
+  const openAlex = loadAllOpenAlex()
+  const recordsByArea = Object.fromEntries(
+    FOCUS_AREAS.map((fa) => [fa.key, withOpenAlex(instrumentsForArea(fa.key), openAlex[fa.key])]),
+  ) as Partial<Record<FocusAreaKey, InstrumentRecord[]>>
   return (
     <div>
       {/* Hero */}
@@ -102,7 +113,11 @@ export default async function ImpactPage() {
             that apply to it; the inflection points below are the specific markers we track, each with its
             live signal.
           </p>
-          <ImpactDashboardV2 liveOutputs={liveOutputs} marketSignals={marketSignals} />
+          <ImpactDashboardV2
+            liveOutputs={liveOutputs}
+            marketSignals={marketSignals}
+            recordsByArea={recordsByArea}
+          />
         </div>
       </section>
 

@@ -151,8 +151,9 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
     {
       instrument: 'idea_vintage',
       state: 'unwired',
-      candidateMetric: 'Mean reference age in content-addressing and peer-to-peer literature (OpenAlex-computable)',
-      blocker: 'The citation-extraction pipeline is not built.',
+      candidateMetric: 'median reference age from OpenAlex',
+      blocker: 'awaiting first run of scripts/velocity/field_velocity_openalex.py',
+      owner: 'Lukas',
     },
     {
       instrument: 'revealed_commitments',
@@ -194,8 +195,9 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
     {
       instrument: 'idea_vintage',
       state: 'unwired',
-      candidateMetric: 'Reference age in mechanism-design and public-goods-funding literature',
-      blocker: 'The citation-extraction pipeline is not built.',
+      candidateMetric: 'median reference age from OpenAlex',
+      blocker: 'awaiting first run of scripts/velocity/field_velocity_openalex.py',
+      owner: 'Lukas',
     },
     {
       instrument: 'revealed_commitments',
@@ -237,8 +239,9 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
     {
       instrument: 'idea_vintage',
       state: 'unwired',
-      candidateMetric: 'Reference age in decentralized-training and agent-coordination literature',
-      blocker: 'The citation-extraction pipeline is not built.',
+      candidateMetric: 'median reference age from OpenAlex',
+      blocker: 'awaiting first run of scripts/velocity/field_velocity_openalex.py',
+      owner: 'Lukas',
     },
     {
       instrument: 'revealed_commitments',
@@ -294,8 +297,9 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
     {
       instrument: 'idea_vintage',
       state: 'unwired',
-      candidateMetric: 'Reference age in connectomics and BCI literature',
-      blocker: 'The citation-extraction pipeline is not built.',
+      candidateMetric: 'median reference age from OpenAlex',
+      blocker: 'awaiting first run of scripts/velocity/field_velocity_openalex.py',
+      owner: 'Lukas',
     },
     {
       instrument: 'revealed_commitments',
@@ -311,6 +315,97 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
 
 export function instrumentsForArea(area: FocusAreaKey): InstrumentRecord[] {
   return INSTRUMENT_RECORDS[area] ?? []
+}
+
+// ── OpenAlex ingestion merge ──────────────────────────────────────────────────
+// A serializable payload (built server-side from a CSV) merged into the static
+// records at render. Pure — no filesystem access here, so this module stays
+// safe to import from the client bundle.
+
+export type OpenAlexArea = {
+  ideaVintage?: {
+    series: { x: number; y: number; lo?: number; hi?: number; reliable: boolean }[]
+    latest: { year: number; median: number } | null
+    reliableWindow: string
+    direction: Direction
+    query?: string
+    generated?: string
+  }
+  revealed?: {
+    entrants: { x: number; y: number }[]
+    corpusShare: { x: number; y: number }[]
+    latest: { year: number; entrants: number } | null
+    window: string
+    direction: Direction
+    query?: string
+    generated?: string
+  }
+}
+
+const OPENALEX_SOURCE = { label: 'OpenAlex (CC0)', url: 'https://openalex.org' }
+const GENERATOR_SOURCE = {
+  label: 'scripts/velocity/field_velocity_openalex.py',
+  url: 'https://github.com/protocol/plrd.org/blob/main/scripts/velocity/field_velocity_openalex.py',
+}
+
+/** Merge OpenAlex readings into a field's static records. Absent data is a no-op. */
+export function withOpenAlex(records: InstrumentRecord[], data?: OpenAlexArea | null): InstrumentRecord[] {
+  if (!data) return records
+  return records.map((r) => {
+    if (r.instrument === 'idea_vintage' && data.ideaVintage && data.ideaVintage.latest) {
+      const iv = data.ideaVintage
+      const latest = iv.latest as { year: number; median: number }
+      return {
+        instrument: 'idea_vintage',
+        state: 'reading',
+        metric: 'median age of references in new work (years)',
+        value: `${latest.median.toFixed(1)} years (${latest.year})`,
+        trend: 'a falling median means the field is building on fresher ideas',
+        direction: iv.direction,
+        window: iv.reliableWindow,
+        asOf: iv.generated,
+        series: iv.series,
+        seriesScale: 'linear',
+        provenance: { query: iv.query, generated: iv.generated },
+        sources: [OPENALEX_SOURCE, GENERATOR_SOURCE],
+      }
+    }
+    if (r.instrument === 'revealed_commitments' && data.revealed) {
+      const rv = data.revealed
+      const talentNote =
+        'chart shows first-time authors entering the field (the talent-entry component); capital formation and job postings remain unwired'
+      const shared = {
+        series: rv.entrants,
+        seriesScale: 'linear' as const,
+        series2: rv.corpusShare,
+        series2Label: 'corpus share per 100k (normalizer)',
+        provenance: { query: rv.query, generated: rv.generated },
+      }
+      if (r.state === 'reading') {
+        // Augment an existing sourced reading (e.g. DHR's Electric Capital figure)
+        // with the OpenAlex talent-entry chart; keep its own value and sources.
+        return {
+          ...r,
+          ...shared,
+          metric: r.metric ? `${r.metric} — ${talentNote}` : talentNote,
+          sources: [...(r.sources ?? []), OPENALEX_SOURCE, GENERATOR_SOURCE],
+        }
+      }
+      return {
+        instrument: 'revealed_commitments',
+        state: 'reading',
+        metric:
+          'First-time authors entering the field each year — the talent-entry component of revealed commitments. Capital formation and job postings remain unwired.',
+        value: rv.latest ? `${rv.latest.entrants.toLocaleString()} first-time authors (${rv.latest.year})` : '—',
+        direction: rv.direction,
+        window: rv.window,
+        asOf: rv.generated,
+        ...shared,
+        sources: [OPENALEX_SOURCE, GENERATOR_SOURCE],
+      }
+    }
+    return r
+  })
 }
 
 // ── Build-time assertion ──────────────────────────────────────────────────────
