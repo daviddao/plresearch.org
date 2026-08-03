@@ -2,9 +2,9 @@ import Link from 'next/link'
 
 /**
  * Compact, headline-style preview of the FA2 Live Dashboard. Renders a curated
- * handful of real ecosystem numbers (Simocracy governance, Glow solar,
- * GainForest hypercerts) — each with a small activity sparkline — and a
- * prominent link through to the full dashboard.
+ * handful of real ecosystem numbers (Simocracy, Glow solar, biodiversity data,
+ * and hypercerts) — each with a small activity sparkline — and a prominent link
+ * through to the full dashboard.
  *
  * Presentational only — the parent server component fetches the stats and
  * passes plain numbers + trend series in. Any source that's unreachable
@@ -15,8 +15,8 @@ type Metric = { value: number; series: number[] }
 
 type FA2LiveStatsBandProps = {
   href: string
-  sim: { totalSims: Metric; treasuryUsd: Metric; totalGatherings: Metric }
-  gainforest: { bumicerts: Metric; certifiedOrgs: Metric }
+  sim: { totalSims: Metric; totalGatherings: Metric }
+  gainforest: { observations: Metric; bumicerts: Metric; certifiedOrgs: Metric }
   glow: { powerOutput: Metric; activeFarms: Metric }
 }
 
@@ -63,8 +63,8 @@ export default function FA2LiveStatsBand({ href, sim, gainforest, glow }: FA2Liv
   const candidates = [
     { m: sim.totalSims, display: compact(sim.totalSims.value), label: 'Sims minted', source: 'Simocracy', accent: 'text-blue/55' },
     { m: glow.powerOutput, display: `${compact(glow.powerOutput.value)} kWh`, label: 'Solar this week', source: 'Glow', accent: 'text-teal/70' },
-    { m: sim.treasuryUsd, display: `$${compact(sim.treasuryUsd.value)}`, label: 'Treasury allocated', source: 'Simocracy', accent: 'text-blue/55' },
-    { m: gainforest.bumicerts, display: compact(gainforest.bumicerts.value), label: 'Hypercerts issued', source: 'GainForest', accent: 'text-[#2f9e57]/70' },
+    { m: gainforest.observations, display: compact(gainforest.observations.value), label: 'Biodiversity data collected', source: 'GainForest', accent: 'text-[#2f9e57]/70' },
+    { m: gainforest.bumicerts, display: compact(gainforest.bumicerts.value), label: 'Hypercerts minted', source: 'Hypercerts', accent: 'text-[#2f9e57]/70' },
     { m: gainforest.certifiedOrgs, display: compact(gainforest.certifiedOrgs.value), label: 'Certified orgs', source: 'GainForest', accent: 'text-[#2f9e57]/70' },
     { m: sim.totalGatherings, display: compact(sim.totalGatherings.value), label: 'Gatherings convened', source: 'Simocracy', accent: 'text-blue/55' },
     { m: glow.activeFarms, display: compact(glow.activeFarms.value), label: 'Solar farms', source: 'Glow', accent: 'text-teal/70' },

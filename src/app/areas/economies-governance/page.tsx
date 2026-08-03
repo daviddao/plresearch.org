@@ -121,10 +121,10 @@ export default async function FA2MainPage() {
         href="/areas/economies-governance/impact/live-dashboard/"
         sim={{
           totalSims: { value: simStats.totals.totalSims, series: simStats.trends.totalSims.values },
-          treasuryUsd: { value: simStats.totals.treasuryUsd, series: simStats.trends.treasuryUsd.values },
           totalGatherings: { value: simStats.totals.totalGatherings, series: simStats.trends.totalGatherings.values },
         }}
         gainforest={{
+          observations: { value: gainforest.observations, series: gainforest.trends.observations.values },
           bumicerts: { value: gainforest.bumicerts, series: gainforest.trends.bumicerts.values },
           certifiedOrgs: { value: gainforest.certifiedOrgs, series: gainforest.trends.certifiedOrgs.values },
         }}
