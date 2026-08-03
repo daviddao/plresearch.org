@@ -14,6 +14,10 @@ import {
   HOW_TO_READ,
   TEAM_LINKS,
   stageIndexForStatus,
+  resolutionFor,
+  inflectionLabel,
+  isConcerningMarker,
+  inflectionSlug,
   type PLRole,
 } from '@/lib/inflection-points'
 import {
@@ -125,6 +129,7 @@ export default function ImpactDashboardV2({
           <div className="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
             Inflection points we&rsquo;re tracking
           </div>
+          {visible.length > 0 && <MissesLedger points={visible} />}
           {visible.length > 0 ? (
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
               {visible.map((p) => (
@@ -625,6 +630,80 @@ function InstrumentDefinitionModal({ id, onClose }: { id: InstrumentId; onClose:
 }
 
 // ── Inflection cards (PR #29 design) ──────────────────────────────────────────
+
+// Tone per derived label. Colors are chosen to stay legible on both the light
+// card and the dark-mode surface.
+function labelTone(label: string): { color: string; bg: string } {
+  const color =
+    label === 'reached — field moved'
+      ? '#16a34a'
+      : label === 'reached — no lift' || label === 'missed'
+        ? '#dc2626'
+        : label === 'missed — field moved another way'
+          ? '#d0894b'
+          : label === 'reached — lift unclear'
+            ? '#6b7fb3'
+            : '#6b7280' // pending, retired — superseded
+  return { color, bg: `color-mix(in srgb, ${color} 14%, transparent)` }
+}
+
+function ResolutionChip({ point }: { point: InflectionPoint }) {
+  const label = inflectionLabel(point)
+  const tone = labelTone(label)
+  return (
+    <span
+      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+      style={{ color: tone.color, backgroundColor: tone.bg }}
+    >
+      {label}
+    </span>
+  )
+}
+
+/** predictedBy / falsifiesIf with the gap rendered visibly when null. */
+function ResolutionMeta({ point, stacked = false }: { point: InflectionPoint; stacked?: boolean }) {
+  const r = resolutionFor(point)
+  return (
+    <div className={`text-[11px] leading-relaxed text-gray-400 ${stacked ? 'space-y-0.5' : ''}`}>
+      <span>
+        Predicted by: <span className="text-gray-500">{r.predictedBy ?? 'date not yet set'}</span>
+      </span>
+      {stacked ? <br /> : <span className="mx-1.5">·</span>}
+      <span>
+        Falsifies if: <span className="text-gray-500">{r.falsifiesIf ?? 'condition not yet set'}</span>
+      </span>
+    </div>
+  )
+}
+
+/** Misses affordance: present even at zero count, before the first miss lands. */
+function MissesLedger({ points }: { points: InflectionPoint[] }) {
+  const flagged = points.filter(isConcerningMarker)
+  return (
+    <div className="mb-4 rounded-lg border border-gray-200 bg-white px-4 py-3">
+      <div className="flex items-center gap-2 text-xs">
+        <span className="tabular-nums font-semibold text-black">{flagged.length}</span>
+        <span className="text-gray-500">markers missed, retired, or reached without lift</span>
+      </div>
+      {flagged.length > 0 ? (
+        <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
+          {flagged.map((p) => (
+            <li key={p.title}>
+              <a href={`#${inflectionSlug(p)}`} className="text-[11px] font-medium text-blue hover:underline">
+                {p.title} — {inflectionLabel(p)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-1 text-[11px] text-gray-400">
+          None yet. Misses and retirements will be listed here as they happen.
+        </p>
+      )}
+    </div>
+  )
+}
+
 function FieldMeter({ status }: { status: InflectionPoint['status'] }) {
   const reached = stageIndexForStatus(status)
   return (
@@ -696,12 +775,14 @@ function InflectionCard({
     (signal && signal.match !== 'gap')
   )
 
+  const resolution = resolutionFor(point)
   return (
     <button
       type="button"
+      id={inflectionSlug(point)}
       onClick={onOpen}
       aria-haspopup="dialog"
-      className="group relative flex flex-col rounded-xl border border-gray-200 bg-white p-6 text-left transition-all hover:border-gray-300 hover:shadow-md"
+      className="group relative flex scroll-mt-24 flex-col rounded-xl border border-gray-200 bg-white p-6 text-left transition-all hover:border-gray-300 hover:shadow-md"
     >
       <span className="absolute right-4 top-4 inline-flex items-center gap-0.5 text-xs font-medium text-gray-300 transition-colors group-hover:text-blue">
         Detail
@@ -719,7 +800,16 @@ function InflectionCard({
 
       <div className="mb-1 text-xs uppercase tracking-wide text-gray-400">{point.opportunitySpace}</div>
       <h3 className="mb-2 text-lg font-medium leading-snug text-black">{point.title}</h3>
-      <p className="mb-5 line-clamp-3 text-sm leading-relaxed text-gray-600">{point.signal}</p>
+      <p className="mb-3 line-clamp-3 text-sm leading-relaxed text-gray-600">{point.signal}</p>
+
+      {/* Resolution: outcome × mattered, with the null date/condition shown. */}
+      <div className="mb-5 flex flex-col gap-1.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <ResolutionChip point={point} />
+          <span className="text-[11px] text-gray-400">reviewed {resolution.asOf ?? 'not yet'}</span>
+        </div>
+        <ResolutionMeta point={point} />
+      </div>
 
       <div className="mt-auto border-t border-gray-100 pt-4">
         <div className="mb-2 flex items-center gap-2">
@@ -872,6 +962,27 @@ function InflectionModal({
                 Progress against inflection point
               </div>
               <FieldMeter status={point.status} />
+            </div>
+
+            {/* Resolution: outcome × mattered (never inferred from one another). */}
+            <div className="mt-4 rounded-xl border border-gray-200 bg-white p-5">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
+                <ResolutionChip point={point} />
+                <span className="text-[11px] text-gray-400">reviewed {resolutionFor(point).asOf ?? 'not yet'}</span>
+              </div>
+              <ResolutionMeta point={point} stacked />
+              {resolutionFor(point).matteredEvidence && (
+                <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                  <span className="font-medium text-black">Why it mattered:</span>{' '}
+                  {resolutionFor(point).matteredEvidence}
+                </p>
+              )}
+              {resolutionFor(point).retiredReason && (
+                <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                  <span className="font-medium text-black">Retired because:</span>{' '}
+                  {resolutionFor(point).retiredReason}
+                </p>
+              )}
             </div>
           </div>
 

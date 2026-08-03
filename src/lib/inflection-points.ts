@@ -66,6 +66,14 @@ export type LiveEvidence = {
   note: string
 }
 
+// ── Resolution: outcome × mattered ────────────────────────────────────────────
+// A single hit/miss cannot express the failure this page exists to catch: a
+// marker that resolves true while the field goes nowhere. Outcome (did the
+// marker resolve) and mattered (did it move the field) are independent, and
+// `mattered` is never derived from `outcome`.
+export type Outcome = 'pending' | 'reached' | 'missed' | 'retired'
+export type Mattered = 'unknown' | 'too_early' | 'yes' | 'no'
+
 export type InflectionPoint = {
   /** Focus-area slug, matches /areas/<slug>. */
   area: FocusAreaKey
@@ -85,6 +93,23 @@ export type InflectionPoint = {
   status: InflectionStatus
   /** Optional live activity / real-world signals — strictly Q3 evidence, never Q2 progress. */
   liveEvidence?: LiveEvidence[]
+
+  // ── Resolution (Task 4). Seeded pending/unknown with null dates until a real
+  //    value lands; the nulls are rendered visibly rather than hidden. ──
+  outcome?: Outcome
+  mattered?: Mattered
+  /** REQUIRED when mattered is 'yes' or 'no' (enforced at build time). */
+  matteredEvidence?: string
+  /** A missed marker where the field accelerated by another path. */
+  fieldMovedAnyway?: boolean
+  /** REQUIRED when outcome is 'retired' (enforced at build time). */
+  retiredReason?: string
+  /** ISO date, nullable — null renders as “date not yet set”. */
+  predictedBy?: string | null
+  /** The condition that would prove us wrong — null renders as “condition not yet set”. */
+  falsifiesIf?: string | null
+  /** ISO date of the last status review. */
+  asOf?: string
 }
 
 export type FocusAreaKey =
@@ -447,3 +472,72 @@ export function pointsForArea(area: FocusAreaKey | 'all'): InflectionPoint[] {
   if (area === 'all') return INFLECTION_POINTS
   return INFLECTION_POINTS.filter((p) => p.area === area)
 }
+
+// ── Resolution helpers ────────────────────────────────────────────────────────
+// Every existing marker is seeded pending / unknown with null date and null
+// condition (no invented values). Real values, when they land, override here.
+export type Resolution = {
+  outcome: Outcome
+  mattered: Mattered
+  matteredEvidence?: string
+  fieldMovedAnyway: boolean
+  retiredReason?: string
+  predictedBy: string | null
+  falsifiesIf: string | null
+  asOf?: string
+}
+
+export function resolutionFor(p: InflectionPoint): Resolution {
+  return {
+    outcome: p.outcome ?? 'pending',
+    mattered: p.mattered ?? 'unknown',
+    matteredEvidence: p.matteredEvidence,
+    fieldMovedAnyway: p.fieldMovedAnyway ?? false,
+    retiredReason: p.retiredReason,
+    predictedBy: p.predictedBy ?? null,
+    falsifiesIf: p.falsifiesIf ?? null,
+    asOf: p.asOf,
+  }
+}
+
+/** The one place the display label is derived. `mattered` is never inferred. */
+export function inflectionLabel(p: InflectionPoint): string {
+  const r = resolutionFor(p)
+  switch (r.outcome) {
+    case 'pending':
+      return 'pending'
+    case 'retired':
+      return 'retired — superseded'
+    case 'missed':
+      return r.fieldMovedAnyway ? 'missed — field moved another way' : 'missed'
+    case 'reached':
+      if (r.mattered === 'yes') return 'reached — field moved'
+      if (r.mattered === 'no') return 'reached — no lift'
+      return 'reached — lift unclear' // too_early | unknown
+  }
+}
+
+/** Markers the misses affordance surfaces: missed, retired, or reached-without-lift. */
+export function isConcerningMarker(p: InflectionPoint): boolean {
+  const r = resolutionFor(p)
+  return r.outcome === 'missed' || r.outcome === 'retired' || (r.outcome === 'reached' && r.mattered === 'no')
+}
+
+/** Stable id for anchoring/linking a marker card. */
+export function inflectionSlug(p: InflectionPoint): string {
+  return `ip-${p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`
+}
+
+// ── Build-time assertion (Task 4 rules) ───────────────────────────────────────
+export function assertInflectionResolution(): void {
+  for (const p of INFLECTION_POINTS) {
+    if ((p.mattered === 'yes' || p.mattered === 'no') && !p.matteredEvidence) {
+      throw new Error(`inflection-points: "${p.title}" has mattered=${p.mattered} but no matteredEvidence`)
+    }
+    if (p.outcome === 'retired' && !p.retiredReason) {
+      throw new Error(`inflection-points: "${p.title}" is retired but has no retiredReason`)
+    }
+  }
+}
+
+assertInflectionResolution()
