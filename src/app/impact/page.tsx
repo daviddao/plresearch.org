@@ -67,9 +67,6 @@ export default async function ImpactPage() {
       <div className="max-w-6xl mx-auto px-6 pt-8">
         <Breadcrumb items={[{ label: 'Impact' }]} />
         <div className="pt-8 pb-10">
-          <span className="mb-4 inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-            Draft for review
-          </span>
           <h1 className="text-2xl lg:text-[44px] font-semibold leading-[1.1] tracking-tight mb-5 max-w-2xl">
             Is the field accelerating?
           </h1>
@@ -90,7 +87,7 @@ export default async function ImpactPage() {
             href="#methodology"
             className="mt-6 inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors font-medium text-[15px]"
           >
-            How we measure this
+            Learn more about our methodology
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>

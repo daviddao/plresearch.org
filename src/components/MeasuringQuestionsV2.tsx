@@ -11,6 +11,7 @@ import {
   FIELD_COLOR,
   TOOLKIT_V2,
   VELOCITY_MEASURES,
+  INFLECTION_EXPLAINER,
   type ToolkitEntry,
   type VelocityMeasure,
 } from '@/lib/field-velocity'
@@ -87,7 +88,7 @@ export default function MeasuringQuestionsV2() {
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {VELOCITY_MEASURES.map((m) => (
+            {[...VELOCITY_MEASURES, INFLECTION_EXPLAINER].map((m) => (
               <button
                 key={m.id}
                 type="button"

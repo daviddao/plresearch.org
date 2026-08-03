@@ -13,8 +13,8 @@
 //   Inflection points = the specific, dated markers we track, each with its live
 //                      signal.
 //
-// Draft copy. Where we do not yet have a reading, a metric renders "n/a" rather
-// than an invented value; the per-field readings will be filled in a later pass.
+// Where we do not yet have a reading, a metric renders "n/a" rather than an
+// invented value.
 
 import {
   INFLECTION_POINTS,
@@ -203,4 +203,16 @@ export const FIELD_VELOCITY_READS: Partial<
 
 export function velocityReadFor(area: FocusAreaKey, measureId: string): VelocityRead {
   return FIELD_VELOCITY_READS[area]?.[measureId] ?? 'na'
+}
+
+// ── Inflection points, explained ──────────────────────────────────────────────
+// Rendered alongside the five instruments in the methodology so the markers on
+// the dashboard have a definition to point to.
+
+export const INFLECTION_EXPLAINER: VelocityMeasure = {
+  id: 'inflection-points',
+  title: 'Inflection points',
+  oneLiner: 'Dated, falsifiable shifts we expect an accelerating field to produce.',
+  description:
+    'Alongside the five instruments, each field names a small set of inflection points: specific, dated, falsifiable shifts that an accelerating field should produce, each paired with a live signal. They are markers rather than targets. Reaching one is evidence the field is moving, and the live signal shows how close it is.',
 }

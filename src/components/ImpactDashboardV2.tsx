@@ -89,7 +89,7 @@ export default function ImpactDashboardV2({
           role="tablist"
           aria-orientation="vertical"
           aria-label="Filter by focus area"
-          className="-mx-1 mb-6 flex gap-1.5 overflow-x-auto px-1 pb-2 lg:mx-0 lg:mb-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0"
+          className="-mx-1 mb-6 flex gap-1.5 overflow-x-auto px-1 pb-2 lg:mx-0 lg:mb-0 lg:flex-col lg:overflow-visible lg:self-start lg:px-0 lg:pb-0 lg:sticky lg:top-20"
         >
           {FOCUS_AREAS.map((fa) => (
             <Tab
@@ -106,7 +106,14 @@ export default function ImpactDashboardV2({
 
         {/* Content: field velocity box + inflection points */}
         <div>
-          {/* Field velocity — one wide box, the five instruments; opens a modal. */}
+          {/* Field velocity — label outside the box; the box previews the five
+              instruments and opens a modal. */}
+          <div className="mb-2 flex items-center gap-2">
+            <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
+              Field velocity
+            </span>
+            <span className="text-[11px] text-gray-400">· Is the field speeding up?</span>
+          </div>
           <FieldVelocityBox area={filter} onOpen={() => setVelocityOpen(true)} />
 
           {/* Inflection points — four cards in two rows, with live signals. */}
@@ -209,20 +216,14 @@ function FieldVelocityBox({ area, onOpen }: { area: FocusAreaKey; onOpen: () => 
       type="button"
       onClick={onOpen}
       aria-haspopup="dialog"
-      className="group flex w-full flex-col rounded-xl border border-gray-200 bg-white p-6 text-left transition-all hover:border-gray-300 hover:shadow-md"
+      className="group relative flex w-full flex-col rounded-xl border border-gray-200 bg-white p-6 text-left transition-all hover:border-gray-300 hover:shadow-md"
     >
-      <div className="mb-4 flex items-center gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
-          Field velocity
-        </span>
-        <span className="text-[11px] text-gray-400">· Is the field speeding up?</span>
-        <span className="ml-auto inline-flex items-center gap-0.5 text-xs font-medium text-gray-300 transition-colors group-hover:text-blue">
-          Detail
-          <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </span>
-      </div>
+      <span className="absolute right-4 top-4 inline-flex items-center gap-0.5 text-xs font-medium text-gray-300 transition-colors group-hover:text-blue">
+        Detail
+        <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </span>
 
       <div className="grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3 lg:grid-cols-5">
         {VELOCITY_MEASURES.map((m) => (
@@ -273,8 +274,7 @@ function VelocityModal({ area, onClose }: { area: FocusAreaKey; onClose: () => v
             The rate the field is moving
           </h2>
           <p className="mb-6 text-sm leading-relaxed text-gray-500">
-            The five instruments we read velocity with. Readings for {fa.label} are being wired; a metric
-            shows n/a until its source is connected.
+            The five instruments we read {fa.label}&rsquo;s velocity with.
           </p>
 
           <div className="space-y-5">
@@ -644,15 +644,11 @@ function EmptyState({ filter }: { filter: FocusAreaKey }) {
   const fa = FOCUS_AREAS.find((f) => f.key === filter)
   return (
     <div className="rounded-xl border border-dashed border-gray-300 bg-white px-6 py-16 text-center">
-      <span className="mb-4 inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-        Coming soon
-      </span>
       <p className="text-base font-medium text-black">
-        Inflection points for {fa?.label ?? 'this focus area'} are being defined.
+        {fa?.label ?? 'This focus area'} is forthcoming.
       </p>
       <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
-        Not zero, just not yet. This focus area is still finalizing its plan of attack, and its
-        inflection points will appear here once they are set.
+        Its inflection points will appear here as the focus area comes online.
       </p>
     </div>
   )
