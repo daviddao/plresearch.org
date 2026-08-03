@@ -100,7 +100,6 @@ body {
 :root {
   --impact-field: #131316;        /* the field axis (neutral ink) */
   --impact-field-ink: #ffffff;    /* text on a field-accent fill */
-  --impact-field-track: #e5e7eb;  /* empty progress segment */
   --impact-hand: #1982f4;         /* our-hand axis (blue) */
 }
 
@@ -134,7 +133,6 @@ html.dark {
      to light so white badge text is swapped for dark ink. */
   --impact-field: #e9e9ee;
   --impact-field-ink: #15171c;
-  --impact-field-track: #3a3f4b;
   --impact-hand: #3b96f6;
 }
 

@@ -10,10 +10,8 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   ROLE_META,
   PL_ROLE_ORDER,
-  FIELD_STAGES,
   HOW_TO_READ,
   TEAM_LINKS,
-  stageIndexForStatus,
   resolutionFor,
   inflectionLabel,
   isConcerningMarker,
@@ -25,7 +23,6 @@ import {
   INFLECTION_POINTS,
   FIELD_COLOR,
   FIELD_INK,
-  FIELD_TRACK,
   HAND_COLOR,
   LIVE_COLOR,
   type FocusAreaKey,
@@ -249,6 +246,11 @@ function DirectionChip({ direction, size = 'sm' }: { direction: Direction; size?
 /** Show the date portion of an ISO string (the full value stays in provenance). */
 function shortDate(s?: string): string | undefined {
   return s ? s.slice(0, 10) : s
+}
+
+/** Review status line. Reads "not yet reviewed" until a review date lands. */
+function reviewedLabel(asOf?: string): string {
+  return asOf ? `reviewed ${asOf}` : 'not yet reviewed'
 }
 
 function marketReadout(s: MarketSignal): string {
@@ -665,30 +667,6 @@ function MissesLedger({ points }: { points: InflectionPoint[] }) {
   )
 }
 
-function FieldMeter({ status }: { status: InflectionPoint['status'] }) {
-  const reached = stageIndexForStatus(status)
-  return (
-    <div>
-      <div className="flex gap-1">
-        {FIELD_STAGES.map((_, i) => (
-          <span
-            key={i}
-            className="h-1.5 flex-1 rounded-full"
-            style={{ backgroundColor: i <= reached ? FIELD_COLOR : FIELD_TRACK }}
-          />
-        ))}
-      </div>
-      <div className="mt-1.5 flex justify-between text-[11px] text-gray-400">
-        {FIELD_STAGES.map((s, i) => (
-          <span key={s} className={i === reached ? 'font-medium text-gray-600' : ''}>
-            {s}
-          </span>
-        ))}
-      </div>
-    </div>
-  )
-}
-
 function RoleChips({ roles }: { roles: PLRole[] }) {
   const ordered = PL_ROLE_ORDER.filter((r) => roles.includes(r))
   return (
@@ -729,7 +707,6 @@ function InflectionCard({
   onOpen: () => void
 }) {
   const fa = FOCUS_AREAS.find((f) => f.key === point.area)!
-  const stageLabel = FIELD_STAGES[stageIndexForStatus(point.status)]
   const hasLiveSignal = !!(
     point.liveEvidence?.length ||
     (metrics && metrics.length) ||
@@ -767,21 +744,12 @@ function InflectionCard({
       <div className="mb-5 flex flex-col gap-1.5">
         <div className="flex flex-wrap items-center gap-2">
           <ResolutionChip point={point} />
-          <span className="text-[11px] text-gray-400">reviewed {resolution.asOf ?? 'not yet'}</span>
+          <span className="text-[11px] text-gray-400">{reviewedLabel(resolution.asOf)}</span>
         </div>
         <ResolutionMeta point={point} />
       </div>
 
       <div className="mt-auto border-t border-gray-100 pt-4">
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
-            The field
-          </span>
-          <span className="ml-auto text-[11px] font-medium" style={{ color: FIELD_COLOR }}>{stageLabel}</span>
-        </div>
-      </div>
-
-      <div className="mt-4 border-t border-gray-100 pt-4">
         <div className="mb-2 flex items-center gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: HAND_COLOR }}>
             Our hand
@@ -917,18 +885,11 @@ function InflectionModal({
                 <p className="text-sm leading-relaxed text-gray-600">{point.cascade}</p>
               </div>
             </div>
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
-                Progress against inflection point
-              </div>
-              <FieldMeter status={point.status} />
-            </div>
-
             {/* Resolution: outcome × mattered (never inferred from one another). */}
-            <div className="mt-4 rounded-xl border border-gray-200 bg-white p-5">
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <ResolutionChip point={point} />
-                <span className="text-[11px] text-gray-400">reviewed {resolutionFor(point).asOf ?? 'not yet'}</span>
+                <span className="text-[11px] text-gray-400">{reviewedLabel(resolutionFor(point).asOf)}</span>
               </div>
               <ResolutionMeta point={point} stacked />
               {resolutionFor(point).matteredEvidence && (

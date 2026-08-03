@@ -18,8 +18,6 @@
 //
 // Source: "Inflection points across PL R&D, and how we will measure them."
 
-export type InflectionStatus = 'watching' | 'early-signal' | 'tripped'
-
 /** PL's pre-registered role(s) on the critical path — claims to be evidenced, not a credit score. */
 export type PLRole = 'infrastructure' | 'legibility' | 'connection' | 'capital' | 'translation' | 'permission'
 
@@ -35,8 +33,6 @@ export const FIELD_COLOR = 'var(--impact-field)'
 export const HAND_COLOR = 'var(--impact-hand)'
 /** Text/ink color to place on a FIELD_COLOR fill (white in light, dark in dark). */
 export const FIELD_INK = 'var(--impact-field-ink)'
-/** Empty segment color for the field-progress meter. */
-export const FIELD_TRACK = 'var(--impact-field-track)'
 /** Live-signal accent — the pulsing dot on points with live outputs (green). */
 export const LIVE_COLOR = '#22c55e'
 
@@ -89,8 +85,6 @@ export type InflectionPoint = {
   contribution: Contribution
   /** Q3, summarized as the PL role(s) on the critical path — the instruments we bring. */
   roles: PLRole[]
-  /** Field-progress lifecycle state. All start 'watching' — none reached as of 2026. */
-  status: InflectionStatus
   /** Optional live activity / real-world signals — strictly Q3 evidence, never Q2 progress. */
   liveEvidence?: LiveEvidence[]
 
@@ -149,40 +143,6 @@ export const LOGIC_MODEL = [
   { key: 'impact', label: 'Impact', body: 'The lasting shift: an inflection point that holds.' },
 ] as const
 export type LogicStageKey = (typeof LOGIC_MODEL)[number]['key']
-
-// ── Field-progress lifecycle (Q1 & Q2). Deliberately separate from PL contribution. ──
-export const FIELD_STAGES = ['Defined', 'Emerging', 'Reached', 'Scaling'] as const
-export type FieldStage = (typeof FIELD_STAGES)[number]
-
-/** How far along the field axis a point sits, given its status. */
-export function stageIndexForStatus(status: InflectionStatus): number {
-  switch (status) {
-    case 'watching':
-      return 0 // threshold defined, waiting at it
-    case 'early-signal':
-      return 1
-    case 'tripped':
-      return 2
-  }
-}
-
-export const STATUS_META: Record<InflectionStatus, { label: string; description: string; color: string }> = {
-  watching: {
-    label: 'Defined',
-    description: 'The threshold is defined and pre-registered. No movement toward it yet.',
-    color: '#6b6d79',
-  },
-  'early-signal': {
-    label: 'Emerging',
-    description: 'Leading indicators are moving toward the threshold.',
-    color: '#1982F4',
-  },
-  tripped: {
-    label: 'Reached',
-    description: 'The defined threshold has been crossed.',
-    color: '#12bfdf',
-  },
-}
 
 /**
  * Team / venture display name -> canonical website. Used to linkify the named
@@ -256,7 +216,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'libp2p / IPFS deployments and the funded comms / messaging teams building on them, such as Fluence and Huddle01.',
     },
     roles: ['infrastructure', 'capital'],
-    status: 'early-signal',
     liveEvidence: [
       {
         label: 'Wikipedia kept online via IPFS during Turkey’s block',
@@ -279,7 +238,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'The identity and credential initiatives PL has seeded or funded, such as Tools for Humanity (World), SpruceID, and Privy.',
     },
     roles: ['connection', 'capital'],
-    status: 'watching',
   },
   {
     area: 'digital-human-rights',
@@ -295,7 +253,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'Content-addressed provenance tooling and the PL-backed teams building it, such as EQTY Lab.',
     },
     roles: ['infrastructure', 'capital'],
-    status: 'early-signal',
     liveEvidence: [
       {
         label: 'Starling Lab — content-authenticity displays in newsrooms',
@@ -318,7 +275,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'Filecoin and the open-compute portfolio — Fluence, Spheron, Expanso, Impossible Cloud, Lava, Fleek — with integrations across storage, compute, and identity.',
     },
     roles: ['infrastructure', 'connection', 'capital'],
-    status: 'watching',
   },
 
   // ── FA2 · Economies & Governance ─────────────────────────────────────────
@@ -336,7 +292,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'Published playbooks, convened sovereign–builder cohorts, and funded DPI primitives.',
     },
     roles: ['connection', 'capital', 'permission'],
-    status: 'watching',
   },
   {
     area: 'economies-governance',
@@ -352,7 +307,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'Simocracy and broad-listening tools, and the government–tool convenings around them.',
     },
     roles: ['connection', 'capital'],
-    status: 'watching',
     liveEvidence: [
       {
         label: 'Simocracy governance simulation — live participation',
@@ -375,7 +329,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'Hypercerts, Funding the Commons, and ventures spun out of / funded across this lineage such as Molecule.',
     },
     roles: ['infrastructure', 'capital', 'translation'],
-    status: 'early-signal',
   },
   {
     area: 'economies-governance',
@@ -391,7 +344,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'GainForest, Glow, WeatherXM, and the verification benchmarks and standards they inform.',
     },
     roles: ['legibility', 'connection', 'capital'],
-    status: 'early-signal',
     liveEvidence: [
       {
         label: 'GainForest & Glow — live verification activity',
@@ -416,7 +368,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'A draft BCI component / API standard and the regulator–maker–developer convenings around it.',
     },
     roles: ['connection', 'permission'],
-    status: 'watching',
   },
   {
     area: 'neurotech',
@@ -432,7 +383,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'The PL Neuro talent network and the neural-data infrastructure and norms it seeds.',
     },
     roles: ['infrastructure', 'connection', 'capital'],
-    status: 'watching',
   },
   {
     area: 'neurotech',
@@ -448,7 +398,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'PL-funded NeuroAI demos and the energy-efficiency benchmarks that frame the target.',
     },
     roles: ['legibility', 'capital'],
-    status: 'watching',
   },
   {
     area: 'neurotech',
@@ -464,7 +413,6 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'The WBE benchmark, connectomics throughput targets, and a PL-engineered demo.',
     },
     roles: ['legibility', 'connection'],
-    status: 'watching',
   },
 ]
 
