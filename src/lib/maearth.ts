@@ -48,16 +48,16 @@ const FALLBACK_POOL_USD = 1_000_000
 
 /**
  * Final Round 3 totals, snapshotted from maearth.com's homepage banner
- * ("$745,949 raised · 11,692 donors · 201 projects funded") after the round
+ * ("$996,804 raised · 11,701 donors · 201 projects funded") after the round
  * closed. Used whenever the live RPC has no current round (round closed) or
  * is unreachable, so the dashboard never regresses to 0/0.
  * Snapshot taken: see `SNAPSHOT_AS_OF`.
  */
-const SNAPSHOT_AS_OF = "2026-02-25"
+const SNAPSHOT_AS_OF = "2026-08-03"
 const CLOSED_ROUND_SNAPSHOT = {
   round: "Round 3",
-  donations: 745_949,
-  donors: 11_692,
+  donations: 996_804,
+  donors: 11_701,
   projects: 201,
   matchingPool: FALLBACK_POOL_USD,
 } as const
