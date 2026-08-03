@@ -166,8 +166,9 @@ function IdeaVintageExamples({ examples }: { examples: IdeaVintageExample[] }) {
     <div className="mt-5 border-t border-gray-100 pt-5">
       <div className="text-sm font-semibold text-black">What it looks like today</div>
       <p className="mt-1 text-xs leading-relaxed text-gray-500">
-        Median reference age per field, on a shared vertical axis in years. A falling line means newer
-        ideas; the dashed tail is recent years still under-indexed.
+        Median age of the references cited in new work, in years, per focus area on a shared axis. The
+        solid line is reliable years; the shaded band is the 95% interval; the dashed tail is the most
+        recent years, still under-indexed. Lower means the field is building on fresher ideas.
       </p>
       <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {examples.map((e) => (
@@ -176,6 +177,42 @@ function IdeaVintageExamples({ examples }: { examples: IdeaVintageExample[] }) {
             <Sparkline series={e.series} scale={e.scale} band width={220} height={60} axis unit="y" />
           </div>
         ))}
+      </div>
+
+      <div className="mt-5">
+        <div className="text-sm font-semibold text-black">How the chart is built</div>
+        <p className="mt-1 text-xs leading-relaxed text-gray-600">
+          For each year we draw a random sample of works whose title or abstract matches a frozen keyword
+          query for the field (the query is recorded with every series). For each sampled work we look up
+          the publication year of every reference it cites, then pool those and take the median age (the
+          work&rsquo;s year minus the reference&rsquo;s year). The band is a bootstrap 95% interval on that
+          median. The direction compares the mean of the earliest three reliable years against the most
+          recent three, and only calls a trend when the shift clears a flat band, so sampling noise reads
+          as flat. It is a sampled estimate, comparable against itself, not a precise census.
+        </p>
+      </div>
+
+      <div className="mt-4 rounded-lg bg-gray-50 p-3">
+        <div className="text-sm font-semibold text-black">What we guard against in OpenAlex</div>
+        <ul className="mt-2 space-y-2 text-xs leading-relaxed text-gray-600">
+          <li>
+            <span className="font-medium text-black">Size is not velocity.</span> We read an age, not a
+            count, so OpenAlex adding works in bulk (a recent backfill added on the order of 190M) does not
+            register as acceleration. Where an instrument uses counts, we normalize against total corpus
+            growth (share per 100k), never raw totals.
+          </li>
+          <li>
+            <span className="font-medium text-black">Labels drift; keywords don&rsquo;t.</span> Fields are
+            defined by a frozen title-and-abstract keyword query, not OpenAlex topic labels, so a large
+            re-classification (such as the 2026 backlog clearance) cannot look like a field taking off.
+            Every series stores its exact query and retrieval date, and each re-pull is versioned.
+          </li>
+          <li>
+            <span className="font-medium text-black">Recent years lag.</span> The last two years or so are
+            under-indexed and always look like a slowdown, so we draw them dashed, leave them out of the
+            direction, and compare like year-over-year windows.
+          </li>
+        </ul>
       </div>
     </div>
   )

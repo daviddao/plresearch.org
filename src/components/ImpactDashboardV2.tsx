@@ -512,11 +512,11 @@ function VelocityModal({
                         <p className="mt-2 text-[11px] leading-relaxed text-gray-400">
                           {r.provenance.query && (
                             <>
-                              Query: <span className="font-mono">{r.provenance.query}</span>
+                              Keyword cohort (title + abstract): <span className="font-mono">{r.provenance.query}</span>
                               {r.provenance.generated ? ' · ' : ''}
                             </>
                           )}
-                          {r.provenance.generated && <>generated {r.provenance.generated}</>}
+                          {r.provenance.generated && <>retrieved {shortDate(r.provenance.generated)}</>}
                         </p>
                       )}
                       {r.sources && <SourceLinks sources={r.sources} />}
