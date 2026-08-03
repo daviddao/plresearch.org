@@ -43,14 +43,15 @@ const UA =
 // its own revalidate window.
 const REVALIDATE = 60 * 15
 
-// Fallback pool when the pool record can't be read: Round 3 base is $1M.
-const FALLBACK_POOL_USD = 1_000_000
+// Fallback pool when the pool record can't be read: Round 3 base is $1.2M.
+const FALLBACK_POOL_USD = 1_200_000
 
 /**
  * Final Round 3 totals, snapshotted from maearth.com's homepage banner
  * ("$996,804 raised · 11,701 donors · 201 projects funded") after the round
- * closed. Used whenever the live RPC has no current round (round closed) or
- * is unreachable, so the dashboard never regresses to 0/0.
+ * closed. The round's matching pool was $1.2M. Used whenever the live RPC has
+ * no current round (round closed) or is unreachable, so the dashboard never
+ * regresses to 0/0.
  * Snapshot taken: see `SNAPSHOT_AS_OF`.
  */
 const SNAPSHOT_AS_OF = "2026-08-03"
