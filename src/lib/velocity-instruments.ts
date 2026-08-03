@@ -330,6 +330,7 @@ export type OpenAlexArea = {
   ideaVintage?: {
     series: { x: number; y: number; lo?: number; hi?: number; reliable: boolean }[]
     latest: { year: number; median: number } | null
+    first: { year: number; median: number } | null
     reliableWindow: string
     direction: Direction
     query?: string
@@ -359,12 +360,17 @@ export function withOpenAlex(records: InstrumentRecord[], data?: OpenAlexArea | 
     if (r.instrument === 'idea_vintage' && data.ideaVintage && data.ideaVintage.latest) {
       const iv = data.ideaVintage
       const latest = iv.latest as { year: number; median: number }
+      const first = iv.first
+      const trend =
+        first && (first.year !== latest.year)
+          ? `${first.median.toFixed(1)}y in ${first.year} → ${latest.median.toFixed(1)}y in ${latest.year} (lower = fresher ideas)`
+          : 'a falling median means the field is building on fresher ideas'
       return {
         instrument: 'idea_vintage',
         state: 'reading',
         metric: 'median age of references in new work (years)',
         value: `${latest.median.toFixed(1)} years (${latest.year})`,
-        trend: 'a falling median means the field is building on fresher ideas',
+        trend,
         direction: iv.direction,
         window: iv.reliableWindow,
         asOf: iv.generated,

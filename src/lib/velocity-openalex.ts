@@ -123,10 +123,12 @@ function toPayload(parsed: ReturnType<typeof parseCsv>): OpenAlexArea {
   const latestReliable = reliableVintage.length
     ? reliableVintage[reliableVintage.length - 1]
     : null
+  const firstReliable = reliableVintage.length ? reliableVintage[0] : null
   const ideaVintage = series.length
     ? {
         series,
         latest: latestReliable ? { year: latestReliable.year, median: latestReliable.median as number } : null,
+        first: firstReliable ? { year: firstReliable.year, median: firstReliable.median as number } : null,
         reliableWindow: reliableVintage.length
           ? `${reliableVintage[0].year}\u2013${reliableVintage[reliableVintage.length - 1].year}`
           : '\u2014',

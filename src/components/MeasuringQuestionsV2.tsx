@@ -8,13 +8,19 @@
 import { useEffect, useState } from 'react'
 import { HAND_COLOR, FIELD_COLOR, TOOLKIT_V2, type ToolkitEntry } from '@/lib/field-velocity'
 import { VELOCITY_INSTRUMENTS, INFLECTION_EXPLAINER } from '@/lib/velocity-instruments'
+import { Sparkline, type SeriesPoint } from '@/components/VelocitySparkline'
 
 type DefEntry = { id: string; label: string; subtitle: string; description: string }
+export type IdeaVintageExample = { label: string; series: SeriesPoint[]; scale: 'linear' | 'log' }
 type Modal =
   | { kind: 'tool'; entry: ToolkitEntry }
   | { kind: 'measure'; entry: DefEntry }
 
-export default function MeasuringQuestionsV2() {
+export default function MeasuringQuestionsV2({
+  ideaVintageExamples = [],
+}: {
+  ideaVintageExamples?: IdeaVintageExample[]
+}) {
   const [modal, setModal] = useState<Modal | null>(null)
 
   return (
@@ -108,12 +114,82 @@ export default function MeasuringQuestionsV2() {
         </div>
       </section>
 
-      {modal && <InfoModal modal={modal} onClose={() => setModal(null)} />}
+      {modal && (
+        <InfoModal modal={modal} ideaVintageExamples={ideaVintageExamples} onClose={() => setModal(null)} />
+      )}
     </div>
   )
 }
 
-function InfoModal({ modal, onClose }: { modal: Modal; onClose: () => void }) {
+// Abbreviated named-vs-mattered framing for the inflection-points modal.
+function InflectionQuadrant() {
+  const quad = (title: string, body: string, tone: string) => (
+    <div className="rounded-lg border border-gray-200 p-3">
+      <div className="text-[11px] font-semibold" style={{ color: tone }}>{title}</div>
+      <p className="mt-1 text-xs leading-relaxed text-gray-600">{body}</p>
+    </div>
+  )
+  return (
+    <div className="mt-5 border-t border-gray-100 pt-5">
+      <div className="text-sm font-semibold text-black">What got named vs. what actually mattered</div>
+      <p className="mt-1 text-sm leading-relaxed text-gray-600">
+        Two independent axes. <span className="font-medium text-black">Named in advance</span>: was this the
+        milestone the field, its funders, and its press had publicly designated as the thing to watch?{' '}
+        <span className="font-medium text-black">Mattered</span>: did crossing it measurably change the
+        field&rsquo;s trajectory &mdash; cost curves, entry rates, capital formation, deployment?
+      </p>
+
+      <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {quad('Named · mattered', 'The good case. Prediction and consequence aligned; a public call was gradeable and correct.', '#16a34a')}
+        {quad('Named · didn’t matter', 'Trap 1: the hit that doesn’t lift. The sensor resolves true, the field doesn’t move. Pair every marker with a “did it matter” test.', '#dc2626')}
+        {quad('Not named · mattered', 'Trap 2: acceleration through a door nobody was watching. Only a continuous velocity basket catches it.', '#d0894b')}
+        {quad('Not named · didn’t matter', 'Noise. Not interesting, but where most events live — which is why precision matters.', '#6b7280')}
+      </div>
+
+      <div className="mt-4 space-y-1.5 text-xs leading-relaxed text-gray-600">
+        <p><span className="font-medium text-black">Named &amp; mattered:</span> the $1,000 genome (2014); AlphaFold&nbsp;2 at CASP14 (2020) &mdash; a named unit-cost or benchmark that was also the field&rsquo;s rate-limiter.</p>
+        <p><span className="font-medium text-black">Named, didn&rsquo;t matter:</span> Watson wins Jeopardy! (2011); Deep Blue (1997) &mdash; staged demos that didn&rsquo;t bend the trajectory.</p>
+        <p><span className="font-medium text-black">Unnamed, mattered:</span> AlexNet (2012), transformers (2017), HTS fusion magnets at 20&nbsp;T (2021) &mdash; the largest recent accelerations, none on a roadmap.</p>
+      </div>
+
+      <div className="mt-4 rounded-lg bg-gray-50 p-3 text-xs leading-relaxed text-gray-600">
+        <div className="mb-1 font-semibold text-black">What it implies for the dashboard</div>
+        <p>Six of eleven canonical cases sit in the two trap quadrants. So: named markers can&rsquo;t be the only instrument (the velocity basket catches unnamed acceleration); prefer cost thresholds and capability curves over demos; and write a &ldquo;did it matter&rdquo; test next to every marker.</p>
+      </div>
+    </div>
+  )
+}
+
+function IdeaVintageExamples({ examples }: { examples: IdeaVintageExample[] }) {
+  if (!examples.length) return null
+  return (
+    <div className="mt-5 border-t border-gray-100 pt-5">
+      <div className="text-sm font-semibold text-black">What it looks like today</div>
+      <p className="mt-1 text-xs leading-relaxed text-gray-500">
+        Median reference age per field, on a shared vertical axis in years. A falling line means newer
+        ideas; the dashed tail is recent years still under-indexed.
+      </p>
+      <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {examples.map((e) => (
+          <div key={e.label} className="rounded-lg border border-gray-200 p-3">
+            <div className="mb-1 text-xs font-medium text-black">{e.label}</div>
+            <Sparkline series={e.series} scale={e.scale} band width={220} height={60} axis unit="y" />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function InfoModal({
+  modal,
+  ideaVintageExamples,
+  onClose,
+}: {
+  modal: Modal
+  ideaVintageExamples: IdeaVintageExample[]
+  onClose: () => void
+}) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -137,6 +213,8 @@ function InfoModal({ modal, onClose }: { modal: Modal; onClose: () => void }) {
   const researchSide =
     modal.kind === 'measure' &&
     (modal.entry.id === 'idea_vintage' || modal.entry.id === 'revealed_commitments')
+  const isIdeaVintage = modal.kind === 'measure' && modal.entry.id === 'idea_vintage'
+  const isInflection = modal.kind === 'measure' && modal.entry.id === 'inflection_points'
 
   return (
     <div
@@ -146,7 +224,7 @@ function InfoModal({ modal, onClose }: { modal: Modal; onClose: () => void }) {
       className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 sm:p-6 lg:p-10"
       onClick={onClose}
     >
-      <div className="relative my-4 w-full max-w-2xl rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="relative my-4 w-full max-w-3xl rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={onClose}
@@ -178,6 +256,8 @@ function InfoModal({ modal, onClose }: { modal: Modal; onClose: () => void }) {
               two can decouple.
             </p>
           )}
+          {isIdeaVintage && <IdeaVintageExamples examples={ideaVintageExamples} />}
+          {isInflection && <InflectionQuadrant />}
         </div>
       </div>
     </div>

@@ -72,6 +72,15 @@ export default async function ImpactPage() {
   const recordsByArea = Object.fromEntries(
     FOCUS_AREAS.map((fa) => [fa.key, withOpenAlex(instrumentsForArea(fa.key), openAlex[fa.key])]),
   ) as Partial<Record<FocusAreaKey, InstrumentRecord[]>>
+
+  // Example idea-vintage series per field, for the methodology modal that explains
+  // the instrument (shown as small multiples).
+  const ideaVintageExamples = FOCUS_AREAS.map((fa) => {
+    const rec = (recordsByArea[fa.key] ?? []).find(
+      (r) => r.instrument === 'idea_vintage' && r.state === 'reading' && r.series && r.series.length > 1,
+    )
+    return rec ? { label: fa.label, series: rec.series!, scale: rec.seriesScale ?? 'linear' } : null
+  }).filter((x): x is { label: string; series: NonNullable<InstrumentRecord['series']>; scale: 'linear' | 'log' } => !!x)
   return (
     <div>
       {/* Hero */}
@@ -128,7 +137,7 @@ export default async function ImpactPage() {
           The method is the meta-research design of how we do field acceleration. We name the
           interventions we run, then read field velocity as the result. Same design, every focus area.
         </p>
-        <MeasuringQuestionsV2 />
+        <MeasuringQuestionsV2 ideaVintageExamples={ideaVintageExamples} />
       </div>
     </div>
   )

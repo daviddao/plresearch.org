@@ -40,6 +40,7 @@ import {
   type Direction,
 } from '@/lib/velocity-instruments'
 import { AreaIcon, type AreaIconType } from '@/components/AreaIcons'
+import { Sparkline, GhostChart, type SeriesPoint } from '@/components/VelocitySparkline'
 import type { MarketSignal } from '@/lib/market-signals'
 
 /** Live output metrics for a point, keyed by the point's title. Fetched server-side. */
@@ -250,135 +251,6 @@ function shortDate(s?: string): string | undefined {
   return s ? s.slice(0, 10) : s
 }
 
-type SeriesPoint = { x: number | string; y: number; lo?: number; hi?: number; reliable?: boolean }
-
-/**
- * Inline SVG sparkline. Supports a log axis, a confidence band (lo/hi), a
- * dashed segment for unreliable trailing points, and an optional secondary
- * dashed normalizer line. No axis labels — the value, window, and as-of date
- * are shown beside it.
- */
-function Sparkline({
-  series,
-  series2,
-  scale = 'linear',
-  width = 116,
-  height = 34,
-  band = false,
-}: {
-  series: SeriesPoint[]
-  series2?: { x: number | string; y: number }[]
-  scale?: 'linear' | 'log'
-  width?: number
-  height?: number
-  band?: boolean
-}) {
-  if (!series.length) return null
-  const tf = (v: number) => (scale === 'log' ? Math.log10(Math.max(v, 1e-6)) : v)
-  const xOf = (p: { x: number | string }, i: number) => (typeof p.x === 'number' ? p.x : i)
-
-  const xsAll = [
-    ...series.map((p, i) => xOf(p, i)),
-    ...(series2 ? series2.map((p, i) => xOf(p, i)) : []),
-  ]
-  const minX = Math.min(...xsAll)
-  const maxX = Math.max(...xsAll)
-  const spanX = maxX - minX || 1
-
-  const ysAll: number[] = []
-  series.forEach((p) => {
-    ysAll.push(tf(p.y))
-    if (band && p.lo != null) ysAll.push(tf(p.lo))
-    if (band && p.hi != null) ysAll.push(tf(p.hi))
-  })
-  if (series2) series2.forEach((p) => ysAll.push(tf(p.y)))
-  const minY = Math.min(...ysAll)
-  const maxY = Math.max(...ysAll)
-  const spanY = maxY - minY || 1
-
-  const px = (x: number) => ((x - minX) / spanX) * (width - 4) + 2
-  const py = (v: number) => height - 3 - ((tf(v) - minY) / spanY) * (height - 6)
-
-  const pt = (p: SeriesPoint, i: number) => `${px(xOf(p, i)).toFixed(1)},${py(p.y).toFixed(1)}`
-
-  // Split into reliable (solid) and the trailing unreliable tail (dashed).
-  const hasReliableFlags = series.some((p) => p.reliable === false)
-  const reliablePts = hasReliableFlags ? series.filter((p) => p.reliable !== false) : series
-  const lastReliableIdx = hasReliableFlags
-    ? series.reduce((acc, p, i) => (p.reliable !== false ? i : acc), 0)
-    : series.length - 1
-  const tailPts = hasReliableFlags ? series.slice(lastReliableIdx) : []
-
-  // Confidence band polygon (hi across, then lo back).
-  let bandPath = ''
-  if (band && series.every((p) => p.lo != null && p.hi != null)) {
-    const top = series.map((p, i) => `${px(xOf(p, i)).toFixed(1)},${py(p.hi as number).toFixed(1)}`)
-    const bot = [...series].reverse().map((p, i) => {
-      const idx = series.length - 1 - i
-      return `${px(xOf(p, idx)).toFixed(1)},${py(p.lo as number).toFixed(1)}`
-    })
-    bandPath = `${top.join(' ')} ${bot.join(' ')}`
-  }
-
-  const last = series[series.length - 1]
-  return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden className="overflow-visible">
-      {bandPath && (
-        <polygon points={bandPath} fill="var(--impact-field)" opacity={0.1} />
-      )}
-      {series2 && (
-        <polyline
-          points={series2.map((p, i) => `${px(xOf(p, i)).toFixed(1)},${py(p.y).toFixed(1)}`).join(' ')}
-          fill="none"
-          stroke="#9ca3af"
-          strokeWidth={1.25}
-          strokeDasharray="3 3"
-        />
-      )}
-      <polyline
-        points={reliablePts.map((p, i) => pt(p, series.indexOf(p) >= 0 ? series.indexOf(p) : i)).join(' ')}
-        fill="none"
-        stroke="var(--impact-field)"
-        strokeWidth={1.75}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-      {tailPts.length > 1 && (
-        <polyline
-          points={tailPts.map((p) => pt(p, series.indexOf(p))).join(' ')}
-          fill="none"
-          stroke="var(--impact-field)"
-          strokeWidth={1.75}
-          strokeDasharray="2 2"
-          opacity={0.45}
-        />
-      )}
-      <circle cx={px(xOf(last, series.length - 1))} cy={py(last.y)} r={1.9} fill="var(--impact-field)" />
-    </svg>
-  )
-}
-
-/**
- * Ghost chart for an `unwired` instrument: a single fixed, abstract, blurred
- * shape carrying no data, no numbers, and no axis. Identical across instruments
- * so it reads as a system state. aria-hidden — the state is in adjacent text.
- */
-function GhostChart({ width = 116, height = 34 }: { width?: number; height?: number }) {
-  return (
-    <svg
-      width={width}
-      height={height}
-      viewBox={`0 0 ${width} ${height}`}
-      aria-hidden="true"
-      className="text-gray-400"
-      style={{ filter: 'blur(3.5px)', opacity: 0.28 }}
-    >
-      <ellipse cx={width * 0.42} cy={height * 0.55} rx={width * 0.34} ry={height * 0.26} fill="currentColor" />
-      <ellipse cx={width * 0.66} cy={height * 0.42} rx={width * 0.22} ry={height * 0.2} fill="currentColor" />
-    </svg>
-  )
-}
-
 function marketReadout(s: MarketSignal): string {
   return s.readout ?? (s.prob != null ? `${Math.round(s.prob * 100)}%` : '—')
 }
@@ -414,6 +286,8 @@ function InstrumentCell({ record, markets }: { record: InstrumentRecord; markets
               series={record.series as SeriesPoint[]}
               scale={record.seriesScale}
               band={record.series.some((p) => (p as SeriesPoint).lo != null)}
+              axis
+              unit={record.instrument === 'idea_vintage' ? 'y' : ''}
             />
           )}
           <span className="line-clamp-2 text-sm font-semibold leading-snug text-black">{record.value}</span>
@@ -611,8 +485,10 @@ function VelocityModal({
                               series={r.series as SeriesPoint[]}
                               scale={r.seriesScale}
                               band={r.series.some((p) => (p as SeriesPoint).lo != null)}
-                              width={180}
-                              height={48}
+                              width={200}
+                              height={56}
+                              axis
+                              unit={r.instrument === 'idea_vintage' ? 'y' : ''}
                             />
                           </div>
                         )}
