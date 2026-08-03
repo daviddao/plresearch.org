@@ -53,6 +53,14 @@ const nextConfig: NextConfig = {
         destination: '/insights/:path*',
         permanent: true,
       },
+      // The impact dashboard shipped first as an unlisted, non-indexed preview
+      // at a cryptic slug (#98). It's now a public, discoverable /impact page,
+      // so send anyone holding the old preview link to the live route.
+      {
+        source: '/impact-preview-eb61fba1b98e/',
+        destination: '/impact/',
+        permanent: true,
+      },
     ]
   },
 }
