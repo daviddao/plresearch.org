@@ -1,8 +1,10 @@
 'use client'
 
-// Impact Dashboard v2 — acceleration-centered. Separate component tree from the
-// v1 ImpactDashboard so the two can be compared side by side. Shared primitives
-// (colors, market-signals, focus-area metadata) are imported, never forked.
+// Impact Dashboard — field velocity. Horizontal, sticky focus-area tabs sit
+// above a two-column read: our hand (the interventions we push on) on the left,
+// field velocity (talent, capital, tool cost, cadence, plus the live crowd
+// forecasts) on the right. Shared primitives (colors, market signals, focus-area
+// metadata) are imported, never forked.
 
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -16,16 +18,9 @@ import {
   VELOCITY_KIND_META,
   DIRECTION_META,
   CONTRIBUTIONS_V2,
-  CONDITION_LABEL,
   TOOLKIT_V2,
-  SENSOR_SEMANTICS,
-  SENSOR_STATUS_META,
-  SENSOR_STATUS_MICROCOPY,
-  MISSED_FIELD_MOVED_MICROCOPY,
   HOW_TO_READ_V2,
-  sensorFor,
   type FocusAreaKey,
-  type InflectionPoint,
   type VelocitySignal,
   type VelocityDirection,
   type ContributionV2,
@@ -63,88 +58,77 @@ export default function ImpactDashboardV2({
   marketSignals?: MarketSignals
 }) {
   const [filter, setFilter] = useState<FocusAreaKey>('digital-human-rights')
-  const [active, setActive] = useState<InflectionPoint | null>(null)
   const [howToOpen, setHowToOpen] = useState(false)
 
-  const sensors = useMemo(
-    () => INFLECTION_POINTS.filter((p) => p.area === filter),
-    [filter],
-  )
   const velocity = FIELD_VELOCITY[filter] ?? []
   const contributions = CONTRIBUTIONS_V2[filter] ?? []
 
+  // Live signal: the crowd forecasts mapped to this focus area's markers, kept
+  // only where a real number (or a date readout) is available.
+  const liveSignals = useMemo(
+    () =>
+      INFLECTION_POINTS.filter((p) => p.area === filter)
+        .map((p) => marketSignals[p.title])
+        .filter((s): s is MarketSignal => !!s && (s.prob != null || !!s.readout)),
+    [filter, marketSignals],
+  )
+
   return (
     <>
-      {/* How to read this — persistent affordance above the grid. */}
-      <div className="mb-5 flex justify-end">
-        <button
-          type="button"
-          onClick={() => setHowToOpen(true)}
-          aria-haspopup="dialog"
-          className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 hover:text-black"
-        >
-          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          How to read this
-        </button>
-      </div>
-
-      <div className="lg:grid lg:grid-cols-[248px_1fr] lg:gap-10">
-        {/* Vertical tabs */}
-        <div
-          role="tablist"
-          aria-orientation="vertical"
-          aria-label="Filter by focus area"
-          className="-mx-1 mb-6 flex gap-1.5 overflow-x-auto px-1 pb-2 lg:mx-0 lg:mb-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0"
-        >
-          {FOCUS_AREAS.map((fa) => (
-            <Tab
-              key={fa.key}
-              label={fa.label}
-              count={INFLECTION_POINTS.filter((p) => p.area === fa.key).length}
-              forthcoming={fa.forthcoming}
-              icon={FA_ICON[fa.key]}
-              active={filter === fa.key}
-              onClick={() => setFilter(fa.key)}
-            />
-          ))}
-        </div>
-
-        {/* Content: field (Y) + our hand (X) */}
-        <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-          <FieldCard
-            velocity={velocity}
-            sensors={sensors}
-            onOpenSensor={(p) => setActive(p)}
-          />
-          <HandCard contributions={contributions} />
+      {/* Sticky, horizontal focus-area tabs. Sticky is scoped to the dashboard
+          section, so the bar scrolls out once the methodology section begins. */}
+      <div className="sticky top-16 z-30 -mx-6 mb-6 bg-gray-100/95 px-6 py-3 backdrop-blur-sm">
+        <div className="flex items-center justify-between gap-4">
+          <div
+            role="tablist"
+            aria-label="Filter by focus area"
+            className="-mx-1 flex gap-1.5 overflow-x-auto px-1"
+          >
+            {FOCUS_AREAS.map((fa) => (
+              <Tab
+                key={fa.key}
+                label={fa.label}
+                forthcoming={fa.forthcoming}
+                icon={FA_ICON[fa.key]}
+                active={filter === fa.key}
+                onClick={() => setFilter(fa.key)}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setHowToOpen(true)}
+            aria-haspopup="dialog"
+            className="hidden shrink-0 items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 hover:text-black sm:inline-flex"
+          >
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            How to read this
+          </button>
         </div>
       </div>
 
-      {active && (
-        <SensorModal
-          point={active}
-          signal={marketSignals[active.title]}
-          onClose={() => setActive(null)}
-        />
-      )}
+      {/* Our hand (left) · field velocity (right) */}
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+        <HandCard contributions={contributions} />
+        <FieldCard velocity={velocity} liveSignals={liveSignals} />
+      </div>
+
       {howToOpen && <HowToReadModalV2 onClose={() => setHowToOpen(false)} />}
     </>
   )
 }
 
-// ── Focus-area tab (mirrors v1 styling) ───────────────────────────────────────
+// ── Focus-area tab (horizontal pill) ──────────────────────────────────────────
 function Tab({
   label,
-  count,
   forthcoming = false,
   active,
   icon,
   onClick,
 }: {
   label: string
-  count: number
   forthcoming?: boolean
   active: boolean
   icon?: AreaIconType
@@ -156,29 +140,27 @@ function Tab({
       role="tab"
       aria-selected={active}
       onClick={onClick}
-      className={`flex shrink-0 items-center gap-3 rounded-lg border px-3.5 py-3 text-left text-sm font-medium transition-all lg:w-full ${
+      className={`flex shrink-0 items-center gap-2 rounded-lg border px-3.5 py-2 text-left text-sm font-medium transition-all ${
         active
           ? 'border-gray-200 bg-white text-black shadow-sm'
           : 'border-transparent text-gray-500 hover:bg-white/60 hover:text-black'
       }`}
     >
       <span
-        className="flex h-6 w-6 shrink-0 items-center justify-center"
+        className="flex h-5 w-5 shrink-0 items-center justify-center"
         style={{ color: active ? 'var(--impact-field)' : '#9ca3af' }}
       >
         {icon && <AreaIcon type={icon} className="block h-5 w-5" />}
       </span>
-      <span className="flex-1 whitespace-nowrap lg:whitespace-normal">{label}</span>
-      {forthcoming ? (
+      <span className="whitespace-nowrap">{label}</span>
+      {forthcoming && (
         <span className="whitespace-nowrap text-[10px] font-medium uppercase tracking-wide text-gray-400">Soon</span>
-      ) : (
-        <span className="text-xs tabular-nums text-gray-400">{count}</span>
       )}
     </button>
   )
 }
 
-// ── Y — the field card ────────────────────────────────────────────────────────
+// ── Field velocity card (right) ───────────────────────────────────────────────
 function directionColor(dir: VelocityDirection): string {
   switch (DIRECTION_META[dir].tone) {
     case 'up':
@@ -245,41 +227,20 @@ function VelocityRow({ signal }: { signal: VelocitySignal }) {
   )
 }
 
-function StatusChip({ point }: { point: InflectionPoint }) {
-  const sensor = sensorFor(point)
-  const meta = SENSOR_STATUS_META[sensor.status]
-  const fieldMoved = sensor.status === 'missed' && sensor.fieldMovedAnyway
-  const label = fieldMoved ? 'Missed · field moved' : meta.label
-  return (
-    <span
-      className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
-      style={{ color: meta.color, backgroundColor: meta.bg }}
-    >
-      {label}
-    </span>
-  )
-}
-
 function FieldCard({
   velocity,
-  sensors,
-  onOpenSensor,
+  liveSignals,
 }: {
   velocity: VelocitySignal[]
-  sensors: InflectionPoint[]
-  onOpenSensor: (p: InflectionPoint) => void
+  liveSignals: MarketSignal[]
 }) {
   return (
     <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-6">
       <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
-        The field
+        Field velocity
       </div>
-      <h3 className="mb-4 text-xl font-semibold tracking-tight text-black">Is the field accelerating?</h3>
+      <h3 className="mb-4 text-xl font-semibold tracking-tight text-black">Is the field speeding up?</h3>
 
-      {/* Velocity basket — leads the card. */}
-      <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-        Velocity basket
-      </div>
       {velocity.length > 0 ? (
         <div>
           {velocity.map((s) => (
@@ -290,56 +251,32 @@ function FieldCard({
         <p className="text-sm text-gray-400">Curating — velocity signals for this focus area are being defined.</p>
       )}
 
-      {/* Sensors — inflection points demoted to a sensors list. */}
-      <div className="mt-6 border-t border-gray-100 pt-5">
-        <div className="mb-1 text-sm font-semibold text-black">Our sensors: inflection points</div>
-        <p className="mb-3 text-xs leading-relaxed text-gray-500">
-          Dated, falsifiable markers we expect acceleration to produce. They grade our model of the
-          field — not the field.{' '}
-          <span className="italic text-gray-400">Illustrative draft ledger — statuses are proposed, not ratified.</span>
-        </p>
-        {sensors.length > 0 ? (
-          <ul className="space-y-1.5">
-            {sensors.map((p) => {
-              const sensor = sensorFor(p)
-              const fieldMoved = sensor.status === 'missed' && sensor.fieldMovedAnyway
-              return (
-                <li key={p.title}>
-                  <button
-                    type="button"
-                    onClick={() => onOpenSensor(p)}
-                    aria-haspopup="dialog"
-                    className={`group flex w-full items-center gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors hover:border-gray-300 hover:bg-gray-50 ${
-                      fieldMoved ? 'border-dashed' : 'border-gray-200'
-                    }`}
-                    style={fieldMoved ? { borderColor: '#e0b489' } : undefined}
-                  >
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-medium text-black">{p.title}</span>
-                      <span className="mt-0.5 block text-[11px] text-gray-400">
-                        by {sensor.predictedBy} · {fieldMoved ? MISSED_FIELD_MOVED_MICROCOPY : SENSOR_STATUS_MICROCOPY[sensor.status]}
-                      </span>
-                    </span>
-                    <StatusChip point={p} />
-                    <svg className="h-4 w-4 shrink-0 text-gray-300 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-        ) : (
-          <p className="rounded-lg border border-dashed border-gray-300 bg-white px-4 py-6 text-center text-sm text-gray-500">
-            Sensors for this focus area are being defined — not zero, just not yet.
+      {/* Live signal — external crowd forecasts mapped to this field. */}
+      {liveSignals.length > 0 && (
+        <div className="mt-6 border-t border-gray-100 pt-5">
+          <div className="mb-1 flex items-center gap-2">
+            <span className="relative flex h-2 w-2" aria-hidden>
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ backgroundColor: LIVE_COLOR }} />
+              <span className="relative inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: LIVE_COLOR }} />
+            </span>
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">Live signal</span>
+          </div>
+          <p className="mb-3 text-xs leading-relaxed text-gray-500">
+            An independent read on whether the field is moving, from the forecast markets mapped to this
+            focus area.
           </p>
-        )}
-      </div>
+          <div className="space-y-2.5">
+            {liveSignals.map((s, i) => (
+              <LiveSignalRow key={i} signal={s} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-// ── X — our hand card ─────────────────────────────────────────────────────────
+// ── Our hand card (left) ──────────────────────────────────────────────────────
 function ToolBadge({ tool }: { tool: ToolId }) {
   return (
     <span className="inline-flex items-center gap-1.5">
@@ -368,18 +305,14 @@ function HandCard({ contributions }: { contributions: ContributionV2[] }) {
       <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide" style={{ color: HAND_COLOR }}>
         Our hand
       </div>
-      <h3 className="mb-4 text-xl font-semibold tracking-tight text-black">The conditions we&rsquo;re pushing on</h3>
+      <h3 className="mb-4 text-xl font-semibold tracking-tight text-black">The interventions we&rsquo;re pushing with</h3>
 
       {contributions.length > 0 ? (
         <div className="space-y-4">
           {contributions.map((c, i) => (
             <div key={i} className="rounded-xl border border-gray-100 bg-gray-50 p-4">
-              <div className="mb-2 flex flex-wrap items-center gap-2">
+              <div className="mb-2">
                 <ToolBadge tool={c.tool} />
-                <svg className="h-3.5 w-3.5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-                <span className="text-xs font-medium text-gray-600">{CONDITION_LABEL[c.targetedCondition]}</span>
               </div>
               <div className="mb-2">
                 <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">What we did</div>
@@ -389,14 +322,14 @@ function HandCard({ contributions }: { contributions: ContributionV2[] }) {
                 <div className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
                   Observed movement
                 </div>
-                <p className="mt-0.5 text-sm leading-relaxed text-gray-600">{c.observedMovement}</p>
+                <p className="mt-0.5 text-sm leading-relaxed text-gray-600"><Linkify text={c.observedMovement} /></p>
               </div>
             </div>
           ))}
         </div>
       ) : (
         <p className="rounded-lg border border-dashed border-gray-300 bg-white px-4 py-6 text-center text-sm text-gray-500">
-          The conditions this focus area is pushing on will appear once its bets are set.
+          The interventions this focus area is running will appear once its bets are set.
         </p>
       )}
     </div>
@@ -437,21 +370,20 @@ function Linkify({ text }: { text: string }) {
   )
 }
 
-// ── Crowd forecast (reuses market-signals on the field axis) ──────────────────
+// ── Live signal row (reuses market-signals) ───────────────────────────────────
 function formatUSD(n: number): string {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(n >= 10_000_000 ? 0 : 1)}M`
   if (n >= 1_000) return `$${Math.round(n / 1_000)}k`
   return `$${Math.round(n)}`
 }
 
-function CrowdForecast({ signal }: { signal: MarketSignal }) {
+function LiveSignalRow({ signal }: { signal: MarketSignal }) {
   const pct = signal.prob != null ? Math.round(signal.prob * 100) : null
   return (
-    <div>
+    <div className="rounded-lg border border-gray-100 bg-gray-50 p-3">
       <div className="mb-1 flex items-center gap-2">
-        <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">Crowd read</span>
         {signal.platform && (
-          <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+          <span className="rounded-full border border-gray-200 bg-white px-2 py-0.5 text-[10px] font-medium text-gray-500">
             {PLATFORM_LABEL[signal.platform]}
             {signal.viaFallback ? ' (fallback)' : ''}
           </span>
@@ -459,24 +391,23 @@ function CrowdForecast({ signal }: { signal: MarketSignal }) {
         {signal.volume != null && (
           <span className="text-[11px] tabular-nums text-gray-400">{formatUSD(signal.volume)} at stake</span>
         )}
-        <span className="ml-auto text-2xl font-semibold tabular-nums" style={{ color: FIELD_COLOR }}>
+        <span className="ml-auto text-xl font-semibold tabular-nums" style={{ color: FIELD_COLOR }}>
           {signal.readout ?? (pct != null ? `${pct}%` : '—')}
         </span>
       </div>
-      {signal.url && (
+      {signal.url ? (
         <a href={signal.url} target="_blank" rel="noopener noreferrer" className="block text-sm text-gray-700 hover:underline">
           {signal.question}
         </a>
+      ) : (
+        <span className="block text-sm text-gray-700">{signal.question}</span>
       )}
-      <p className="mt-2 text-[11px] leading-relaxed text-gray-400">
-        {signal.note} A Y-sensor: an independent read on whether the field is moving — not our contribution, not a settled outcome.
-      </p>
     </div>
   )
 }
 
-// ── Sensor modal ──────────────────────────────────────────────────────────────
-function useModalChrome(onClose: () => void) {
+// ── How to read this ──────────────────────────────────────────────────────────
+function HowToReadModalV2({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
@@ -489,148 +420,7 @@ function useModalChrome(onClose: () => void) {
       document.body.style.overflow = prev
     }
   }, [onClose])
-}
 
-function SensorModal({
-  point,
-  signal,
-  onClose,
-}: {
-  point: InflectionPoint
-  signal?: MarketSignal
-  onClose: () => void
-}) {
-  useModalChrome(onClose)
-  const fa = FOCUS_AREAS.find((f) => f.key === point.area)!
-  const sensor = sensorFor(point)
-  const meta = SENSOR_STATUS_META[sensor.status]
-  const fieldMoved = sensor.status === 'missed' && sensor.fieldMovedAnyway
-
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label={point.title}
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 sm:p-6 lg:p-10"
-      onClick={onClose}
-    >
-      <div className="relative my-4 w-full max-w-3xl rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-black"
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
-        <div className="p-6 sm:p-8">
-          <div className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-500">
-            <span className="flex h-5 w-5 items-center justify-center text-gray-400">
-              <AreaIcon type={FA_ICON[fa.key]} className="block h-4 w-4" />
-            </span>
-            {fa.label}
-            <span className="text-gray-300">·</span>
-            <span className="text-gray-400">{point.opportunitySpace}</span>
-          </div>
-
-          {/* Sensor card */}
-          <div className="rounded-xl bg-gray-50 p-5 sm:p-6">
-            <div className="mb-2 flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
-                Sensor · inflection point
-              </span>
-              <span
-                className="ml-auto inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide"
-                style={{ color: meta.color, backgroundColor: meta.bg }}
-              >
-                {fieldMoved ? 'Missed · field moved' : meta.label}
-              </span>
-            </div>
-            <h2 className="mb-3 text-2xl font-semibold leading-tight tracking-tight text-black">{point.title}</h2>
-
-            <div className="space-y-4">
-              <div>
-                <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">The marker (what we predicted)</div>
-                <p className="text-sm leading-relaxed text-gray-600">{point.signal}</p>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Predicted by</div>
-                  <p className="text-sm font-medium text-black">{sensor.predictedBy}</p>
-                </div>
-                <div>
-                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Status</div>
-                  <p className="text-sm font-medium" style={{ color: meta.color }}>
-                    {fieldMoved ? MISSED_FIELD_MOVED_MICROCOPY : SENSOR_STATUS_MICROCOPY[sensor.status]}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Falsification condition</div>
-                <p className="text-sm leading-relaxed text-gray-600">{sensor.falsificationCondition}</p>
-              </div>
-              <div>
-                <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">If it matters (cascade)</div>
-                <p className="text-sm leading-relaxed text-gray-600">{point.cascade}</p>
-              </div>
-              {sensor.postMortem && (
-                <div
-                  className="rounded-xl border p-4"
-                  style={{
-                    borderColor: fieldMoved ? '#e0b489' : '#e5e7eb',
-                    backgroundColor: fieldMoved ? 'color-mix(in srgb, #d0894b 8%, white)' : 'white',
-                  }}
-                >
-                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide" style={{ color: fieldMoved ? '#b06a2e' : '#6b7280' }}>
-                    {fieldMoved ? 'Post-mortem — the field accelerated via another path' : 'Post-mortem'}
-                  </div>
-                  <p className="text-sm leading-relaxed text-gray-600">{sensor.postMortem}</p>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Crowd read — reused market signal on the field axis */}
-          {signal && signal.match !== 'gap' && (
-            <div className="mt-4 rounded-xl bg-gray-50 p-5 sm:p-6">
-              <CrowdForecast signal={signal} />
-            </div>
-          )}
-          {signal && signal.match === 'gap' && (
-            <div className="mt-4 rounded-xl border border-dashed border-gray-200 bg-white px-4 py-3">
-              <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Crowd read</div>
-              <p className="text-sm leading-relaxed text-gray-500">{signal.note}</p>
-            </div>
-          )}
-
-          <a
-            href={`/insights/?area=${point.area}`}
-            className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-blue hover:underline"
-          >
-            See the latest {fa.label} insights
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </a>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ── How to read this (v2) ─────────────────────────────────────────────────────
-function HowToReadModalV2({ onClose }: { onClose: () => void }) {
-  useModalChrome(onClose)
-  const statuses: { key: keyof typeof SENSOR_STATUS_META | 'field-moved'; label: string; micro: string }[] = [
-    { key: 'pending', label: SENSOR_STATUS_META.pending.label, micro: SENSOR_STATUS_MICROCOPY.pending },
-    { key: 'hit', label: SENSOR_STATUS_META.hit.label, micro: SENSOR_STATUS_MICROCOPY.hit },
-    { key: 'missed', label: SENSOR_STATUS_META.missed.label, micro: SENSOR_STATUS_MICROCOPY.missed },
-    { key: 'field-moved', label: 'Missed · field moved', micro: MISSED_FIELD_MOVED_MICROCOPY },
-    { key: 'retired', label: SENSOR_STATUS_META.retired.label, micro: SENSOR_STATUS_MICROCOPY.retired },
-  ]
   return (
     <div
       role="dialog"
@@ -655,24 +445,12 @@ function HowToReadModalV2({ onClose }: { onClose: () => void }) {
         <p className="mb-7 max-w-xl text-lg leading-relaxed text-black">{HOW_TO_READ_V2}</p>
 
         <div className="space-y-4 border-t border-gray-100 pt-6">
-          <LegendRow color={FIELD_COLOR} ink={FIELD_INK} label="The field (Y)">
-            Is the field accelerating — read from the velocity basket. Moves with or without us.
+          <LegendRow color={HAND_COLOR} ink="#ffffff" label="Our hand">
+            The interventions we push on with the toolkit, and the movement we saw in the field.
           </LegendRow>
-          <LegendRow color={HAND_COLOR} ink="#ffffff" label="Our hand (X)">
-            The conditions we push on with the toolkit, judged by whether the condition actually moved.
+          <LegendRow color={FIELD_COLOR} ink={FIELD_INK} label="Field velocity">
+            The rate the field is moving, read from talent, capital, tool cost, output cadence, and the live crowd forecasts.
           </LegendRow>
-        </div>
-
-        <div className="mt-6 border-t border-gray-100 pt-6">
-          <div className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Sensor statuses</div>
-          <ul className="space-y-2">
-            {statuses.map((s) => (
-              <li key={s.key} className="flex items-start gap-2 text-sm text-gray-600">
-                <span className="mt-0.5 font-semibold text-black">{s.label}</span>
-                <span className="text-gray-400">— {s.micro}</span>
-              </li>
-            ))}
-          </ul>
         </div>
       </div>
     </div>

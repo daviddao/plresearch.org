@@ -96,7 +96,7 @@ body {
 }
 
 /* Impact dashboard two-axis accents — theme-aware so the “field” ink and the
-   progress track stay legible in dark mode (ImpactDashboard / MeasuringQuestions). */
+   progress track stay legible in dark mode (impact field-velocity dashboard). */
 :root {
   --impact-field: #131316;        /* the field axis (neutral ink) */
   --impact-field-ink: #ffffff;    /* text on a field-accent fill */
