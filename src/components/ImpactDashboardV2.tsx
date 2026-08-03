@@ -79,43 +79,51 @@ export default function ImpactDashboardV2({
 
   const visible = useMemo(() => INFLECTION_POINTS.filter((p) => p.area === filter), [filter])
   const records = recordsByArea?.[filter] ?? instrumentsForArea(filter)
+  // Live forecast markets mapped to this field's markers — surfaced on the
+  // Markets instrument (the same crowd forecasts shown per inflection point).
+  const fieldMarkets = useMemo(
+    () =>
+      visible
+        .map((p) => marketSignals[p.title])
+        .filter((s): s is MarketSignal => !!s && s.match !== 'gap' && (s.prob != null || !!s.readout)),
+    [visible, marketSignals],
+  )
 
   return (
     <>
-      {/* "How to read this" — a persistent affordance above the grid. */}
-      <div className="mb-5 flex justify-end">
-        <button
-          type="button"
-          onClick={() => setHowToOpen(true)}
-          aria-haspopup="dialog"
-          className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 hover:text-black"
-        >
-          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          How to read this
-        </button>
-      </div>
-
       <div className="lg:grid lg:grid-cols-[248px_1fr] lg:gap-10">
-        {/* Vertical tabs (PR #29 layout) */}
-        <div
-          role="tablist"
-          aria-orientation="vertical"
-          aria-label="Filter by focus area"
-          className="-mx-1 mb-6 flex gap-1.5 overflow-x-auto px-1 pb-2 lg:mx-0 lg:mb-0 lg:flex-col lg:overflow-visible lg:self-start lg:px-0 lg:pb-0 lg:sticky lg:top-20"
-        >
-          {FOCUS_AREAS.map((fa) => (
-            <Tab
-              key={fa.key}
-              label={fa.label}
-              count={INFLECTION_POINTS.filter((p) => p.area === fa.key).length}
-              forthcoming={fa.forthcoming}
-              icon={FA_ICON[fa.key]}
-              active={filter === fa.key}
-              onClick={() => setFilter(fa.key)}
-            />
-          ))}
+        {/* Vertical tabs (PR #29 layout), sticky so they + the "How to read this"
+            affordance stay visible while scrolling the field. */}
+        <div className="-mx-1 mb-6 flex flex-col gap-1.5 px-1 pb-2 lg:mx-0 lg:mb-0 lg:self-start lg:px-0 lg:pb-0 lg:sticky lg:top-20">
+          <div
+            role="tablist"
+            aria-orientation="vertical"
+            aria-label="Filter by focus area"
+            className="flex gap-1.5 overflow-x-auto lg:flex-col lg:overflow-visible"
+          >
+            {FOCUS_AREAS.map((fa) => (
+              <Tab
+                key={fa.key}
+                label={fa.label}
+                count={INFLECTION_POINTS.filter((p) => p.area === fa.key).length}
+                forthcoming={fa.forthcoming}
+                icon={FA_ICON[fa.key]}
+                active={filter === fa.key}
+                onClick={() => setFilter(fa.key)}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setHowToOpen(true)}
+            aria-haspopup="dialog"
+            className="mt-2 inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 hover:text-black lg:w-full"
+          >
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            How to read this
+          </button>
         </div>
 
         {/* Content: field velocity box + inflection points */}
@@ -128,7 +136,7 @@ export default function ImpactDashboardV2({
             </span>
             <span className="text-[11px] text-gray-400">· Is the field speeding up?</span>
           </div>
-          <FieldVelocityBox records={records} onOpen={() => setVelocityOpen(true)} />
+          <FieldVelocityBox records={records} markets={fieldMarkets} onOpen={() => setVelocityOpen(true)} />
 
           {/* Inflection points — four cards in two rows, with live signals. */}
           <div className="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
@@ -165,6 +173,7 @@ export default function ImpactDashboardV2({
         <VelocityModal
           area={filter}
           records={records}
+          markets={fieldMarkets}
           onClose={() => setVelocityOpen(false)}
           onOpenDef={setDefInstrument}
         />
@@ -370,8 +379,31 @@ function GhostChart({ width = 116, height = 34 }: { width?: number; height?: num
   )
 }
 
-function InstrumentCell({ record }: { record: InstrumentRecord }) {
+function marketReadout(s: MarketSignal): string {
+  return s.readout ?? (s.prob != null ? `${Math.round(s.prob * 100)}%` : '—')
+}
+
+function InstrumentCell({ record, markets }: { record: InstrumentRecord; markets?: MarketSignal[] }) {
   const inst = INSTRUMENT_BY_ID[record.instrument]
+  // Markets instrument with live mapped forecasts overrides the static state.
+  if (record.instrument === 'markets' && markets && markets.length) {
+    return (
+      <div className="flex flex-col gap-1.5 border-l-2 border-gray-100 pl-3">
+        <span className="text-sm font-medium leading-snug text-black">{inst.label}</span>
+        <div className="flex flex-col gap-1">
+          {markets.slice(0, 2).map((s, i) => (
+            <span key={i} className="flex items-baseline gap-1.5 text-xs">
+              <span className="font-semibold tabular-nums" style={{ color: FIELD_COLOR }}>{marketReadout(s)}</span>
+              <span className="truncate text-gray-500">{s.platform ? PLATFORM_LABEL[s.platform] : 'market'}</span>
+            </span>
+          ))}
+          {markets.length > 2 && (
+            <span className="text-[11px] text-gray-400">+{markets.length - 2} more</span>
+          )}
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="flex flex-col gap-1.5 border-l-2 border-gray-100 pl-3">
       <span className="text-sm font-medium leading-snug text-black">{inst.label}</span>
@@ -404,7 +436,15 @@ function InstrumentCell({ record }: { record: InstrumentRecord }) {
   )
 }
 
-function FieldVelocityBox({ records, onOpen }: { records: InstrumentRecord[]; onOpen: () => void }) {
+function FieldVelocityBox({
+  records,
+  markets,
+  onOpen,
+}: {
+  records: InstrumentRecord[]
+  markets?: MarketSignal[]
+  onOpen: () => void
+}) {
   return (
     <button
       type="button"
@@ -422,7 +462,7 @@ function FieldVelocityBox({ records, onOpen }: { records: InstrumentRecord[]; on
       {/* Ragged by design — a field lists only the instruments that apply. */}
       <div className="grid grid-cols-2 items-start gap-x-6 gap-y-5 sm:grid-cols-3 lg:grid-cols-5">
         {records.map((r) => (
-          <InstrumentCell key={r.instrument} record={r} />
+          <InstrumentCell key={r.instrument} record={r} markets={r.instrument === 'markets' ? markets : undefined} />
         ))}
       </div>
     </button>
@@ -450,14 +490,32 @@ function SourceLinks({ sources }: { sources: { label: string; url: string }[] })
   )
 }
 
+function MarketsPanel({ markets }: { markets: MarketSignal[] }) {
+  return (
+    <div>
+      <div className="rounded-xl border border-gray-100 bg-gray-50 p-4">
+        {markets.map((s, i) => (
+          <CrowdForecast key={i} signal={s} divider={i > 0} />
+        ))}
+      </div>
+      <p className="mt-2 text-[11px] leading-relaxed text-gray-400">
+        External forecast markets mapped to this field&rsquo;s markers. A term structure across horizons
+        is not yet aggregated. Read with care: market moves partly reflect our own attention work.
+      </p>
+    </div>
+  )
+}
+
 function VelocityModal({
   area,
   records,
+  markets,
   onClose,
   onOpenDef,
 }: {
   area: FocusAreaKey
   records: InstrumentRecord[]
+  markets?: MarketSignal[]
   onClose: () => void
   onOpenDef: (id: InstrumentId) => void
 }) {
@@ -505,6 +563,8 @@ function VelocityModal({
           <div className="space-y-5">
             {records.map((r) => {
               const inst = INSTRUMENT_BY_ID[r.instrument]
+              const liveMarkets = r.instrument === 'markets' && markets ? markets : []
+              const isLiveMarkets = liveMarkets.length > 0
               return (
                 <div key={r.instrument} className="border-t border-gray-100 pt-5 first:border-t-0 first:pt-0">
                   <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -518,20 +578,31 @@ function VelocityModal({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </button>
-                    {r.state === 'reading' && r.direction && (
+                    {isLiveMarkets && (
+                      <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wide text-gray-500">
+                        <span className="relative flex h-2 w-2">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full" style={{ backgroundColor: `${LIVE_COLOR}99` }} />
+                          <span className="relative inline-flex h-2 w-2 rounded-full" style={{ backgroundColor: LIVE_COLOR }} />
+                        </span>
+                        {liveMarkets.length} live market{liveMarkets.length === 1 ? '' : 's'}
+                      </span>
+                    )}
+                    {!isLiveMarkets && r.state === 'reading' && r.direction && (
                       <span className="ml-auto">
                         <DirectionChip direction={r.direction} size="lg" />
                       </span>
                     )}
-                    {r.state === 'unwired' && (
+                    {!isLiveMarkets && r.state === 'unwired' && (
                       <span className="ml-auto text-[11px] font-medium uppercase tracking-wide text-gray-400">not yet wired</span>
                     )}
-                    {r.state === 'not_applicable' && (
+                    {!isLiveMarkets && r.state === 'not_applicable' && (
                       <span className="ml-auto text-[11px] font-medium uppercase tracking-wide text-gray-400">not applicable to this field</span>
                     )}
                   </div>
 
-                  {r.state === 'reading' && (
+                  {isLiveMarkets && <MarketsPanel markets={liveMarkets} />}
+
+                  {!isLiveMarkets && r.state === 'reading' && (
                     <div>
                       <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
                         {r.series && r.series.length > 1 && (
@@ -576,7 +647,7 @@ function VelocityModal({
                     </div>
                   )}
 
-                  {r.state === 'unwired' && (
+                  {!isLiveMarkets && r.state === 'unwired' && (
                     <div className="flex items-start gap-4">
                       <div className="shrink-0 pt-1">
                         <GhostChart width={140} height={44} />
@@ -584,12 +655,11 @@ function VelocityModal({
                       <div className="text-sm leading-relaxed text-gray-500">
                         <p><span className="font-medium text-gray-700">Intended metric:</span> {r.candidateMetric}</p>
                         <p className="mt-1"><span className="font-medium text-gray-700">Blocked by:</span> {r.blocker}</p>
-                        {r.owner && <p className="mt-1 text-xs text-gray-400">Owner: {r.owner}</p>}
                       </div>
                     </div>
                   )}
 
-                  {r.state === 'not_applicable' && (
+                  {!isLiveMarkets && r.state === 'not_applicable' && (
                     <p className="text-sm italic leading-relaxed text-gray-400">{r.reason}</p>
                   )}
                 </div>
@@ -827,13 +897,12 @@ function InflectionCard({
       </div>
 
       <div className="mt-auto border-t border-gray-100 pt-4">
-        <div className="mb-2 flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
             The field
           </span>
           <span className="ml-auto text-[11px] font-medium" style={{ color: FIELD_COLOR }}>{stageLabel}</span>
         </div>
-        <FieldMeter status={point.status} />
       </div>
 
       <div className="mt-4 border-t border-gray-100 pt-4">

@@ -78,17 +78,17 @@ export default async function ImpactPage() {
       <div className="max-w-6xl mx-auto px-6 pt-8">
         <Breadcrumb items={[{ label: 'Impact' }]} />
         <div className="pt-8 pb-10">
-          <h1 className="text-2xl lg:text-[44px] font-semibold leading-[1.1] tracking-tight mb-5 max-w-2xl">
-            Is the field accelerating?
+          <h1 className="text-2xl lg:text-[44px] font-semibold leading-[1.1] tracking-tight mb-5 max-w-3xl">
+            PL R&amp;D&rsquo;s impact on field velocity
           </h1>
-          <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">
+          <p className="text-lg text-gray-600 leading-relaxed max-w-none">
             We back fields we think are ready to move, then check whether they do.{' '}
             <strong className="font-semibold text-black">Field velocity</strong> is that rate of change:
             how fast talent enters, capital forms, tool costs fall, and output ships.{' '}
             <strong className="font-semibold text-black">Inflection points</strong> are one of the markers
             we read &mdash; dated, falsifiable shifts an accelerating field should produce.
           </p>
-          <p className="mt-4 text-lg text-gray-600 leading-relaxed max-w-2xl">
+          <p className="mt-4 text-lg text-gray-600 leading-relaxed max-w-none">
             We measure velocity the same way we do the work: as a research program. Whether field
             acceleration works is itself the open question, tested across all four focus areas.
           </p>

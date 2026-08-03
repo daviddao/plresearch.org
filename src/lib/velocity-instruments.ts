@@ -174,9 +174,9 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
     },
     {
       instrument: 'markets',
-      state: 'not_applicable',
-      reason:
-        'No liquid forecast market prices censorship-resistant communication or stateless personhood at scale, so there is no market signal to read. The per-marker crowd-forecast white space records that gap directly.',
+      state: 'unwired',
+      candidateMetric: 'Implied arrival dates across the identity and AI-regulation markets mapped to this field',
+      blocker: 'The term-structure aggregation is not built; the live crowd forecasts are shown per market below.',
     },
   ],
   'economies-governance': [
@@ -207,9 +207,9 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
     },
     {
       instrument: 'markets',
-      state: 'unwired',
-      candidateMetric: 'Implied arrival dates from crypto-governance and stablecoin-adoption forecast questions',
-      blocker: 'Liquidity is not yet verified, and the term-structure aggregation is not built.',
+      state: 'not_applicable',
+      reason:
+        'No liquid forecast market prices programmable-allocation or digital-public-infrastructure milestones, so there is no market signal to read.',
     },
   ],
   'ai-robotics': [
@@ -307,9 +307,13 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
       candidateMetric: 'Implants placed against the 10k-by-2030 milestone, and capital raised by BCI companies',
       blocker: 'Implant counts are not centrally reported, and capital figures are scattered.',
     },
-    // `markets` is deliberately not declared here: the field's thin market signal
-    // is already read at the marker level (the Metaculus WBE/BCI crowd forecasts),
-    // so a duplicate field-level market instrument would add nothing.
+    {
+      instrument: 'markets',
+      state: 'unwired',
+      candidateMetric:
+        'Implied arrival dates across the mapped BCI and whole-brain-emulation questions (Metaculus, Polymarket, Kalshi)',
+      blocker: 'The term-structure aggregation is not built; the live crowd forecasts are shown per market below.',
+    },
   ],
 }
 
