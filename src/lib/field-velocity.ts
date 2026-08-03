@@ -21,7 +21,6 @@ import {
   FOCUS_AREAS,
   FIELD_COLOR,
   FIELD_INK,
-  FIELD_TRACK,
   HAND_COLOR,
   LIVE_COLOR,
   type FocusAreaKey,
@@ -30,7 +29,7 @@ import {
 
 // Re-export the shared color + two-axis primitives so components import from one
 // place and the theme-aware dark-mode handling is reused verbatim.
-export { FIELD_COLOR, FIELD_INK, FIELD_TRACK, HAND_COLOR, LIVE_COLOR }
+export { FIELD_COLOR, FIELD_INK, HAND_COLOR, LIVE_COLOR }
 export { FOCUS_AREAS, INFLECTION_POINTS }
 export type { FocusAreaKey, InflectionPoint }
 

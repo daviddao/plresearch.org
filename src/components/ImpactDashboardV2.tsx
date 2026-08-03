@@ -10,10 +10,8 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   ROLE_META,
   PL_ROLE_ORDER,
-  FIELD_STAGES,
   HOW_TO_READ,
   TEAM_LINKS,
-  stageIndexForStatus,
   resolutionFor,
   inflectionLabel,
   isConcerningMarker,
@@ -21,11 +19,19 @@ import {
   type PLRole,
 } from '@/lib/inflection-points'
 import {
+  claimsForArea,
+  claimsForPoint,
+  unmarkeredClaims,
+  tallyClaims,
+  visibleTestimony,
+  TIER_META,
+  type ContributionClaim,
+} from '@/lib/contribution-claims'
+import {
   FOCUS_AREAS,
   INFLECTION_POINTS,
   FIELD_COLOR,
   FIELD_INK,
-  FIELD_TRACK,
   HAND_COLOR,
   LIVE_COLOR,
   type FocusAreaKey,
@@ -144,6 +150,7 @@ export default function ImpactDashboardV2({
             Inflection points we&rsquo;re tracking
           </div>
           {visible.length > 0 && <MissesLedger points={visible} />}
+          {visible.length > 0 && <ClaimsLedger area={filter} />}
           {visible.length > 0 ? (
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
               {visible.map((p) => (
@@ -249,6 +256,11 @@ function DirectionChip({ direction, size = 'sm' }: { direction: Direction; size?
 /** Show the date portion of an ISO string (the full value stays in provenance). */
 function shortDate(s?: string): string | undefined {
   return s ? s.slice(0, 10) : s
+}
+
+/** Review status line. Reads "not yet reviewed" until a review date lands. */
+function reviewedLabel(asOf?: string): string {
+  return asOf ? `reviewed ${asOf}` : 'not yet reviewed'
 }
 
 function marketReadout(s: MarketSignal): string {
@@ -665,26 +677,73 @@ function MissesLedger({ points }: { points: InflectionPoint[] }) {
   )
 }
 
-function FieldMeter({ status }: { status: InflectionPoint['status'] }) {
-  const reached = stageIndexForStatus(status)
+/** Aggregate contribution-claim strip. Mirrors the misses ledger and never
+ *  suppresses a zero. Unmarkered claims hang off an expandable line below. */
+function ClaimsLedger({ area }: { area: FocusAreaKey }) {
+  const [open, setOpen] = useState(false)
+  const claims = claimsForArea(area)
+  const t = tallyClaims(claims)
+  const unmarkered = unmarkeredClaims(area)
+  if (t.n === 0) return null
+  const seg = (n: number, label: string) => (
+    <span className="text-gray-500">
+      <span className="tabular-nums font-semibold text-black">{n}</span> {label}
+    </span>
+  )
   return (
-    <div>
-      <div className="flex gap-1">
-        {FIELD_STAGES.map((_, i) => (
-          <span
-            key={i}
-            className="h-1.5 flex-1 rounded-full"
-            style={{ backgroundColor: i <= reached ? FIELD_COLOR : FIELD_TRACK }}
-          />
-        ))}
+    <div className="mb-4 rounded-lg border border-gray-200 bg-white px-4 py-3">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+        <span className="font-semibold" style={{ color: HAND_COLOR }}>
+          <span className="tabular-nums">{t.n}</span> contribution claims
+        </span>
+        <span className="text-gray-300" aria-hidden>·</span>
+        {seg(t.tier1, 'tier 1')}
+        <span className="text-gray-300" aria-hidden>·</span>
+        {seg(t.tier2, 'tier 2')}
+        <span className="text-gray-300" aria-hidden>·</span>
+        {seg(t.tier3plus, 'tier 3+')}
+        <span className="text-gray-300" aria-hidden>·</span>
+        {seg(t.counterfactualsTested, 'counterfactuals tested')}
+        <span className="text-gray-300" aria-hidden>·</span>
+        {seg(t.withdrawnOrNotSupported, 'withdrawn or not supported')}
+        <a href="#evidence-grading" className="ml-auto inline-flex items-center gap-1 font-medium text-blue hover:underline">
+          How we grade our evidence
+          <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </a>
       </div>
-      <div className="mt-1.5 flex justify-between text-[11px] text-gray-400">
-        {FIELD_STAGES.map((s, i) => (
-          <span key={s} className={i === reached ? 'font-medium text-gray-600' : ''}>
-            {s}
-          </span>
-        ))}
-      </div>
+      {t.counterfactualsTested === 0 && (
+        <p className="mt-1 text-[11px] italic text-gray-400">No counterfactual has been tested yet.</p>
+      )}
+      {unmarkered.length > 0 && (
+        <div className="mt-2 border-t border-gray-100 pt-2">
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="inline-flex items-center gap-1.5 text-[11px] font-medium text-gray-500 hover:text-black"
+          >
+            <svg
+              className={`h-3 w-3 transition-transform ${open ? 'rotate-90' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            Claims not tied to a named marker ({unmarkered.length})
+          </button>
+          {open && (
+            <div className="mt-3 space-y-4">
+              {unmarkered.map((c) => (
+                <div key={c.id} className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                  <ClaimAttribution claim={c} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }
@@ -717,6 +776,177 @@ function RoleChips({ roles }: { roles: PLRole[] }) {
   )
 }
 
+// ── Contribution claim (the graded OUR HAND) ──────────────────────────────────
+// Renders a claim so its evidence strength is visible: tier + confidence,
+// the counterfactual (or its stated absence), and an Evidence expander holding
+// traced links and testimony. Testimony that goes against us is never hidden.
+
+function TierBadge({ tier }: { tier: ContributionClaim['tier'] }) {
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+      style={{
+        color: HAND_COLOR,
+        backgroundColor: 'color-mix(in srgb, var(--impact-hand) 12%, transparent)',
+        border: '1px solid color-mix(in srgb, var(--impact-hand) 30%, transparent)',
+      }}
+      title={`Tier ${tier} evidence`}
+    >
+      <span className="tabular-nums">Tier {tier}</span>
+      <span className="font-medium opacity-80">{TIER_META[tier].short}</span>
+    </span>
+  )
+}
+
+function StatusNote({ claim }: { claim: ContributionClaim }) {
+  if (claim.status !== 'not_supported' && claim.status !== 'withdrawn') return null
+  const label = claim.status === 'withdrawn' ? 'withdrawn' : 'not supported'
+  return (
+    <span
+      className="inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
+      style={{ color: '#dc2626', backgroundColor: 'color-mix(in srgb, #dc2626 14%, transparent)' }}
+    >
+      {label}{claim.statusReason ? ` — ${claim.statusReason}` : ''}
+    </span>
+  )
+}
+
+function ClaimEvidence({ claim }: { claim: ContributionClaim }) {
+  const [open, setOpen] = useState(false)
+  const testimony = visibleTestimony(claim)
+  const count = claim.tracedLinks.length + testimony.length
+  if (count === 0) {
+    return (
+      <p className="mt-3 text-[11px] italic text-gray-400">No traceable evidence recorded yet.</p>
+    )
+  }
+  return (
+    <div className="mt-3">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-500 hover:text-black"
+      >
+        <svg
+          className={`h-3 w-3 transition-transform ${open ? 'rotate-90' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+        Evidence ({count})
+      </button>
+      {open && (
+        <div className="mt-3 space-y-3 rounded-lg border border-gray-200 bg-white p-3">
+          {claim.tracedLinks.length > 0 && (
+            <div>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                Traced links
+              </div>
+              <div className="flex flex-wrap gap-x-3 gap-y-1">
+                {claim.tracedLinks.map((l) =>
+                  l.evidenceUrl ? (
+                    <a
+                      key={l.link}
+                      href={l.evidenceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] font-medium text-blue hover:underline"
+                    >
+                      {l.link}
+                      <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </a>
+                  ) : (
+                    <span key={l.link} className="text-[11px] font-medium text-gray-600">{l.link}</span>
+                  ),
+                )}
+              </div>
+            </div>
+          )}
+          {testimony.length > 0 && (
+            <div className={claim.tracedLinks.length > 0 ? 'border-t border-gray-100 pt-3' : ''}>
+              <div className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                Testimony
+              </div>
+              <div className="space-y-2.5">
+                {testimony.map((t, i) => (
+                  <figure key={i} className="text-sm leading-relaxed text-gray-600">
+                    <blockquote>“{t.quote}”</blockquote>
+                    <figcaption className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-gray-400">
+                      <span className="font-medium text-gray-600">
+                        {t.url ? (
+                          <a href={t.url} target="_blank" rel="noopener noreferrer" className="text-blue hover:underline">
+                            {t.source}
+                          </a>
+                        ) : (
+                          t.source
+                        )}
+                      </span>
+                      <span>· {t.role}</span>
+                      {t.wouldHaveHappenedAnyway && (
+                        <span
+                          className="rounded-full px-1.5 py-0.5 font-medium"
+                          style={{ color: '#d0894b', backgroundColor: 'color-mix(in srgb, #d0894b 16%, transparent)' }}
+                          title="This counterparty says the outcome would have happened without us. Shown, never hidden."
+                        >
+                          would have happened anyway
+                        </span>
+                      )}
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/** One graded contribution claim. Reused in the modal and the unmarkered list. */
+function ClaimAttribution({ claim }: { claim: ContributionClaim }) {
+  return (
+    <div>
+      <p className="text-sm leading-relaxed text-gray-600"><Linkify text={claim.whatWeDid} /></p>
+
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <TierBadge tier={claim.tier} />
+        <span className="inline-flex items-center gap-1 text-[11px] font-medium text-gray-500">
+          <span className="uppercase tracking-wide text-gray-400">Confidence</span>
+          <span className="font-semibold text-gray-700">{claim.confidence}</span>
+        </span>
+        {claim.retrospective && (
+          <span className="text-[11px] italic text-gray-400" title="Written after the outcome was known — not pre-registered">
+            written retrospectively
+          </span>
+        )}
+        <StatusNote claim={claim} />
+      </div>
+
+      <p className="mt-2 text-sm leading-relaxed">
+        <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">Counterfactual</span>{' '}
+        {claim.counterfactualClaim ? (
+          <span className="text-gray-600">{claim.counterfactualClaim}</span>
+        ) : (
+          <span className="italic text-gray-400">counterfactual not yet stated</span>
+        )}
+      </p>
+
+      <ClaimEvidence claim={claim} />
+
+      {claim.distalBet && (
+        <p className="mt-3 rounded-lg bg-gray-50 px-3 py-2 text-[13px] leading-relaxed text-gray-500">
+          <span className="font-semibold text-gray-600">The bet (unproven):</span> {claim.distalBet}
+        </p>
+      )}
+    </div>
+  )
+}
+
 function InflectionCard({
   point,
   metrics,
@@ -729,7 +959,6 @@ function InflectionCard({
   onOpen: () => void
 }) {
   const fa = FOCUS_AREAS.find((f) => f.key === point.area)!
-  const stageLabel = FIELD_STAGES[stageIndexForStatus(point.status)]
   const hasLiveSignal = !!(
     point.liveEvidence?.length ||
     (metrics && metrics.length) ||
@@ -767,21 +996,12 @@ function InflectionCard({
       <div className="mb-5 flex flex-col gap-1.5">
         <div className="flex flex-wrap items-center gap-2">
           <ResolutionChip point={point} />
-          <span className="text-[11px] text-gray-400">reviewed {resolution.asOf ?? 'not yet'}</span>
+          <span className="text-[11px] text-gray-400">{reviewedLabel(resolution.asOf)}</span>
         </div>
         <ResolutionMeta point={point} />
       </div>
 
       <div className="mt-auto border-t border-gray-100 pt-4">
-        <div className="flex items-center gap-2">
-          <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
-            The field
-          </span>
-          <span className="ml-auto text-[11px] font-medium" style={{ color: FIELD_COLOR }}>{stageLabel}</span>
-        </div>
-      </div>
-
-      <div className="mt-4 border-t border-gray-100 pt-4">
         <div className="mb-2 flex items-center gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: HAND_COLOR }}>
             Our hand
@@ -917,18 +1137,11 @@ function InflectionModal({
                 <p className="text-sm leading-relaxed text-gray-600">{point.cascade}</p>
               </div>
             </div>
-            <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
-                Progress against inflection point
-              </div>
-              <FieldMeter status={point.status} />
-            </div>
-
             {/* Resolution: outcome × mattered (never inferred from one another). */}
-            <div className="mt-4 rounded-xl border border-gray-200 bg-white p-5">
+            <div className="rounded-xl border border-gray-200 bg-white p-5">
               <div className="mb-3 flex flex-wrap items-center gap-2">
                 <ResolutionChip point={point} />
-                <span className="text-[11px] text-gray-400">reviewed {resolutionFor(point).asOf ?? 'not yet'}</span>
+                <span className="text-[11px] text-gray-400">{reviewedLabel(resolutionFor(point).asOf)}</span>
               </div>
               <ResolutionMeta point={point} stacked />
               {resolutionFor(point).matteredEvidence && (
@@ -952,11 +1165,19 @@ function InflectionModal({
             </div>
             <div className="mb-4 text-sm font-semibold text-black">PL R&D interventions</div>
             <RoleChips roles={point.roles} />
-            <div className="mt-5">
-              <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">In practice</div>
-              <p className="text-sm leading-relaxed text-gray-600"><Linkify text={point.contribution.activities} /></p>
-              <p className="mt-2 text-sm leading-relaxed text-gray-500"><Linkify text={point.contribution.outputs} /></p>
-            </div>
+            {(() => {
+              const claims = claimsForPoint(point.area, point.title)
+              if (!claims.length) return null
+              return (
+                <div className="mt-5 space-y-5">
+                  {claims.map((c, i) => (
+                    <div key={c.id} className={i > 0 ? 'border-t border-gray-200 pt-5' : ''}>
+                      <ClaimAttribution claim={c} />
+                    </div>
+                  ))}
+                </div>
+              )
+            })()}
           </div>
 
           <div className="mt-4 rounded-xl bg-gray-50 p-5 sm:p-6">
