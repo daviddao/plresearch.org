@@ -167,8 +167,8 @@ function IdeaVintageExamples({ examples }: { examples: IdeaVintageExample[] }) {
       <div className="text-sm font-semibold text-black">What it looks like today</div>
       <p className="mt-1 text-xs leading-relaxed text-gray-500">
         Median age of the references cited in new work, in years, per focus area on a shared axis. The
-        solid line is reliable years; the shaded band is the 95% interval; the dashed tail is the most
-        recent years, still under-indexed. Lower means the field is building on fresher ideas.
+        solid line is reliable years, the shaded band is the 95% interval, and the dashed tail is the most
+        recent years, still under-indexed. A lower line means the field is building on fresher ideas.
       </p>
       <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {examples.map((e) => (
@@ -180,37 +180,43 @@ function IdeaVintageExamples({ examples }: { examples: IdeaVintageExample[] }) {
       </div>
 
       <div className="mt-5">
-        <div className="text-sm font-semibold text-black">How the chart is built</div>
+        <div className="text-sm font-semibold text-black">How we build this from OpenAlex</div>
         <p className="mt-1 text-xs leading-relaxed text-gray-600">
-          For each year we draw a random sample of works whose title or abstract matches a frozen keyword
-          query for the field (the query is recorded with every series). For each sampled work we look up
-          the publication year of every reference it cites, then pool those and take the median age (the
-          work&rsquo;s year minus the reference&rsquo;s year). The band is a bootstrap 95% interval on that
-          median. The direction compares the mean of the earliest three reliable years against the most
-          recent three, and only calls a trend when the shift clears a flat band, so sampling noise reads
-          as flat. It is a sampled estimate, comparable against itself, not a precise census.
+          The source is OpenAlex, an open, CC0 catalogue of more than 250 million works and the reference
+          lists that connect them. For each year we take a random sample of works whose title or abstract
+          matches a fixed keyword query for the field, and we store that query with every series. For each
+          work we read the publication year of every reference it cites, pool them, and take the median
+          age, which is the work&rsquo;s year minus the reference&rsquo;s year. The shaded band is a
+          bootstrap 95% interval on that median. Direction compares the mean of the earliest three reliable
+          years with the most recent three, and calls a trend only once the shift clears a flat band, so
+          sampling noise stays flat. Treat the number as directional.
         </p>
       </div>
 
       <div className="mt-4 rounded-lg bg-gray-50 p-3">
-        <div className="text-sm font-semibold text-black">What we guard against in OpenAlex</div>
+        <div className="text-sm font-semibold text-black">Reading OpenAlex without its artefacts</div>
+        <p className="mt-1 text-xs leading-relaxed text-gray-500">
+          OpenAlex is a moving target: it grows and re-labels in large batches, and it lags on recent
+          work. Three habits keep those artefacts out of the reading.
+        </p>
         <ul className="mt-2 space-y-2 text-xs leading-relaxed text-gray-600">
           <li>
             <span className="font-medium text-black">Size is not velocity.</span> We read an age, not a
-            count, so OpenAlex adding works in bulk (a recent backfill added on the order of 190M) does not
-            register as acceleration. Where an instrument uses counts, we normalize against total corpus
-            growth (share per 100k), never raw totals.
+            count, so a bulk addition to the catalogue (one recent backfill added on the order of 190
+            million works) cannot show up as acceleration. Any instrument that does count is normalized
+            against total corpus growth, as a share per 100,000 works, never a raw total.
           </li>
           <li>
-            <span className="font-medium text-black">Labels drift; keywords don&rsquo;t.</span> Fields are
-            defined by a frozen title-and-abstract keyword query, not OpenAlex topic labels, so a large
-            re-classification (such as the 2026 backlog clearance) cannot look like a field taking off.
-            Every series stores its exact query and retrieval date, and each re-pull is versioned.
+            <span className="font-medium text-black">Labels drift; keywords hold.</span> We define each
+            field with a fixed title-and-abstract keyword query rather than OpenAlex&rsquo;s own topic
+            labels, so a large re-classification (like the 2026 backlog clearance) cannot look like a field
+            taking off. Each series stores its query and the date it was pulled, and every refresh is a new
+            versioned pull.
           </li>
           <li>
-            <span className="font-medium text-black">Recent years lag.</span> The last two years or so are
-            under-indexed and always look like a slowdown, so we draw them dashed, leave them out of the
-            direction, and compare like year-over-year windows.
+            <span className="font-medium text-black">Recent years lag.</span> The last two years are
+            under-indexed and always look like a slowdown, so we mark them dashed, drop them from the
+            direction, and compare matching year windows.
           </li>
         </ul>
       </div>
