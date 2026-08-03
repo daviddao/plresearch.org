@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react'
 import { HAND_COLOR, FIELD_COLOR, TOOLKIT_V2, type ToolkitEntry } from '@/lib/field-velocity'
 import { VELOCITY_INSTRUMENTS, INFLECTION_EXPLAINER } from '@/lib/velocity-instruments'
+import { TIER_DEFINITIONS } from '@/lib/contribution-claims'
 import { Sparkline, type SeriesPoint } from '@/components/VelocitySparkline'
 
 type DefEntry = { id: string; label: string; subtitle: string; description: string }
@@ -111,6 +112,77 @@ export default function MeasuringQuestionsV2({
             invention directly &mdash; prototypes, designs, datasets, and negative results largely lack
             identifiers to count. Closing that gap is itself part of the work.
           </p>
+        </div>
+      </section>
+
+      {/* Downward divider — the field is observed, our contribution to it is graded. */}
+      <div className="relative my-12" aria-hidden>
+        <div className="border-t border-gray-200" />
+        <span className="absolute left-1/2 top-1/2 flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-400 shadow-sm">
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </div>
+
+      {/* Block 3 — how we grade our own evidence (attribution) */}
+      <section id="evidence-grading" className="scroll-mt-24">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr]">
+          <div>
+            <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide" style={{ color: HAND_COLOR }}>
+              Our hand
+            </div>
+            <h3 className="text-lg font-semibold tracking-tight text-black">How we grade our own evidence</h3>
+            <p className="mt-2 text-sm leading-relaxed text-gray-500">
+              Every contribution claim carries a tier that says how strong the evidence behind it is,
+              from a bare coincidence to a randomized comparison.
+            </p>
+          </div>
+
+          <div>
+            <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
+              We do not claim to have caused these fields to accelerate. Field-level attribution is not
+              identifiable: four fields, no counterfactual, effects that lag years, and interventions
+              small next to the forces already moving a frontier. What we can do is name each
+              intervention, state what we expected it to produce, show the links we can actually trace,
+              and grade how strong that evidence is. Where recipients tell us they would have done it
+              anyway, we publish that too.
+            </p>
+
+            <div className="mt-5 space-y-3">
+              {TIER_DEFINITIONS.map((t) => (
+                <div key={t.tier} className="flex gap-3">
+                  <span
+                    className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold tabular-nums"
+                    style={{
+                      color: HAND_COLOR,
+                      backgroundColor: 'color-mix(in srgb, var(--impact-hand) 12%, transparent)',
+                      border: '1px solid color-mix(in srgb, var(--impact-hand) 30%, transparent)',
+                    }}
+                    aria-hidden
+                  >
+                    {t.tier}
+                  </span>
+                  <p className="text-sm leading-relaxed text-gray-600">
+                    <span className="font-semibold text-black">{t.name}</span> &mdash; {t.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-6 rounded-lg bg-gray-50 p-4">
+              <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+                Reflexivity note
+              </div>
+              <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
+                One caveat we owe readers. Our main channel is legibility and attention, so the
+                instruments most responsive to our work &mdash; talent inflow, market prices, citation
+                velocity &mdash; are partly measuring our own communications. The least contaminated
+                instruments are the cost curves, which are the ones we are least able to move. We weight
+                our claims accordingly.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
