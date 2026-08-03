@@ -73,15 +73,13 @@ export default async function ImpactPage() {
           <p className="text-lg text-gray-600 leading-relaxed max-w-2xl">
             We back fields we think are ready to move, then check whether they do.{' '}
             <strong className="font-semibold text-black">Field velocity</strong> is that rate of change:
-            how fast talent enters, capital forms, tool costs fall, output ships, and the{' '}
-            <strong className="font-semibold text-black">inflection points</strong> we named come true.
-            Inflection points are one of the markers we read, dated and falsifiable shifts an
-            accelerating field should produce.
+            how fast talent enters, capital forms, tool costs fall, and output ships.{' '}
+            <strong className="font-semibold text-black">Inflection points</strong> are one of the markers
+            we read &mdash; dated, falsifiable shifts an accelerating field should produce.
           </p>
           <p className="mt-4 text-lg text-gray-600 leading-relaxed max-w-2xl">
-            The way we measure velocity is the same research design as the work itself. How we do field
-            acceleration is a research program, and testing whether it works is research that runs across
-            all four focus areas.
+            We measure velocity the same way we do the work: as a research program. Whether field
+            acceleration works is itself the open question, tested across all four focus areas.
           </p>
           <a
             href="#methodology"
@@ -100,8 +98,9 @@ export default async function ImpactPage() {
         <div className="max-w-6xl mx-auto px-6 py-14 lg:py-16">
           <h2 className="text-xl lg:text-2xl font-semibold tracking-tight mb-2">Field velocity</h2>
           <p className="text-base text-gray-600 leading-relaxed max-w-3xl mb-8">
-            Pick a focus area. The box up top reads the field&rsquo;s velocity across five instruments;
-            the inflection points below are the specific markers we track, each with its live signal.
+            Pick a focus area. The summary above reads that field&rsquo;s velocity across the instruments
+            that apply to it; the inflection points below are the specific markers we track, each with its
+            live signal.
           </p>
           <ImpactDashboardV2 liveOutputs={liveOutputs} marketSignals={marketSignals} />
         </div>

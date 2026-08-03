@@ -6,19 +6,13 @@
 // result with. Both the toolkit tools and the velocity instruments open modals.
 
 import { useEffect, useState } from 'react'
-import {
-  HAND_COLOR,
-  FIELD_COLOR,
-  TOOLKIT_V2,
-  VELOCITY_MEASURES,
-  INFLECTION_EXPLAINER,
-  type ToolkitEntry,
-  type VelocityMeasure,
-} from '@/lib/field-velocity'
+import { HAND_COLOR, FIELD_COLOR, TOOLKIT_V2, type ToolkitEntry } from '@/lib/field-velocity'
+import { VELOCITY_INSTRUMENTS, INFLECTION_EXPLAINER } from '@/lib/velocity-instruments'
 
+type DefEntry = { id: string; label: string; subtitle: string; description: string }
 type Modal =
   | { kind: 'tool'; entry: ToolkitEntry }
-  | { kind: 'measure'; entry: VelocityMeasure }
+  | { kind: 'measure'; entry: DefEntry }
 
 export default function MeasuringQuestionsV2() {
   const [modal, setModal] = useState<Modal | null>(null)
@@ -85,10 +79,15 @@ export default function MeasuringQuestionsV2() {
               The interventions are the input. Field velocity, the rate a field is moving, is what tells
               us whether they landed. We read it through five instruments.
             </p>
+            <p className="mt-3 text-sm leading-relaxed text-gray-500">
+              Not every instrument fits every field. A field with no single gating unit cost has no
+              performance curve to read, and a field no forecast market has priced has no market signal.
+              We show the instruments that apply and name the ones that do not.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {[...VELOCITY_MEASURES, INFLECTION_EXPLAINER].map((m) => (
+            {[...VELOCITY_INSTRUMENTS, INFLECTION_EXPLAINER].map((m) => (
               <button
                 key={m.id}
                 type="button"
@@ -96,11 +95,16 @@ export default function MeasuringQuestionsV2() {
                 aria-haspopup="dialog"
                 className="group flex flex-col rounded-xl border border-gray-200 bg-white p-4 text-left transition-all hover:border-gray-300 hover:shadow-sm"
               >
-                <span className="mb-1 text-sm font-semibold text-black">{m.title}</span>
-                <p className="text-xs leading-relaxed text-gray-600">{m.oneLiner}</p>
+                <span className="mb-1 text-sm font-semibold text-black">{m.label}</span>
+                <p className="text-xs leading-relaxed text-gray-600">{m.subtitle}</p>
               </button>
             ))}
           </div>
+          <p className="mt-4 max-w-2xl text-xs leading-relaxed text-gray-400">
+            These instruments read the research and capital sides of a field. They do not observe
+            invention directly &mdash; prototypes, designs, datasets, and negative results largely lack
+            identifiers to count. Closing that gap is itself part of the work.
+          </p>
         </div>
       </section>
 
@@ -126,10 +130,13 @@ function InfoModal({ modal, onClose }: { modal: Modal; onClose: () => void }) {
   const isTool = modal.kind === 'tool'
   const eyebrow = isTool ? 'Intervention' : 'Field velocity'
   const eyebrowColor = isTool ? HAND_COLOR : FIELD_COLOR
-  const title = modal.entry.title
-  const subtitle = isTool ? modal.entry.subtitle : undefined
+  const title = isTool ? modal.entry.title : modal.entry.label
+  const subtitle = modal.entry.subtitle
   const proposed = isTool ? modal.entry.proposed : false
   const description = modal.entry.description
+  const researchSide =
+    modal.kind === 'measure' &&
+    (modal.entry.id === 'idea_vintage' || modal.entry.id === 'revealed_commitments')
 
   return (
     <div
@@ -165,6 +172,12 @@ function InfoModal({ modal, onClose }: { modal: Modal; onClose: () => void }) {
           <h2 className="mb-1 text-2xl font-semibold leading-tight tracking-tight text-black">{title}</h2>
           {subtitle && <div className="mb-5 text-sm text-gray-500">{subtitle}</div>}
           <p className={`${subtitle ? '' : 'mt-4 '}text-sm leading-relaxed text-gray-700`}>{description}</p>
+          {researchSide && (
+            <p className="mt-4 rounded-lg bg-gray-50 px-4 py-3 text-sm italic leading-relaxed text-gray-500">
+              This reads the research side of the field. It does not observe invention directly, and the
+              two can decouple.
+            </p>
+          )}
         </div>
       </div>
     </div>
