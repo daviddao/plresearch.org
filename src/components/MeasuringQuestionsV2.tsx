@@ -36,6 +36,12 @@ export default function MeasuringQuestionsV2({
             <p className="mt-2 text-sm leading-relaxed text-gray-500">
               A fixed toolkit we bring to every field. Pick the ones a field is missing, then push.
             </p>
+            <p className="mt-3 text-sm leading-relaxed text-gray-500">
+              We don&rsquo;t claim these interventions directly cause a field to accelerate &mdash;
+              attribution at the field level isn&rsquo;t cleanly identifiable. For now we name what we run
+              and watch whether the field moves; making that link clearer is work we intend to do, and to
+              publish here later.
+            </p>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
