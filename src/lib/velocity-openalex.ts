@@ -16,7 +16,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import type { FocusAreaKey } from '@/lib/inflection-points'
 import type { Direction, OpenAlexArea } from '@/lib/velocity-instruments'
-import { ideaVintageDirection, trailingSlope } from '../../scripts/velocity/vintage-direction.mjs'
+import { ideaVintageDirection, trailingSlope, windowMeans } from '../../scripts/velocity/vintage-direction.mjs'
 
 const DATA_DIR = path.join(process.cwd(), 'src', 'data', 'velocity')
 const AREA_SLUGS: FocusAreaKey[] = [
@@ -123,12 +123,13 @@ function toPayload(parsed: ReturnType<typeof parseCsv>): OpenAlexArea {
   const latestReliable = reliableVintage.length
     ? reliableVintage[reliableVintage.length - 1]
     : null
-  const firstReliable = reliableVintage.length ? reliableVintage[0] : null
+  const wm = reliablePts.length >= 2 ? windowMeans(reliablePts, 3) : null
   const ideaVintage = series.length
     ? {
         series,
         latest: latestReliable ? { year: latestReliable.year, median: latestReliable.median as number } : null,
-        first: firstReliable ? { year: firstReliable.year, median: firstReliable.median as number } : null,
+        early: wm ? { mean: wm.early, from: wm.earlyRange[0] as number, to: wm.earlyRange[1] as number } : null,
+        recent: wm ? { mean: wm.late, from: wm.lateRange[0] as number, to: wm.lateRange[1] as number } : null,
         reliableWindow: reliableVintage.length
           ? `${reliableVintage[0].year}\u2013${reliableVintage[reliableVintage.length - 1].year}`
           : '\u2014',
