@@ -8,7 +8,6 @@
 import { useEffect, useState } from 'react'
 import { HAND_COLOR, FIELD_COLOR, TOOLKIT_V2, type ToolkitEntry } from '@/lib/field-velocity'
 import { VELOCITY_INSTRUMENTS, INFLECTION_EXPLAINER } from '@/lib/velocity-instruments'
-import { TIER_DEFINITIONS } from '@/lib/contribution-claims'
 import { Sparkline, type SeriesPoint } from '@/components/VelocitySparkline'
 
 type DefEntry = { id: string; label: string; subtitle: string; description: string }
@@ -125,63 +124,34 @@ export default function MeasuringQuestionsV2({
         </span>
       </div>
 
-      {/* Block 3 — how we grade our own evidence (attribution) */}
-      <section id="evidence-grading" className="scroll-mt-24">
+      {/* Block 3 — attribution, held honestly for now */}
+      <section id="attribution" className="scroll-mt-24">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr]">
           <div>
             <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide" style={{ color: HAND_COLOR }}>
               Our hand
             </div>
-            <h3 className="text-lg font-semibold tracking-tight text-black">How we grade our own evidence</h3>
+            <h3 className="text-lg font-semibold tracking-tight text-black">How we think about attribution</h3>
             <p className="mt-2 text-sm leading-relaxed text-gray-500">
-              Every contribution claim carries a tier that says how strong the evidence behind it is,
-              from a bare coincidence to a randomized comparison.
+              We watch whether the fields we back speed up. We do not claim our interventions are what
+              made them.
             </p>
           </div>
 
           <div>
             <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
-              We do not claim to have caused these fields to accelerate. Field-level attribution is not
-              identifiable: four fields, no counterfactual, effects that lag years, and interventions
-              small next to the forces already moving a frontier. What we can do is name each
-              intervention, state what we expected it to produce, show the links we can actually trace,
-              and grade how strong that evidence is. Where recipients tell us they would have done it
-              anyway, we publish that too.
+              We don&rsquo;t claim our interventions directly cause these fields to accelerate. Field-level
+              attribution isn&rsquo;t cleanly identifiable: four fields, no counterfactual, effects that lag
+              years, and interventions small next to the forces already moving a frontier. For now we hold
+              that gap honestly &mdash; we name the interventions we run and read whether the field moves,
+              without drawing a causal line between the two.
             </p>
-
-            <div className="mt-5 space-y-3">
-              {TIER_DEFINITIONS.map((t) => (
-                <div key={t.tier} className="flex gap-3">
-                  <span
-                    className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold tabular-nums"
-                    style={{
-                      color: HAND_COLOR,
-                      backgroundColor: 'color-mix(in srgb, var(--impact-hand) 12%, transparent)',
-                      border: '1px solid color-mix(in srgb, var(--impact-hand) 30%, transparent)',
-                    }}
-                    aria-hidden
-                  >
-                    {t.tier}
-                  </span>
-                  <p className="text-sm leading-relaxed text-gray-600">
-                    <span className="font-semibold text-black">{t.name}</span> &mdash; {t.body}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 rounded-lg bg-gray-50 p-4">
-              <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                Reflexivity note
-              </div>
-              <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
-                One caveat we owe readers. Our main channel is legibility and attention, so the
-                instruments most responsive to our work &mdash; talent inflow, market prices, citation
-                velocity &mdash; are partly measuring our own communications. The least contaminated
-                instruments are the cost curves, which are the ones we are least able to move. We weight
-                our claims accordingly.
-              </p>
-            </div>
+            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-gray-600">
+              Making that loop clearer is work we intend to do: tracing specific interventions to specific
+              outcomes, being honest about how strong each link is, and asking the people on the receiving
+              end what they would have done otherwise, including where they&rsquo;d have gotten there without
+              us. When that evidence is solid enough to stand on, we plan to publish it here.
+            </p>
           </div>
         </div>
       </section>
