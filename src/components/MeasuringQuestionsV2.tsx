@@ -28,6 +28,9 @@ export default function MeasuringQuestionsV2() {
       <section>
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr]">
           <div>
+            <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide" style={{ color: HAND_COLOR }}>
+              Our hand
+            </div>
             <h3 className="text-lg font-semibold tracking-tight text-black">PL R&amp;D interventions</h3>
             <p className="mt-2 text-sm leading-relaxed text-gray-500">
               A fixed toolkit we bring to every field. Pick the ones a field is missing, then push.
@@ -73,7 +76,10 @@ export default function MeasuringQuestionsV2() {
       <section>
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_1fr]">
           <div>
-            <h3 className="text-lg font-semibold tracking-tight text-black">Observed field velocity</h3>
+            <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide" style={{ color: FIELD_COLOR }}>
+              The field
+            </div>
+            <h3 className="text-lg font-semibold tracking-tight text-black">Observed velocity</h3>
             <p className="mt-2 text-sm leading-relaxed text-gray-500">
               The interventions are the input. Field velocity, the rate a field is moving, is what tells
               us whether they landed. We read it through five instruments.

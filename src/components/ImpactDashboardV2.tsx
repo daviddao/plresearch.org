@@ -68,62 +68,68 @@ export default function ImpactDashboardV2({
 
   return (
     <>
-      {/* Sticky, horizontal focus-area tabs. Sticky is scoped to the dashboard
-          section, so the bar scrolls out once the methodology section begins. */}
-      <div className="sticky top-16 z-30 -mx-6 mb-6 bg-gray-100/95 px-6 py-3 backdrop-blur-sm">
-        <div className="flex items-center justify-between gap-4">
-          <div
-            role="tablist"
-            aria-label="Filter by focus area"
-            className="-mx-1 flex gap-1.5 overflow-x-auto px-1"
-          >
-            {FOCUS_AREAS.map((fa) => (
-              <Tab
-                key={fa.key}
-                label={fa.label}
-                forthcoming={fa.forthcoming}
-                icon={FA_ICON[fa.key]}
-                active={filter === fa.key}
-                onClick={() => setFilter(fa.key)}
-              />
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={() => setHowToOpen(true)}
-            aria-haspopup="dialog"
-            className="hidden shrink-0 items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 hover:text-black sm:inline-flex"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            How to read this
-          </button>
-        </div>
+      {/* "How to read this" — a persistent affordance above the grid. */}
+      <div className="mb-5 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setHowToOpen(true)}
+          aria-haspopup="dialog"
+          className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 hover:text-black"
+        >
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          How to read this
+        </button>
       </div>
 
-      {/* Field velocity — one wide box, the five instruments; opens a modal. */}
-      <FieldVelocityBox area={filter} onOpen={() => setVelocityOpen(true)} />
-
-      {/* Inflection points — four cards in two rows, with live signals. */}
-      <div className="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-        Inflection points we&rsquo;re tracking
-      </div>
-      {visible.length > 0 ? (
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          {visible.map((p) => (
-            <InflectionCard
-              key={`${p.area}-${p.title}`}
-              point={p}
-              metrics={liveOutputs[p.title]}
-              signal={marketSignals[p.title]}
-              onOpen={() => setActive(p)}
+      <div className="lg:grid lg:grid-cols-[248px_1fr] lg:gap-10">
+        {/* Vertical tabs (PR #29 layout) */}
+        <div
+          role="tablist"
+          aria-orientation="vertical"
+          aria-label="Filter by focus area"
+          className="-mx-1 mb-6 flex gap-1.5 overflow-x-auto px-1 pb-2 lg:mx-0 lg:mb-0 lg:flex-col lg:overflow-visible lg:px-0 lg:pb-0"
+        >
+          {FOCUS_AREAS.map((fa) => (
+            <Tab
+              key={fa.key}
+              label={fa.label}
+              count={INFLECTION_POINTS.filter((p) => p.area === fa.key).length}
+              forthcoming={fa.forthcoming}
+              icon={FA_ICON[fa.key]}
+              active={filter === fa.key}
+              onClick={() => setFilter(fa.key)}
             />
           ))}
         </div>
-      ) : (
-        <EmptyState filter={filter} />
-      )}
+
+        {/* Content: field velocity box + inflection points */}
+        <div>
+          {/* Field velocity — one wide box, the five instruments; opens a modal. */}
+          <FieldVelocityBox area={filter} onOpen={() => setVelocityOpen(true)} />
+
+          {/* Inflection points — four cards in two rows, with live signals. */}
+          <div className="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+            Inflection points we&rsquo;re tracking
+          </div>
+          {visible.length > 0 ? (
+            <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+              {visible.map((p) => (
+                <InflectionCard
+                  key={`${p.area}-${p.title}`}
+                  point={p}
+                  metrics={liveOutputs[p.title]}
+                  signal={marketSignals[p.title]}
+                  onOpen={() => setActive(p)}
+                />
+              ))}
+            </div>
+          ) : (
+            <EmptyState filter={filter} />
+          )}
+        </div>
+      </div>
 
       {active && (
         <InflectionModal
@@ -139,15 +145,17 @@ export default function ImpactDashboardV2({
   )
 }
 
-// ── Focus-area tab (horizontal pill) ──────────────────────────────────────────
+// ── Focus-area tab (vertical, PR #29 layout) ─────────────────────────────────
 function Tab({
   label,
+  count,
   forthcoming = false,
   active,
   icon,
   onClick,
 }: {
   label: string
+  count: number
   forthcoming?: boolean
   active: boolean
   icon?: AreaIconType
@@ -159,21 +167,23 @@ function Tab({
       role="tab"
       aria-selected={active}
       onClick={onClick}
-      className={`flex shrink-0 items-center gap-2 rounded-lg border px-3.5 py-2 text-left text-sm font-medium transition-all ${
+      className={`flex shrink-0 items-center gap-3 rounded-lg border px-3.5 py-3 text-left text-sm font-medium transition-all lg:w-full ${
         active
           ? 'border-gray-200 bg-white text-black shadow-sm'
           : 'border-transparent text-gray-500 hover:bg-white/60 hover:text-black'
       }`}
     >
       <span
-        className="flex h-5 w-5 shrink-0 items-center justify-center"
+        className="flex h-6 w-6 shrink-0 items-center justify-center"
         style={{ color: active ? 'var(--impact-field)' : '#9ca3af' }}
       >
         {icon && <AreaIcon type={icon} className="block h-5 w-5" />}
       </span>
-      <span className="whitespace-nowrap">{label}</span>
-      {forthcoming && (
+      <span className="flex-1 whitespace-nowrap lg:whitespace-normal">{label}</span>
+      {forthcoming ? (
         <span className="whitespace-nowrap text-[10px] font-medium uppercase tracking-wide text-gray-400">Soon</span>
+      ) : (
+        <span className="text-xs tabular-nums text-gray-400">{count}</span>
       )}
     </button>
   )
@@ -398,7 +408,7 @@ function InflectionCard({
           <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: HAND_COLOR }}>
             Our hand
           </span>
-          <span className="text-[11px] text-gray-400">· How PL is making a difference</span>
+          <span className="text-[11px] text-gray-400">· PL R&D interventions</span>
         </div>
         <RoleChips roles={point.roles} />
       </div>
@@ -541,7 +551,7 @@ function InflectionModal({
             <div className="mb-2 text-xs font-semibold uppercase tracking-wide" style={{ color: HAND_COLOR }}>
               Our hand
             </div>
-            <div className="mb-4 text-sm font-semibold text-black">How PL is making a difference</div>
+            <div className="mb-4 text-sm font-semibold text-black">PL R&D interventions</div>
             <RoleChips roles={point.roles} />
             <div className="mt-5">
               <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">In practice</div>
