@@ -88,7 +88,7 @@ export default async function ImpactPage() {
         <Breadcrumb items={[{ label: 'Impact' }]} />
         <div className="pt-8 pb-10">
           <h1 className="text-2xl lg:text-[44px] font-semibold leading-[1.1] tracking-tight mb-5 max-w-3xl">
-            PL R&amp;D&rsquo;s impact on field velocity
+            Field velocity and PL R&amp;D interventions
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed max-w-none">
             We back fields we think are ready to move, then check whether they do.{' '}
@@ -126,6 +126,7 @@ export default async function ImpactPage() {
             liveOutputs={liveOutputs}
             marketSignals={marketSignals}
             recordsByArea={recordsByArea}
+            ideaVintageExamples={ideaVintageExamples}
           />
         </div>
       </section>

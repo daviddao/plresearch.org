@@ -111,6 +111,26 @@ export const MARKET_MAPPINGS: MarketMapping[] = [
     note: 'No market prices a $1B+ outcomes-verified climate fund.',
   },
   {
+    title: 'A frontier model trained off the hyperscalers',
+    match: 'gap',
+    note: 'No liquid market prices a frontier model trained end-to-end on decentralized compute — an early, contrarian white space.',
+  },
+  {
+    title: 'Agents transact on open rails',
+    match: 'gap',
+    note: 'No market prices the share of agent-to-agent activity settling on open, permissionless rails — the category is too young to be priced.',
+  },
+  {
+    title: 'A shared real-world robotics data network',
+    match: 'gap',
+    note: 'No liquid market prices an open, multi-operator robotics data commons — a genuine white space.',
+  },
+  {
+    title: 'Machine-native money moves at scale',
+    match: 'gap',
+    note: 'No market prices machine-native economic activity at scale — agent-native payment rails are still pre-market.',
+  },
+  {
     title: 'The BCI app store',
     match: 'proxy',
     primary: {

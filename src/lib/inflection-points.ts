@@ -55,6 +55,16 @@ export type Contribution = {
   outputs: string
 }
 
+/** A concrete example intervention, tagged with the toolkit category it belongs to. */
+export type Intervention = {
+  /** The named thing we did / built / funded (a team, artifact, standard, convening). */
+  label: string
+  /** Optional link — a team site, an insights feed, a roadmap. */
+  href?: string
+  /** The toolkit category this belongs to (drives the tag). */
+  role: PLRole
+}
+
 /** A pointer to live activity that is contribution evidence (Q3) — NOT a Q2 threshold reading. */
 export type LiveEvidence = {
   label: string
@@ -85,6 +95,9 @@ export type InflectionPoint = {
   contribution: Contribution
   /** Q3, summarized as the PL role(s) on the critical path — the instruments we bring. */
   roles: PLRole[]
+  /** A few concrete interventions we ran here, each tagged with its category.
+   *  Shown on the card + modal in place of bare category pills. */
+  interventions?: Intervention[]
   /** Optional live activity / real-world signals — strictly Q3 evidence, never Q2 progress. */
   liveEvidence?: LiveEvidence[]
 
@@ -127,7 +140,7 @@ export type FocusAreaMeta = {
 export const FOCUS_AREAS: FocusAreaMeta[] = [
   { key: 'digital-human-rights', label: 'Digital Human Rights', code: 'FA1', href: '/areas/digital-human-rights/', accent: '#1982F4' },
   { key: 'economies-governance', label: 'Economies & Governance', code: 'FA2', href: '/areas/economies-governance/', accent: '#12bfdf' },
-  { key: 'ai-robotics', label: 'AI & Robotics', code: 'FA3', href: '/areas/ai-robotics/', accent: '#3966FE', forthcoming: true },
+  { key: 'ai-robotics', label: 'AI & Robotics', code: 'FA3', href: '/areas/ai-robotics/', accent: '#3966FE' },
   { key: 'neurotech', label: 'Neurotech', code: 'FA4', href: '/areas/neurotech/', accent: '#E51A66' },
 ]
 
@@ -216,6 +229,11 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'libp2p / IPFS deployments and the funded comms / messaging teams building on them, such as Fluence and Huddle01.',
     },
     roles: ['infrastructure', 'capital'],
+    interventions: [
+      { role: 'infrastructure', label: 'libp2p / IPFS networking stack', href: 'https://libp2p.io/' },
+      { role: 'capital', label: 'Fluence, Huddle01 (funded comms teams)', href: 'https://fluence.network/' },
+      { role: 'legibility', label: 'Latest Digital Human Rights insights', href: '/insights/?area=digital-human-rights' },
+    ],
     liveEvidence: [
       {
         label: 'Wikipedia kept online via IPFS during Turkey’s block',
@@ -238,6 +256,11 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'The identity and credential initiatives PL has seeded or funded, such as Tools for Humanity (World), SpruceID, and Privy.',
     },
     roles: ['connection', 'capital'],
+    interventions: [
+      { role: 'connection', label: 'Tools for Humanity, SpruceID, Privy (convened + seeded)', href: 'https://spruceid.com/' },
+      { role: 'capital', label: 'Seed funding for portable-credential work', href: 'https://privy.io/' },
+      { role: 'legibility', label: 'Latest Digital Human Rights insights', href: '/insights/?area=digital-human-rights' },
+    ],
   },
   {
     area: 'digital-human-rights',
@@ -253,6 +276,11 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'Content-addressed provenance tooling and the PL-backed teams building it, such as EQTY Lab.',
     },
     roles: ['infrastructure', 'capital'],
+    interventions: [
+      { role: 'infrastructure', label: 'Content addressing (IPFS) as the provenance substrate', href: 'https://ipfs.io/' },
+      { role: 'capital', label: 'EQTY Lab (verifiable-compute team)', href: 'https://eqtylab.io/' },
+      { role: 'legibility', label: 'Latest Digital Human Rights insights', href: '/insights/?area=digital-human-rights' },
+    ],
     liveEvidence: [
       {
         label: 'Starling Lab — content-authenticity displays in newsrooms',
@@ -275,6 +303,11 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'Filecoin and the open-compute portfolio — Fluence, Spheron, Expanso, Impossible Cloud, Lava, Fleek — with integrations across storage, compute, and identity.',
     },
     roles: ['infrastructure', 'connection', 'capital'],
+    interventions: [
+      { role: 'infrastructure', label: 'Filecoin + the open-compute portfolio', href: 'https://filecoin.io/' },
+      { role: 'capital', label: 'Fluence, Spheron, Expanso, Fleek', href: 'https://fluence.network/' },
+      { role: 'legibility', label: 'Latest Digital Human Rights insights', href: '/insights/?area=digital-human-rights' },
+    ],
   },
 
   // ── FA2 · Economies & Governance ─────────────────────────────────────────
@@ -292,6 +325,11 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'Published playbooks, convened sovereign–builder cohorts, and funded DPI primitives.',
     },
     roles: ['connection', 'capital', 'permission'],
+    interventions: [
+      { role: 'permission', label: 'DPI standards & procurement playbooks' },
+      { role: 'connection', label: 'Sovereign–builder convenings (Funding the Commons)', href: 'https://fundingthecommons.io/' },
+      { role: 'legibility', label: 'Latest Economies & Governance insights', href: '/insights/?area=economies-governance' },
+    ],
   },
   {
     area: 'economies-governance',
@@ -307,6 +345,11 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'Simocracy and broad-listening tools, and the government–tool convenings around them.',
     },
     roles: ['connection', 'capital'],
+    interventions: [
+      { role: 'capital', label: 'Simocracy & broad-listening tools' },
+      { role: 'connection', label: 'Government–tool convenings' },
+      { role: 'legibility', label: 'Latest Economies & Governance insights', href: '/insights/?area=economies-governance' },
+    ],
     liveEvidence: [
       {
         label: 'Simocracy governance simulation — live participation',
@@ -329,6 +372,12 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'Hypercerts, Funding the Commons, and ventures spun out of / funded across this lineage such as Molecule.',
     },
     roles: ['infrastructure', 'capital', 'translation'],
+    interventions: [
+      { role: 'infrastructure', label: 'Hypercerts (PL origin)', href: 'https://hypercerts.org/' },
+      { role: 'translation', label: 'Molecule (venture across this lineage)', href: 'https://www.molecule.xyz/' },
+      { role: 'connection', label: 'Funding the Commons', href: 'https://fundingthecommons.io/' },
+      { role: 'legibility', label: 'Latest Economies & Governance insights', href: '/insights/?area=economies-governance' },
+    ],
   },
   {
     area: 'economies-governance',
@@ -344,6 +393,11 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'GainForest, Glow, WeatherXM, and the verification benchmarks and standards they inform.',
     },
     roles: ['legibility', 'connection', 'capital'],
+    interventions: [
+      { role: 'capital', label: 'GainForest, Glow, WeatherXM (MRV teams)', href: 'https://gainforest.earth/' },
+      { role: 'connection', label: 'Verification benchmark & standards convenings' },
+      { role: 'legibility', label: 'Latest Economies & Governance insights', href: '/insights/?area=economies-governance' },
+    ],
     liveEvidence: [
       {
         label: 'GainForest & Glow — live verification activity',
@@ -368,6 +422,11 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'A draft BCI component / API standard and the regulator–maker–developer convenings around it.',
     },
     roles: ['connection', 'permission'],
+    interventions: [
+      { role: 'permission', label: 'Draft BCI component / API standard' },
+      { role: 'connection', label: 'Regulator–maker–developer convenings' },
+      { role: 'legibility', label: 'PL Neuro roadmap & insights', href: '/insights/?area=neurotech' },
+    ],
   },
   {
     area: 'neurotech',
@@ -383,6 +442,11 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'The PL Neuro talent network and the neural-data infrastructure and norms it seeds.',
     },
     roles: ['infrastructure', 'connection', 'capital'],
+    interventions: [
+      { role: 'connection', label: 'PL Neuro talent network (AI labs × comp neuro)' },
+      { role: 'infrastructure', label: 'Neural-data infrastructure & norms' },
+      { role: 'legibility', label: 'PL Neuro roadmap & insights', href: '/insights/?area=neurotech' },
+    ],
   },
   {
     area: 'neurotech',
@@ -398,6 +462,10 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'PL-funded NeuroAI demos and the energy-efficiency benchmarks that frame the target.',
     },
     roles: ['legibility', 'capital'],
+    interventions: [
+      { role: 'capital', label: 'PL-funded NeuroAI / neuromorphic demos' },
+      { role: 'legibility', label: 'Energy-efficiency benchmark & PL Neuro roadmap', href: '/insights/?area=neurotech' },
+    ],
   },
   {
     area: 'neurotech',
@@ -413,6 +481,92 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       outputs: 'The WBE benchmark, connectomics throughput targets, and a PL-engineered demo.',
     },
     roles: ['legibility', 'connection'],
+    interventions: [
+      { role: 'connection', label: 'Connectomics workshops & throughput targets' },
+      { role: 'legibility', label: 'WBE benchmark & PL Neuro roadmap', href: '/insights/?area=neurotech' },
+    ],
+  },
+
+  // ── FA3 · AI & Robotics ─────────────────────────────────────────
+  {
+    area: 'ai-robotics',
+    opportunitySpace: 'Open Compute Networks',
+    title: 'A frontier model trained off the hyperscalers',
+    signal:
+      'A frontier-scale model is trained end-to-end across independent, decentralized compute — pooled GPUs, edge capacity, and energy-sited hardware — rather than inside a single hyperscaler cluster.',
+    cascade:
+      'Compute stops being a bottleneck only a few labs can clear; regions and independents can train at the frontier, and the substrate of AI is set in the open.',
+    contribution: {
+      inputs: 'The Filecoin / open-compute portfolio; PL capital and coordination across compute, storage, and energy-sited hardware.',
+      activities: 'Building open compute and storage rails, funding decentralized-training teams, and coordinating an ecosystem that can pool capacity.',
+      outputs: 'The open-compute portfolio — Fluence, Spheron, Expanso — and the decentralized-training teams building on it.',
+    },
+    roles: ['infrastructure', 'connection', 'capital'],
+    interventions: [
+      { role: 'infrastructure', label: 'Filecoin + the open-compute portfolio', href: 'https://filecoin.io/' },
+      { role: 'capital', label: 'Fluence, Spheron, Expanso (compute teams)', href: 'https://fluence.network/' },
+      { role: 'legibility', label: 'Latest AI & Robotics insights', href: '/insights/?area=ai-robotics' },
+    ],
+  },
+  {
+    area: 'ai-robotics',
+    opportunitySpace: 'Agent Coordination Infrastructure',
+    title: 'Agents transact on open rails',
+    signal:
+      'A meaningful share of agent-to-agent economic activity — payments, contracting, task markets — settles on open, permissionless identity and coordination protocols rather than one platform’s closed stack.',
+    cascade:
+      'The rules of the agent economy — identity, reputation, settlement — are set as neutral public infrastructure instead of owned by whoever ships the dominant platform first.',
+    contribution: {
+      inputs: 'Open identity and coordination primitives from the PL network; convening capacity across agent-protocol teams.',
+      activities: 'Building open identity / coordination rails, convening agent-protocol teams, and funding early coordination-protocol work.',
+      outputs: 'Open agent-identity and coordination primitives and the teams building persistent-agent protocols on them.',
+    },
+    roles: ['infrastructure', 'connection', 'capital'],
+    interventions: [
+      { role: 'infrastructure', label: 'Open agent-identity & coordination primitives', href: 'https://libp2p.io/' },
+      { role: 'connection', label: 'Agent-protocol convenings' },
+      { role: 'legibility', label: 'Latest AI & Robotics insights', href: '/insights/?area=ai-robotics' },
+    ],
+  },
+  {
+    area: 'ai-robotics',
+    opportunitySpace: 'Embodied AI & Robotics Data Networks',
+    title: 'A shared real-world robotics data network',
+    signal:
+      'An open, multi-operator robot fleet generates a continuous, shared stream of real-world interaction data that outside teams can train on — not a single company’s proprietary logs.',
+    cascade:
+      'The data bottleneck on embodied intelligence breaks; robotics progress compounds across a commons instead of siloing inside whoever owns the largest fleet.',
+    contribution: {
+      inputs: 'Data-network primitives and incentive design; funding for robotics-data teams; convening across fleet operators.',
+      activities: 'Building shared data-network rails, funding robotics-data teams, and convening operators around open data standards.',
+      outputs: 'Robotics-data network primitives and the funded teams pooling real-world interaction data.',
+    },
+    roles: ['infrastructure', 'capital'],
+    interventions: [
+      { role: 'infrastructure', label: 'Shared robotics-data network primitives' },
+      { role: 'capital', label: 'Funding for robotics-data teams' },
+      { role: 'legibility', label: 'Latest AI & Robotics insights', href: '/insights/?area=ai-robotics' },
+    ],
+  },
+  {
+    area: 'ai-robotics',
+    opportunitySpace: 'Agent-Native Economic Infrastructure',
+    title: 'Machine-native money moves at scale',
+    signal:
+      'Autonomous agents run real, recurring economic activity — paying, contracting, and coordinating machine-to-machine — through primitives built for agents rather than retrofitted human payment rails.',
+    cascade:
+      'Agent economies gain the financial primitives they need to exist at all; coordination and settlement for machine participants become as reliable as they are for humans.',
+    contribution: {
+      inputs: 'Agent-payment and coordination primitives; PL capital and network connections to route validated work to deployment.',
+      activities: 'Building agent-native payment / coordination primitives, funding early teams, and translating validated work into ventures.',
+      outputs: 'Agent-native economic primitives and the teams building machine-to-machine commerce on them.',
+    },
+    roles: ['infrastructure', 'capital', 'translation'],
+    interventions: [
+      { role: 'infrastructure', label: 'Agent-native payment & coordination primitives' },
+      { role: 'translation', label: 'Routing validated work to ventures & pilots' },
+      { role: 'legibility', label: 'Latest AI & Robotics insights', href: '/insights/?area=ai-robotics' },
+    ],
   },
 ]
 
