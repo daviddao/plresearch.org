@@ -78,6 +78,20 @@ export function IdeaVintageExamples({ examples }: { examples: IdeaVintageExample
           </li>
         </ul>
       </div>
+
+      <div className="mt-4 rounded-lg bg-gray-50 p-3">
+        <div className="text-sm font-semibold text-black">Staleness, and why this instrument is exempt</div>
+        <p className="mt-1 text-xs leading-relaxed text-gray-500">
+          Across the dashboard, a reading is reported as current only for about a year after the date it
+          refers to; past that we keep the number but flag it stale and drop the trend arrow, because a
+          metric we have not re-measured is unmeasured, not flat. (We also never draw a direction from
+          fewer than three points, and we separate when a figure was last measured from when the pipeline
+          last ran.) Idea vintage is the one exception: its reliable reading is always about two years old
+          by construction, so that lag is built in rather than neglect and we do not mark it stale. It
+          still shows a direction only when the recent-segment trend is statistically clear, and stays
+          &ldquo;unclear&rdquo; otherwise.
+        </p>
+      </div>
     </div>
   )
 }

@@ -49,7 +49,9 @@ year,field_works,all_works,corpus_share_per_100k,first_time_authors,idea_vintage
 > **TODO(lukas): regenerate all four CSVs with the clustered bootstrap.** The
 > four committed CSVs still carry the old per-reference bootstrap CIs (narrower)
 > and no `n_works_sampled` column. Regenerate them in a **separate** PR so the
-> data diff is reviewable apart from this code change.
+> data diff is reviewable apart from this code change. Step-by-step runbook (with
+> the frozen queries and all checks) lives in
+> [`scripts/velocity/REGENERATE.md`](../../../scripts/velocity/REGENERATE.md).
 - Direction for idea vintage is **inverted**: a falling median reference age means
   the field is building on fresher ideas, i.e. accelerating
   (`scripts/velocity/vintage-direction.mjs`, covered by `npm test`).

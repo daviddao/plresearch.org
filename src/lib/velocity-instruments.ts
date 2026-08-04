@@ -289,8 +289,11 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
     {
       instrument: 'latency_compression',
       state: 'unwired',
-      candidateMetric: "Lag from a paper's publication to an open-weights reimplementation",
-      blocker: 'Needs a curated paper-to-reimplementation corpus.',
+      candidateMetric:
+        "Median days from a paper's arXiv publication to the first commit of a linked open-source implementation, per year (a falling lag = faster paper-to-code)",
+      blocker:
+        'Generator is built (scripts/velocity/latency_pwc.py, over the CC-BY-SA Papers With Code link archive + arXiv + GitHub first-commit dates); awaiting a run against the archived links file to emit src/data/velocity/latency/ai-robotics.csv.',
+      owner: 'Lukas',
     },
     {
       instrument: 'idea_vintage',
