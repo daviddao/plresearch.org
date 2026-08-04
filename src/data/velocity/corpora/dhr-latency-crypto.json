@@ -2,7 +2,19 @@
   "meta": {
     "field": "digital-human-rights",
     "instrument": "latency_compression",
+    "fromKey": "standardDate",
+    "toKey": "implDate",
     "metric": "Days from a cryptographic standard's publication (IETF RFC or NIST FIPS) to its first stable release in OpenSSL.",
+    "valueNoun": "standard to first open implementation",
+    "unitNoun": "primitives",
+    "trendVerb": "ships standards faster",
+    "provenanceQuery": "reference implementation: OpenSSL; standard → first stable release",
+    "splitYear": 2017,
+    "sources": [
+      { "label": "Curated corpus: crypto standard → first OpenSSL release", "url": "https://github.com/protocol/plrd.org/blob/main/src/data/velocity/corpora/dhr-latency-crypto.json" },
+      { "label": "IETF Datatracker (RFC dates)", "url": "https://datatracker.ietf.org/" },
+      { "label": "OpenSSL release tags", "url": "https://github.com/openssl/openssl/releases" }
+    ],
     "referenceImplementation": "OpenSSL",
     "referenceImplementationNote": "OpenSSL is used as the single reference implementation for every entry, because it is the most widely deployed open TLS/crypto library and every one of its stable releases is dated by a GitHub tag. Using one library keeps the lag comparable across primitives; a different library (BoringSSL, libsodium, rustls) sometimes shipped a primitive earlier, so these lags are an upper bound on 'first open implementation anywhere'.",
     "curationNote": "Curated and human-reviewable. Every entry cites both the standard and the exact implementing release. Dates given at month precision use the first of the month; the lag is a years-scale quantity so day precision does not matter. Extend this file (do not scrape at build time) to densify the series.",
