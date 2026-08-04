@@ -391,9 +391,25 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
     },
     {
       instrument: 'revealed_commitments',
-      state: 'unwired',
-      candidateMetric: 'Implants placed against the 10k-by-2030 milestone, and capital raised by BCI companies',
-      blocker: 'Implant counts are not centrally reported, and capital figures are scattered.',
+      state: 'reading',
+      metric:
+        'Cumulative humans implanted with an intracortical BCI (peer-reviewed count), against the 10,000-by-2030 milestone the field has set',
+      value: '67 participants implanted (1998–2024)',
+      // Single peer-reviewed cumulative figure, no year-by-year series yet, so no
+      // trend arrow is drawn. Capital raised by BCI companies remains unwired.
+      // TODO(lukas): add a ClinicalTrials.gov pull for a monthly-refreshing series.
+      trend:
+        'A peer-reviewed count across all iBCI trials, ~150× below the 10,000-by-2030 milestone. Enrolment is now accelerating across several companies (Neuralink 21, Synchron, Precision Neuroscience).',
+      window: '1998 → 2024',
+      measuredAt: '2024-01-01',
+      checkedAt: '2024-01-01',
+      sources: [
+        {
+          label: 'Patrick-Krueger et al. (2024), Nature Reviews Bioengineering',
+          url: 'https://doi.org/10.1038/s44222-024-00239-5',
+        },
+        { label: 'PL Neuro — 10k-by-2030 milestone', url: 'https://www.plneuro.xyz/' },
+      ],
     },
     {
       instrument: 'markets',
