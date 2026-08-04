@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "field": "neurotech",
+    "instrument": "latency_compression",
+    "fromKey": "nhpDate",
+    "toKey": "humanDate",
+    "metric": "Years from a BCI modality's first pivotal preclinical animal demonstration to its first-in-human implant. Most entries are nonhuman-primate; the animal model is recorded per entry (Synchron's pivotal preclinical work was in sheep).",
+    "valueNoun": "preclinical demonstration to first-in-human",
+    "unitNoun": "modalities",
+    "trendVerb": "reaches humans faster",
+    "provenanceQuery": "per-modality: first pivotal preclinical animal demonstration \u2192 first-in-human implant",
+    "splitYear": 2010,
+    "curationNote": "Curated and human-reviewable. Small sample by design: we count MODALITIES, not companies, and only include a modality when both dates carry a primary source. Paradromics (Connexus) is omitted for now because its multi-year sheep preclinical work has no single clean 'first demonstration' date; its first-in-human was June 2025.",
+    "generated": "2026-08-04",
+    "todo": "TODO(lukas): sanity-check the modality assignments and dates; add ECoG and a clean Paradromics preclinical date if one can be sourced.",
+    "sources": [
+      { "label": "Curated corpus: BCI modality preclinical \u2192 first-in-human", "url": "https://github.com/protocol/plrd.org/blob/main/src/data/velocity/corpora/neuro-latency-modalities.json" }
+    ]
+  },
+  "entries": [
+    {
+      "modality": "Neurotrophic (cone) electrode",
+      "animalModel": "monkey (NHP)",
+      "nhp": "Kennedy & Bakay, stable recordings up to 15 months in monkey motor cortex (NeuroReport, 1992)",
+      "nhpDate": "1992-06-01",
+      "nhpUrl": "https://pubmed.ncbi.nlm.nih.gov/1421115/",
+      "human": "Kennedy & Bakay, first neurotrophic-electrode implant in a locked-in patient (NeuroReport, 1998)",
+      "humanDate": "1998-06-01",
+      "humanUrl": "https://doi.org/10.1097/00001756-199806010-00007"
+    },
+    {
+      "modality": "Intracortical microelectrode array (Utah array)",
+      "animalModel": "monkey (NHP)",
+      "nhp": "Serruya, Hatsopoulos, Donoghue et al., instant neural control of a cursor in monkey motor cortex (Nature, 2002)",
+      "nhpDate": "2002-03-01",
+      "nhpUrl": "https://pubmed.ncbi.nlm.nih.gov/11894084/",
+      "human": "BrainGate first implant (June 2004); sustained neuromotor prosthesis control in tetraplegia (Hochberg et al., Nature, 2006)",
+      "humanDate": "2004-06-01",
+      "humanUrl": "https://www.nature.com/articles/nature04970"
+    },
+    {
+      "modality": "Endovascular (Stentrode)",
+      "animalModel": "sheep",
+      "nhp": "Endovascular neural-interface feasibility in sheep, DARPA-funded (2016)",
+      "nhpDate": "2016-01-01",
+      "nhpUrl": "https://www.darpa.mil/news/2016/sentrode-neural-interface",
+      "human": "Synchron first successful human implantation of the Stentrode, SWITCH trial (2019)",
+      "humanDate": "2019-09-01",
+      "humanUrl": "https://www.prnewswire.com/news-releases/synchron-achieves-first-successful-human-implantation-of-brain-computer-interface-300922195.html"
+    },
+    {
+      "modality": "Thin-film threads (Neuralink)",
+      "animalModel": "macaque (NHP)",
+      "nhp": "Neuralink macaque 'Pager' plays Pong via implanted thin-film threads (April 2021)",
+      "nhpDate": "2021-04-01",
+      "nhpUrl": "https://www.bbc.co.uk/news/technology-56688812",
+      "human": "Neuralink first human implant, PRIME study (29 January 2024)",
+      "humanDate": "2024-01-29",
+      "humanUrl": "https://www.reuters.com/technology/neuralink-implants-brain-chip-first-human-musk-says-2024-01-29/"
+    }
+  ]
+}

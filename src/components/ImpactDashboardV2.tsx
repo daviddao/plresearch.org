@@ -9,14 +9,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   ROLE_META,
-  PL_ROLE_ORDER,
   HOW_TO_READ,
   TEAM_LINKS,
   resolutionFor,
   inflectionLabel,
-  isConcerningMarker,
   inflectionSlug,
   type PLRole,
+  type Intervention,
 } from '@/lib/inflection-points'
 import {
   FOCUS_AREAS,
@@ -32,13 +31,17 @@ import {
   instrumentsForArea,
   INSTRUMENT_BY_ID,
   DIRECTION_META,
+  STALE_AFTER_MONTHS,
+  isStaleReading,
+  shownDirection,
   type InstrumentId,
   type InstrumentRecord,
   type Direction,
 } from '@/lib/velocity-instruments'
 import { AreaIcon, type AreaIconType } from '@/components/AreaIcons'
 import { Sparkline, GhostChart, type SeriesPoint } from '@/components/VelocitySparkline'
-import type { MarketSignal } from '@/lib/market-signals'
+import { IdeaVintageExamples, type IdeaVintageExample } from '@/components/velocity-explainers'
+import { isRenderableMarket, type MarketSignal } from '@/lib/market-signals'
 
 /** Live output metrics for a point, keyed by the point's title. Fetched server-side. */
 export type LiveMetric = { value: string; label: string }
@@ -62,12 +65,16 @@ export default function ImpactDashboardV2({
   liveOutputs = {},
   marketSignals = {},
   recordsByArea,
+  ideaVintageExamples = [],
 }: {
   liveOutputs?: LiveOutputs
   marketSignals?: MarketSignals
   /** Instrument records per focus area, precomputed server-side (static records
    *  merged with any OpenAlex CSV readings). Falls back to the static set. */
   recordsByArea?: Partial<Record<FocusAreaKey, InstrumentRecord[]>>
+  /** Idea-vintage small multiples, so the field-velocity instrument modal shows
+   *  the same rich card as the methodology section. */
+  ideaVintageExamples?: IdeaVintageExample[]
 }) {
   const [filter, setFilter] = useState<FocusAreaKey>('digital-human-rights')
   const [active, setActive] = useState<InflectionPoint | null>(null)
@@ -83,7 +90,9 @@ export default function ImpactDashboardV2({
     () =>
       visible
         .map((p) => marketSignals[p.title])
-        .filter((s): s is MarketSignal => !!s && s.match !== 'gap' && (s.prob != null || !!s.readout)),
+        // Only render a market that carries all four: question, venue, resolution
+        // date, and URL. A bare probability without its question is uninterpretable.
+        .filter((s): s is MarketSignal => !!s && isRenderableMarket(s) && (s.prob != null || !!s.readout)),
     [visible, marketSignals],
   )
 
@@ -140,7 +149,6 @@ export default function ImpactDashboardV2({
           <div className="mt-6 mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
             Inflection points we&rsquo;re tracking
           </div>
-          {visible.length > 0 && <MissesLedger points={visible} />}
           {visible.length > 0 ? (
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
               {visible.map((p) => (
@@ -177,7 +185,11 @@ export default function ImpactDashboardV2({
         />
       )}
       {defInstrument && (
-        <InstrumentDefinitionModal id={defInstrument} onClose={() => setDefInstrument(null)} />
+        <InstrumentDefinitionModal
+          id={defInstrument}
+          ideaVintageExamples={ideaVintageExamples}
+          onClose={() => setDefInstrument(null)}
+        />
       )}
       {howToOpen && <HowToReadModal onClose={() => setHowToOpen(false)} />}
     </>
@@ -248,33 +260,37 @@ function shortDate(s?: string): string | undefined {
   return s ? s.slice(0, 10) : s
 }
 
-/** Review status line. Reads "not yet reviewed" until a review date lands. */
-function reviewedLabel(asOf?: string): string {
-  return asOf ? `reviewed ${asOf}` : 'not yet reviewed'
-}
-
-function marketReadout(s: MarketSignal): string {
-  return s.readout ?? (s.prob != null ? `${Math.round(s.prob * 100)}%` : '—')
+/** A visible "stale" pill for readings whose measured observation is older than
+ *  the staleness policy. The direction chip is suppressed alongside it. */
+function StaleMarker({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
+  return (
+    <span
+      title={`Last measured over ${STALE_AFTER_MONTHS} months ago; not re-measured since, so no current trend is claimed.`}
+      className={`inline-flex items-center gap-1 rounded-full bg-amber-50 font-medium text-amber-700 ${
+        size === 'lg' ? 'px-2 py-0.5 text-[11px]' : 'px-1.5 py-0.5 text-[10px]'
+      }`}
+    >
+      <span aria-hidden>○</span> stale
+    </span>
+  )
 }
 
 function InstrumentCell({ record, markets }: { record: InstrumentRecord; markets?: MarketSignal[] }) {
   const inst = INSTRUMENT_BY_ID[record.instrument]
   // Markets instrument with live mapped forecasts overrides the static state.
+  // We show how many bets the field carries and the capital at stake behind
+  // them, rather than a single point-in-time probability (which reads as noise).
   if (record.instrument === 'markets' && markets && markets.length) {
+    const totalVolume = markets.reduce((sum, s) => sum + (s.volume ?? 0), 0)
     return (
       <div className="flex flex-col gap-1.5 border-l-2 border-gray-100 pl-3">
         <span className="text-sm font-medium leading-snug text-black">{inst.label}</span>
-        <div className="flex flex-col gap-1">
-          {markets.slice(0, 2).map((s, i) => (
-            <span key={i} className="flex items-baseline gap-1.5 text-xs">
-              <span className="font-semibold tabular-nums" style={{ color: FIELD_COLOR }}>{marketReadout(s)}</span>
-              <span className="truncate text-gray-500">{s.platform ? PLATFORM_LABEL[s.platform] : 'market'}</span>
-            </span>
-          ))}
-          {markets.length > 2 && (
-            <span className="text-[11px] text-gray-400">+{markets.length - 2} more</span>
-          )}
-        </div>
+        <span className="text-sm font-semibold leading-snug text-black">
+          {markets.length} bet{markets.length === 1 ? '' : 's'} tracked
+        </span>
+        {totalVolume > 0 && (
+          <span className="text-[11px] text-gray-400">{formatUSD(totalVolume)} at stake</span>
+        )}
       </div>
     )
   }
@@ -293,9 +309,13 @@ function InstrumentCell({ record, markets }: { record: InstrumentRecord; markets
             />
           )}
           <span className="line-clamp-2 text-sm font-semibold leading-snug text-black">{record.value}</span>
+          {record.trend && (
+            <span className="line-clamp-2 text-[11px] leading-snug text-gray-400">{record.trend}</span>
+          )}
           <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-gray-400">
-            {record.direction && <DirectionChip direction={record.direction} />}
-            {record.asOf && <span className="tabular-nums">as of {shortDate(record.asOf)}</span>}
+            {shownDirection(record) && <DirectionChip direction={shownDirection(record)!} />}
+            {isStaleReading(record) && <StaleMarker />}
+            {record.measuredAt && <span className="tabular-nums">measured {shortDate(record.measuredAt)}</span>}
           </span>
         </>
       )}
@@ -362,6 +382,46 @@ function SourceLinks({ sources }: { sources: { label: string; url: string }[] })
           </svg>
         </a>
       ))}
+    </div>
+  )
+}
+
+/** Idea vintage's second chart: the patent-side (invention) twin. Reading shows a
+ *  sparkline; unwired shows a ghost + blocker; not_applicable shows the reason. */
+function PatentVintagePanel({ pv }: { pv: NonNullable<InstrumentRecord['patentVintage']> }) {
+  return (
+    <div className="mt-4 border-t border-gray-100 pt-4">
+      <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+        Patent vintage <span className="font-normal text-gray-400">· invention side</span>
+      </div>
+      {pv.state === 'reading' && (
+        <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
+          {pv.series && pv.series.length > 1 && (
+            <Sparkline series={pv.series as SeriesPoint[]} width={200} height={56} axis unit="y" />
+          )}
+          <div className="min-w-[10rem] flex-1">
+            {pv.value && <div className="text-lg font-semibold leading-tight text-black">{pv.value}</div>}
+            {pv.measuredAt && (
+              <div className="mt-1 text-[11px] tabular-nums text-gray-400">measured {shortDate(pv.measuredAt)}</div>
+            )}
+            {pv.sources && <SourceLinks sources={pv.sources} />}
+          </div>
+        </div>
+      )}
+      {pv.state === 'unwired' && (
+        <div className="flex items-start gap-4">
+          <div className="shrink-0 pt-1">
+            <GhostChart width={140} height={44} />
+          </div>
+          <div className="text-sm leading-relaxed text-gray-500">
+            <p><span className="font-medium text-gray-700">Intended metric:</span> {pv.candidateMetric}</p>
+            <p className="mt-1"><span className="font-medium text-gray-700">Blocked by:</span> {pv.blocker}</p>
+          </div>
+        </div>
+      )}
+      {pv.state === 'not_applicable' && (
+        <p className="text-sm italic leading-relaxed text-gray-400">{pv.reason}</p>
+      )}
     </div>
   )
 }
@@ -463,9 +523,10 @@ function VelocityModal({
                         {liveMarkets.length} live market{liveMarkets.length === 1 ? '' : 's'}
                       </span>
                     )}
-                    {!isLiveMarkets && r.state === 'reading' && r.direction && (
-                      <span className="ml-auto">
-                        <DirectionChip direction={r.direction} size="lg" />
+                    {!isLiveMarkets && r.state === 'reading' && (shownDirection(r) || isStaleReading(r)) && (
+                      <span className="ml-auto inline-flex items-center gap-2">
+                        {isStaleReading(r) && <StaleMarker size="lg" />}
+                        {shownDirection(r) && <DirectionChip direction={shownDirection(r)!} size="lg" />}
                       </span>
                     )}
                     {!isLiveMarkets && r.state === 'unwired' && (
@@ -506,8 +567,19 @@ function VelocityModal({
                           {r.trend && <div className="mt-1 text-xs text-gray-500">{r.trend}</div>}
                           <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-gray-400">
                             {r.window && <span>window {r.window}</span>}
-                            {r.asOf && <span className="tabular-nums">as of {shortDate(r.asOf)}</span>}
+                            {r.measuredAt && (
+                              <span className="tabular-nums">measured {shortDate(r.measuredAt)}</span>
+                            )}
+                            {r.checkedAt && r.checkedAt !== r.measuredAt && (
+                              <span className="tabular-nums">last checked {shortDate(r.checkedAt)}</span>
+                            )}
                           </div>
+                          {isStaleReading(r) && (
+                            <p className="mt-1 text-[11px] leading-relaxed text-amber-700">
+                              Last measured over {STALE_AFTER_MONTHS} months ago and not re-measured since,
+                              so no current direction is claimed.
+                            </p>
+                          )}
                         </div>
                       </div>
                       {r.provenance && (r.provenance.query || r.provenance.generated) && (
@@ -522,6 +594,9 @@ function VelocityModal({
                         </p>
                       )}
                       {r.sources && <SourceLinks sources={r.sources} />}
+                      {r.instrument === 'idea_vintage' && r.patentVintage && (
+                        <PatentVintagePanel pv={r.patentVintage} />
+                      )}
                     </div>
                   )}
 
@@ -550,10 +625,19 @@ function VelocityModal({
   )
 }
 
-function InstrumentDefinitionModal({ id, onClose }: { id: InstrumentId; onClose: () => void }) {
+function InstrumentDefinitionModal({
+  id,
+  ideaVintageExamples = [],
+  onClose,
+}: {
+  id: InstrumentId
+  ideaVintageExamples?: IdeaVintageExample[]
+  onClose: () => void
+}) {
   useModalChrome(onClose)
   const inst = INSTRUMENT_BY_ID[id]
   const researchSide = id === 'idea_vintage' || id === 'revealed_commitments'
+  const isIdeaVintage = id === 'idea_vintage'
   return (
     <div
       role="dialog"
@@ -562,7 +646,7 @@ function InstrumentDefinitionModal({ id, onClose }: { id: InstrumentId; onClose:
       className="fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-black/40 p-4 sm:p-6 lg:p-10"
       onClick={onClose}
     >
-      <div className="relative my-4 w-full max-w-2xl rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="relative my-4 w-full max-w-3xl rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <button
           type="button"
           onClick={onClose}
@@ -586,6 +670,7 @@ function InstrumentDefinitionModal({ id, onClose }: { id: InstrumentId; onClose:
               two can decouple.
             </p>
           )}
+          {isIdeaVintage && <IdeaVintageExamples examples={ideaVintageExamples} />}
         </div>
       </div>
     </div>
@@ -623,75 +708,77 @@ function ResolutionChip({ point }: { point: InflectionPoint }) {
   )
 }
 
-/** predictedBy / falsifiesIf with the gap rendered visibly when null. */
-function ResolutionMeta({ point, stacked = false }: { point: InflectionPoint; stacked?: boolean }) {
-  const r = resolutionFor(point)
+/** A single intervention-category tag. The label renders once; the description
+ *  lives only in the hover tooltip (no visually-hidden duplicate). */
+function CategoryTag({ role }: { role: PLRole }) {
   return (
-    <div className={`text-[11px] leading-relaxed text-gray-400 ${stacked ? 'space-y-0.5' : ''}`}>
-      <span>
-        Predicted by: <span className="text-gray-500">{r.predictedBy ?? 'date not yet set'}</span>
+    <span className="group/role relative inline-flex shrink-0">
+      <span
+        className="inline-flex cursor-help items-center rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide"
+        style={{
+          color: HAND_COLOR,
+          borderColor: 'color-mix(in srgb, var(--impact-hand) 34%, transparent)',
+          backgroundColor: 'color-mix(in srgb, var(--impact-hand) 8%, transparent)',
+        }}
+      >
+        {ROLE_META[role].label}
       </span>
-      {stacked ? <br /> : <span className="mx-1.5">·</span>}
-      <span>
-        Falsifies if: <span className="text-gray-500">{r.falsifiesIf ?? 'condition not yet set'}</span>
+      <span
+        role="tooltip"
+        className="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-60 rounded-lg bg-gray-900 px-3 py-2 text-left text-xs font-normal normal-case leading-relaxed text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover/role:opacity-100"
+      >
+        {ROLE_META[role].description}
       </span>
-    </div>
-  )
-}
-
-/** Misses affordance: present even at zero count, before the first miss lands. */
-function MissesLedger({ points }: { points: InflectionPoint[] }) {
-  const flagged = points.filter(isConcerningMarker)
-  return (
-    <div className="mb-4 rounded-lg border border-gray-200 bg-white px-4 py-3">
-      <div className="flex items-center gap-2 text-xs">
-        <span className="tabular-nums font-semibold text-black">{flagged.length}</span>
-        <span className="text-gray-500">markers missed, retired, or reached without lift</span>
-      </div>
-      {flagged.length > 0 ? (
-        <ul className="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-          {flagged.map((p) => (
-            <li key={p.title}>
-              <a href={`#${inflectionSlug(p)}`} className="text-[11px] font-medium text-blue hover:underline">
-                {p.title} — {inflectionLabel(p)}
-              </a>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p className="mt-1 text-[11px] text-gray-400">
-          None yet. Misses and retirements will be listed here as they happen.
-        </p>
-      )}
-    </div>
-  )
-}
-
-function RoleChips({ roles }: { roles: PLRole[] }) {
-  const ordered = PL_ROLE_ORDER.filter((r) => roles.includes(r))
-  return (
-    <span className="inline-flex flex-wrap items-center gap-1.5">
-      {ordered.map((r) => (
-        <span key={r} className="group/role relative inline-flex">
-          <span
-            className="inline-flex cursor-help items-center rounded-full border px-2.5 py-1 text-xs font-medium"
-            style={{
-              color: HAND_COLOR,
-              borderColor: 'color-mix(in srgb, var(--impact-hand) 34%, transparent)',
-              backgroundColor: 'color-mix(in srgb, var(--impact-hand) 8%, transparent)',
-            }}
-          >
-            {ROLE_META[r].label}
-          </span>
-          <span
-            role="tooltip"
-            className="pointer-events-none absolute bottom-full left-0 z-50 mb-2 w-60 rounded-lg bg-gray-900 px-3 py-2 text-left text-xs font-normal normal-case leading-relaxed text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover/role:opacity-100"
-          >
-            <span className="font-semibold">{ROLE_META[r].label}</span> — {ROLE_META[r].description}
-          </span>
-        </span>
-      ))}
     </span>
+  )
+}
+
+/** A few concrete example interventions, each tagged with its category. Falls
+ *  back to bare category tags (from roles) when no examples are declared. */
+function InterventionExamples({
+  point,
+  limit,
+}: {
+  point: InflectionPoint
+  limit?: number
+}) {
+  const items = point.interventions ?? []
+  if (!items.length) {
+    return (
+      <div className="flex flex-wrap items-center gap-1.5">
+        {point.roles.map((r) => (
+          <CategoryTag key={r} role={r} />
+        ))}
+      </div>
+    )
+  }
+  const shown = limit ? items.slice(0, limit) : items
+  return (
+    <ul className="flex flex-col gap-2">
+      {shown.map((it, i) => (
+        <li key={i} className="flex items-center gap-2">
+          <CategoryTag role={it.role} />
+          <InterventionLabel item={it} />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function InterventionLabel({ item }: { item: Intervention }) {
+  if (!item.href) {
+    return <span className="text-[13px] leading-snug text-gray-600">{item.label}</span>
+  }
+  const external = /^https?:\/\//.test(item.href)
+  return (
+    <a
+      href={item.href}
+      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      onClick={(e) => e.stopPropagation()}
+      className="text-[13px] leading-snug text-gray-700 underline decoration-dotted underline-offset-2 hover:text-black"
+    >
+      {item.label}
+    </a>
   )
 }
 
@@ -710,10 +797,9 @@ function InflectionCard({
   const hasLiveSignal = !!(
     point.liveEvidence?.length ||
     (metrics && metrics.length) ||
-    (signal && signal.match !== 'gap')
+    (signal && isRenderableMarket(signal))
   )
 
-  const resolution = resolutionFor(point)
   return (
     <button
       type="button"
@@ -740,23 +826,19 @@ function InflectionCard({
       <h3 className="mb-2 text-lg font-medium leading-snug text-black">{point.title}</h3>
       <p className="mb-3 line-clamp-3 text-sm leading-relaxed text-gray-600">{point.signal}</p>
 
-      {/* Resolution: outcome × mattered, with the null date/condition shown. */}
-      <div className="mb-5 flex flex-col gap-1.5">
-        <div className="flex flex-wrap items-center gap-2">
-          <ResolutionChip point={point} />
-          <span className="text-[11px] text-gray-400">{reviewedLabel(resolution.asOf)}</span>
-        </div>
-        <ResolutionMeta point={point} />
+      {/* Resolution: pending until a marker resolves. */}
+      <div className="mb-5">
+        <ResolutionChip point={point} />
       </div>
 
       <div className="mt-auto border-t border-gray-100 pt-4">
-        <div className="mb-2 flex items-center gap-2">
+        <div className="mb-3 flex items-center gap-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide" style={{ color: HAND_COLOR }}>
             Our hand
           </span>
           <span className="text-[11px] text-gray-400">· PL R&D interventions</span>
         </div>
-        <RoleChips roles={point.roles} />
+        <InterventionExamples point={point} limit={3} />
       </div>
 
       {hasLiveSignal && (
@@ -795,6 +877,11 @@ function CrowdForecast({ signal, divider = false }: { signal: MarketSignal; divi
             {formatUSD(signal.volume)} at stake
           </span>
         )}
+        {signal.resolutionDate && (
+          <span className="text-[11px] tabular-nums text-gray-400" title="When the market resolves">
+            resolves {shortDate(signal.resolutionDate)}
+          </span>
+        )}
         <span className="ml-auto text-2xl font-semibold tabular-nums" style={{ color: FIELD_COLOR }}>
           {signal.readout ?? (pct != null ? `${pct}%` : '—')}
         </span>
@@ -805,7 +892,7 @@ function CrowdForecast({ signal, divider = false }: { signal: MarketSignal; divi
         </a>
       )}
       <p className="mt-2 text-[11px] leading-relaxed text-gray-400">
-        {signal.note} An independent read on whether the field is moving — not a settled outcome.
+        {signal.note} An independent read on whether the field is moving, not a settled outcome.
       </p>
     </div>
   )
@@ -877,7 +964,7 @@ function InflectionModal({
             <h2 className="mb-4 text-2xl font-semibold leading-tight tracking-tight text-black">{point.title}</h2>
             <div className="mb-6 space-y-5">
               <div>
-                <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Outcome</div>
+                <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Definition</div>
                 <p className="text-sm leading-relaxed text-gray-600">{point.signal}</p>
               </div>
               <div>
@@ -885,13 +972,12 @@ function InflectionModal({
                 <p className="text-sm leading-relaxed text-gray-600">{point.cascade}</p>
               </div>
             </div>
-            {/* Resolution: outcome × mattered (never inferred from one another). */}
+            {/* Resolution: pending until a marker resolves. */}
             <div className="rounded-xl border border-gray-200 bg-white p-5">
-              <div className="mb-3 flex flex-wrap items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <ResolutionChip point={point} />
-                <span className="text-[11px] text-gray-400">{reviewedLabel(resolutionFor(point).asOf)}</span>
+                <span className="text-[11px] text-gray-400">not yet resolved</span>
               </div>
-              <ResolutionMeta point={point} stacked />
               {resolutionFor(point).matteredEvidence && (
                 <p className="mt-3 text-sm leading-relaxed text-gray-600">
                   <span className="font-medium text-black">Why it mattered:</span>{' '}
@@ -912,7 +998,8 @@ function InflectionModal({
               Our hand
             </div>
             <div className="mb-4 text-sm font-semibold text-black">PL R&D interventions</div>
-            <RoleChips roles={point.roles} />
+            <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Examples</div>
+            <InterventionExamples point={point} />
             <div className="mt-5">
               <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-gray-400">In practice</div>
               <p className="text-sm leading-relaxed text-gray-600"><Linkify text={point.contribution.activities} /></p>
@@ -928,7 +1015,7 @@ function InflectionModal({
               </span>
               Live signal
             </div>
-            {(point.liveEvidence?.length || (metrics && metrics.length) || (signal && signal.match !== 'gap')) && (
+            {(point.liveEvidence?.length || (metrics && metrics.length) || (signal && isRenderableMarket(signal))) && (
               <div className="mb-4 rounded-xl border border-gray-200 bg-white p-4">
                 {point.liveEvidence?.map((ev, i) => {
                   const external = /^https?:\/\//.test(ev.href)
@@ -971,7 +1058,7 @@ function InflectionModal({
                   </div>
                 )}
 
-                {signal && signal.match !== 'gap' && (
+                {signal && isRenderableMarket(signal) && (
                   <CrowdForecast signal={signal} divider={!!point.liveEvidence?.length} />
                 )}
               </div>
@@ -1089,7 +1176,7 @@ function HowToReadModal({ onClose }: { onClose: () => void }) {
               </span>
             </span>
             <p className="text-sm leading-relaxed text-gray-600">
-              <span className="font-semibold text-black">Live signal</span> — real-world evidence for and against, refreshed from the field. Never a settled outcome.
+              <span className="font-semibold text-black">Live signal</span>: real-world evidence for and against, refreshed from the field. Never a settled outcome.
             </p>
           </div>
         </div>
@@ -1117,7 +1204,7 @@ function LegendRow({
         aria-hidden
       />
       <p className="text-sm leading-relaxed text-gray-600">
-        <span className="font-semibold" style={{ color }}>{label}</span> — {children}
+        <span className="font-semibold" style={{ color }}>{label}</span>: {children}
       </p>
     </div>
   )

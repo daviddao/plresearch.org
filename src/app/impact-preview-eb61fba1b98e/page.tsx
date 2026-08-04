@@ -7,8 +7,9 @@ import { fetchGainforestStats } from '@/lib/gainforest'
 import { fetchGlowStats } from '@/lib/glow'
 import { resolveAllSignals } from '@/lib/market-signals'
 import { FOCUS_AREAS, type FocusAreaKey } from '@/lib/inflection-points'
-import { instrumentsForArea, withOpenAlex, type InstrumentRecord } from '@/lib/velocity-instruments'
+import { instrumentsForArea, withOpenAlex, withPatentVintage, type InstrumentRecord } from '@/lib/velocity-instruments'
 import { loadAllOpenAlex } from '@/lib/velocity-openalex'
+import { loadAllLatency, withLatency } from '@/lib/velocity-latency'
 
 // The impact page reads field velocity: the interventions we run, the five
 // instruments we read a field's rate of change with, and the inflection points
@@ -73,8 +74,9 @@ export default async function ImpactPage() {
   // instrument records, per focus area. Parsed at build time; absent CSVs are a
   // no-op, leaving the documented `unwired` records in place.
   const openAlex = loadAllOpenAlex()
+  const latency = loadAllLatency()
   const recordsByArea = Object.fromEntries(
-    FOCUS_AREAS.map((fa) => [fa.key, withOpenAlex(instrumentsForArea(fa.key), openAlex[fa.key])]),
+    FOCUS_AREAS.map((fa) => [fa.key, withLatency(withOpenAlex(withPatentVintage(instrumentsForArea(fa.key), fa.key), openAlex[fa.key]), latency[fa.key])]),
   ) as Partial<Record<FocusAreaKey, InstrumentRecord[]>>
 
   // Example idea-vintage series per field, for the methodology modal that explains
@@ -92,14 +94,14 @@ export default async function ImpactPage() {
         <Breadcrumb items={[{ label: 'Impact' }]} />
         <div className="pt-8 pb-10">
           <h1 className="text-2xl lg:text-[44px] font-semibold leading-[1.1] tracking-tight mb-5 max-w-3xl">
-            PL R&amp;D&rsquo;s impact on field velocity
+            Field velocity and PL R&amp;D interventions
           </h1>
           <p className="text-lg text-gray-600 leading-relaxed max-w-none">
             We back fields we think are ready to move, then check whether they do.{' '}
             <strong className="font-semibold text-black">Field velocity</strong> is that rate of change:
             how fast talent enters, capital forms, tool costs fall, and output ships.{' '}
             <strong className="font-semibold text-black">Inflection points</strong> are one of the markers
-            we read &mdash; dated, falsifiable shifts an accelerating field should produce.
+            we read: dated, falsifiable shifts an accelerating field should produce.
           </p>
           <p className="mt-4 text-lg text-gray-600 leading-relaxed max-w-none">
             We measure velocity the same way we do the work: as a research program. Whether field
@@ -130,6 +132,7 @@ export default async function ImpactPage() {
             liveOutputs={liveOutputs}
             marketSignals={marketSignals}
             recordsByArea={recordsByArea}
+            ideaVintageExamples={ideaVintageExamples}
           />
         </div>
       </section>
