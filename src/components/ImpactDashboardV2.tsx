@@ -9,7 +9,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   ROLE_META,
-  HOW_TO_READ,
   TEAM_LINKS,
   resolutionFor,
   inflectionLabel,
@@ -78,7 +77,6 @@ export default function ImpactDashboardV2({
 }) {
   const [filter, setFilter] = useState<FocusAreaKey>('digital-human-rights')
   const [active, setActive] = useState<InflectionPoint | null>(null)
-  const [howToOpen, setHowToOpen] = useState(false)
   const [velocityOpen, setVelocityOpen] = useState(false)
   const [defInstrument, setDefInstrument] = useState<InstrumentId | null>(null)
 
@@ -99,8 +97,8 @@ export default function ImpactDashboardV2({
   return (
     <>
       <div className="lg:grid lg:grid-cols-[248px_1fr] lg:gap-10">
-        {/* Vertical tabs (PR #29 layout), sticky so they + the "How to read this"
-            affordance stay visible while scrolling the field. */}
+        {/* Vertical tabs (PR #29 layout), sticky so they stay visible while
+            scrolling the field. */}
         <div className="-mx-1 mb-6 flex flex-col gap-1.5 px-1 pb-2 lg:mx-0 lg:mb-0 lg:self-start lg:px-0 lg:pb-0 lg:sticky lg:top-20">
           <div
             role="tablist"
@@ -120,17 +118,6 @@ export default function ImpactDashboardV2({
               />
             ))}
           </div>
-          <button
-            type="button"
-            onClick={() => setHowToOpen(true)}
-            aria-haspopup="dialog"
-            className="mt-2 inline-flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 hover:text-black lg:w-full"
-          >
-            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            How to read this
-          </button>
         </div>
 
         {/* Content: field velocity box + inflection points */}
@@ -191,7 +178,6 @@ export default function ImpactDashboardV2({
           onClose={() => setDefInstrument(null)}
         />
       )}
-      {howToOpen && <HowToReadModal onClose={() => setHowToOpen(false)} />}
     </>
   )
 }
@@ -1132,80 +1118,5 @@ function Linkify({ text }: { text: string }) {
         ),
       )}
     </>
-  )
-}
-
-// ── How to read this ──────────────────────────────────────────────────────────
-function HowToReadModal({ onClose }: { onClose: () => void }) {
-  useModalChrome(onClose)
-  return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="How to read this"
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/40 p-4 sm:p-6 lg:p-10"
-      onClick={onClose}
-    >
-      <div className="relative my-4 w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl sm:p-8" onClick={(e) => e.stopPropagation()}>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-black"
-        >
-          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-
-        <div className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-gray-400">How to read this</div>
-        <p className="mb-7 max-w-xl text-lg leading-relaxed text-black">{HOW_TO_READ}</p>
-
-        <div className="space-y-4 border-t border-gray-100 pt-6">
-          <LegendRow color={FIELD_COLOR} ink={FIELD_INK} label="The field">
-            The change in the world: did it happen (outcome) and did it matter (impact). Moves with or without us.
-          </LegendRow>
-          <LegendRow color={HAND_COLOR} ink="#ffffff" label="Our hand">
-            Our contribution: the PL instruments on the critical path. The axis we control with our partners.
-          </LegendRow>
-          <div className="flex items-start gap-3">
-            <span className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full" style={{ backgroundColor: `${LIVE_COLOR}99` }} />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ backgroundColor: LIVE_COLOR }} />
-              </span>
-            </span>
-            <p className="text-sm leading-relaxed text-gray-600">
-              <span className="font-semibold text-black">Live signal</span>: real-world evidence for and against, refreshed from the field. Never a settled outcome.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function LegendRow({
-  color,
-  ink,
-  label,
-  children,
-}: {
-  color: string
-  ink: string
-  label: string
-  children: React.ReactNode
-}) {
-  return (
-    <div className="flex items-start gap-3">
-      <span
-        className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded text-[10px] font-bold"
-        style={{ backgroundColor: color, color: ink }}
-        aria-hidden
-      />
-      <p className="text-sm leading-relaxed text-gray-600">
-        <span className="font-semibold" style={{ color }}>{label}</span>: {children}
-      </p>
-    </div>
   )
 }
