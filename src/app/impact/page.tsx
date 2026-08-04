@@ -60,7 +60,7 @@ async function fetchLiveOutputs(): Promise<LiveOutputs> {
 export const metadata: Metadata = {
   title: 'Impact',
   description:
-    'How we judge PL R&D: whether the fields we back are speeding up. We name the interventions we run, then read field velocity through five instruments and the inflection points we track.',
+    'How we judge PL R&D: whether the fields we back are speeding up. We name the interventions we run, then read field velocity through six instruments and the inflection points we track.',
 }
 
 export default async function ImpactPage() {

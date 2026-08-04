@@ -7,7 +7,7 @@
 //
 // The model, in one line:
 //   Interventions    = a fixed toolkit we push on, per field.
-//   Field velocity   = the rate a field is moving, read through five instruments
+//   Field velocity   = the rate a field is moving, read through six instruments
 //                      (performance curves, latency compression, idea vintage,
 //                      revealed commitments, markets).
 //   Inflection points = the specific, dated markers we track, each with its live
@@ -124,5 +124,5 @@ export const TOOLKIT_V2: ToolkitEntry[] = [
   },
 ]
 
-// The five velocity instruments and their per-focus-area readings now live in
+// The six velocity instruments and their per-focus-area readings now live in
 // `@/lib/velocity-instruments` (the single source of truth for that prose).

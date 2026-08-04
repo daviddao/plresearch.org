@@ -2,7 +2,7 @@
 
 // Methodology section. Two blocks joined by a downward divider that reads as
 // "these interventions drive the below": (1) the PL R&D interventions (the
-// toolkit), and (2) observed field velocity, the five instruments we read the
+// toolkit), and (2) observed field velocity, the six instruments we read the
 // result with. Both the toolkit tools and the velocity instruments open modals.
 
 import { useEffect, useState } from 'react'
@@ -89,12 +89,14 @@ export default function MeasuringQuestionsV2({
             <h3 className="text-lg font-semibold tracking-tight text-black">Observed velocity</h3>
             <p className="mt-2 text-sm leading-relaxed text-gray-500">
               The interventions are the input. Field velocity, the rate a field is moving, is what tells
-              us whether they landed. We read it through five instruments.
+              us whether they landed. We read it through six instruments.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-gray-500">
               Not every instrument fits every field. A field with no single gating unit cost has no
-              performance curve to read, and a field no forecast market has priced has no market signal.
-              We show the instruments that apply and name the ones that do not.
+              performance curve to read; a field no forecast market has priced has no market signal; and
+              an open-source, public-goods field can read slow on patent-based measures while working
+              exactly as intended, because it deliberately does not patent. We show the instruments that
+              apply and name the ones that do not.
             </p>
           </div>
 

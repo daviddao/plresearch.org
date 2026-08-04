@@ -424,7 +424,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     roles: ['connection', 'permission'],
     interventions: [
       { role: 'permission', label: 'Draft BCI component / API standard' },
-      { role: 'connection', label: 'Regulator–maker–developer convenings' },
+      { role: 'connection', label: 'BCI Founders Retreat', href: 'https://www.plneuro.xyz/events/bci-founders-retreat/' },
       { role: 'legibility', label: 'PL Neuro roadmap & insights', href: '/insights/?area=neurotech' },
     ],
   },
@@ -443,7 +443,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     },
     roles: ['infrastructure', 'connection', 'capital'],
     interventions: [
-      { role: 'connection', label: 'PL Neuro talent network (AI labs × comp neuro)' },
+      { role: 'connection', label: 'PL Neuro Salon (scaled neural data × AI)', href: 'https://www.plneuro.xyz/events/neuro-ai-workshop/' },
       { role: 'infrastructure', label: 'Neural-data infrastructure & norms' },
       { role: 'legibility', label: 'PL Neuro roadmap & insights', href: '/insights/?area=neurotech' },
     ],
@@ -482,7 +482,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     },
     roles: ['legibility', 'connection'],
     interventions: [
-      { role: 'connection', label: 'Connectomics workshops & throughput targets' },
+      { role: 'connection', label: 'Connectomics Workshop', href: 'https://www.plneuro.xyz/events/connectomics-workshop/' },
       { role: 'legibility', label: 'WBE benchmark & PL Neuro roadmap', href: '/insights/?area=neurotech' },
     ],
   },

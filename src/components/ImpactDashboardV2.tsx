@@ -1,7 +1,7 @@
 'use client'
 
 // Impact Dashboard — field velocity. Horizontal, sticky focus-area tabs sit
-// above a wide "field velocity" box (the five velocity instruments, each with a
+// above a wide "field velocity" box (the six velocity instruments, each with a
 // direction indicator, opening a modal) and the inflection points we track,
 // laid out as four cards in two rows with their live signals. The inflection
 // cards mirror the PR #29 design; shared primitives are imported, never forked.
@@ -356,7 +356,7 @@ function FieldVelocityBox({
       </span>
 
       {/* Ragged by design — a field lists only the instruments that apply. */}
-      <div className="grid grid-cols-2 items-start gap-x-6 gap-y-5 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="grid grid-cols-2 items-start gap-x-6 gap-y-5 sm:grid-cols-3 lg:grid-cols-6">
         {records.map((r) => (
           <InstrumentCell key={r.instrument} record={r} markets={r.instrument === 'markets' ? markets : undefined} />
         ))}
@@ -451,7 +451,7 @@ function VelocityModal({
             The rate the field is moving
           </h2>
           <p className="mb-6 text-sm leading-relaxed text-gray-500">
-            The five instruments we read velocity with. Where a reading is live, it carries a date and a
+            The six instruments we read velocity with. Where a reading is live, it carries a date and a
             source. Where it is not, we name the metric we intend to use and what is blocking it. Where an
             instrument does not fit this field, we say so.
           </p>
