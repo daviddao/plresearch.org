@@ -98,10 +98,18 @@ export function IdeaVintageExamples({ examples }: { examples: IdeaVintageExample
 
 // The named-vs-mattered framing for the inflection-points explainer.
 export function InflectionQuadrant() {
-  const quad = (title: string, body: string, tone: string) => (
-    <div className="rounded-lg border border-gray-200 p-3">
+  const cell = (title: string, body: string, tone: string) => (
+    <div className="rounded-lg border border-gray-200 p-3" style={{ borderTopColor: tone, borderTopWidth: 2 }}>
       <div className="text-[11px] font-semibold" style={{ color: tone }}>{title}</div>
       <p className="mt-1 text-xs leading-relaxed text-gray-600">{body}</p>
+    </div>
+  )
+  const colHead = (label: string) => (
+    <div className="pb-1 text-center text-[11px] font-semibold uppercase tracking-wide text-gray-500">{label}</div>
+  )
+  const rowHead = (label: string) => (
+    <div className="flex items-center justify-center">
+      <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 [writing-mode:vertical-rl] rotate-180">{label}</span>
     </div>
   )
   return (
@@ -114,11 +122,19 @@ export function InflectionQuadrant() {
         field&rsquo;s trajectory: cost curves, entry rates, capital formation, deployment?
       </p>
 
-      <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {quad('Named · mattered', 'The good case. Prediction and consequence aligned; a public call was gradeable and correct.', '#16a34a')}
-        {quad('Named · didn’t matter', 'Trap 1: the hit that doesn’t lift. The sensor resolves true, the field doesn’t move. Pair every marker with a “did it matter” test.', '#dc2626')}
-        {quad('Not named · mattered', 'Trap 2: acceleration through a door nobody was watching. Only a continuous velocity basket catches it.', '#d0894b')}
-        {quad('Not named · didn’t matter', 'Noise. Not interesting, but where most events live, which is why precision matters.', '#6b7280')}
+      {/* 2×2 matrix: columns = Named / Not named, rows = Mattered / Didn’t matter. */}
+      <div className="mt-4 grid grid-cols-[auto_1fr_1fr] gap-2">
+        <div />
+        {colHead('Named in advance')}
+        {colHead('Not named')}
+
+        {rowHead('Mattered')}
+        {cell('The good case', 'Prediction and consequence aligned; a public call was gradeable and correct.', '#16a34a')}
+        {cell('Trap 2 · blind acceleration', 'Acceleration through a door nobody was watching. Only a continuous velocity basket catches it.', '#d0894b')}
+
+        {rowHead('Didn’t matter')}
+        {cell('Trap 1 · the hit that doesn’t lift', 'The sensor resolves true, the field doesn’t move. Pair every marker with a “did it matter” test.', '#dc2626')}
+        {cell('Noise', 'Not interesting, but where most events live, which is why precision matters.', '#6b7280')}
       </div>
 
       <div className="mt-4 space-y-1.5 text-xs leading-relaxed text-gray-600">
