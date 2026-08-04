@@ -31,6 +31,9 @@ import {
   instrumentsForArea,
   INSTRUMENT_BY_ID,
   DIRECTION_META,
+  STALE_AFTER_MONTHS,
+  isStaleReading,
+  shownDirection,
   type InstrumentId,
   type InstrumentRecord,
   type Direction,
@@ -38,7 +41,7 @@ import {
 import { AreaIcon, type AreaIconType } from '@/components/AreaIcons'
 import { Sparkline, GhostChart, type SeriesPoint } from '@/components/VelocitySparkline'
 import { IdeaVintageExamples, type IdeaVintageExample } from '@/components/velocity-explainers'
-import type { MarketSignal } from '@/lib/market-signals'
+import { isRenderableMarket, type MarketSignal } from '@/lib/market-signals'
 
 /** Live output metrics for a point, keyed by the point's title. Fetched server-side. */
 export type LiveMetric = { value: string; label: string }
@@ -87,7 +90,9 @@ export default function ImpactDashboardV2({
     () =>
       visible
         .map((p) => marketSignals[p.title])
-        .filter((s): s is MarketSignal => !!s && s.match !== 'gap' && (s.prob != null || !!s.readout)),
+        // Only render a market that carries all four: question, venue, resolution
+        // date, and URL. A bare probability without its question is uninterpretable.
+        .filter((s): s is MarketSignal => !!s && isRenderableMarket(s) && (s.prob != null || !!s.readout)),
     [visible, marketSignals],
   )
 
@@ -255,6 +260,21 @@ function shortDate(s?: string): string | undefined {
   return s ? s.slice(0, 10) : s
 }
 
+/** A visible "stale" pill for readings whose measured observation is older than
+ *  the staleness policy. The direction chip is suppressed alongside it. */
+function StaleMarker({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
+  return (
+    <span
+      title={`Last measured over ${STALE_AFTER_MONTHS} months ago; not re-measured since, so no current trend is claimed.`}
+      className={`inline-flex items-center gap-1 rounded-full bg-amber-50 font-medium text-amber-700 ${
+        size === 'lg' ? 'px-2 py-0.5 text-[11px]' : 'px-1.5 py-0.5 text-[10px]'
+      }`}
+    >
+      <span aria-hidden>○</span> stale
+    </span>
+  )
+}
+
 function InstrumentCell({ record, markets }: { record: InstrumentRecord; markets?: MarketSignal[] }) {
   const inst = INSTRUMENT_BY_ID[record.instrument]
   // Markets instrument with live mapped forecasts overrides the static state.
@@ -293,8 +313,9 @@ function InstrumentCell({ record, markets }: { record: InstrumentRecord; markets
             <span className="line-clamp-2 text-[11px] leading-snug text-gray-400">{record.trend}</span>
           )}
           <span className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-gray-400">
-            {record.direction && <DirectionChip direction={record.direction} />}
-            {record.asOf && <span className="tabular-nums">as of {shortDate(record.asOf)}</span>}
+            {shownDirection(record) && <DirectionChip direction={shownDirection(record)!} />}
+            {isStaleReading(record) && <StaleMarker />}
+            {record.measuredAt && <span className="tabular-nums">measured {shortDate(record.measuredAt)}</span>}
           </span>
         </>
       )}
@@ -361,6 +382,46 @@ function SourceLinks({ sources }: { sources: { label: string; url: string }[] })
           </svg>
         </a>
       ))}
+    </div>
+  )
+}
+
+/** Idea vintage's second chart: the patent-side (invention) twin. Reading shows a
+ *  sparkline; unwired shows a ghost + blocker; not_applicable shows the reason. */
+function PatentVintagePanel({ pv }: { pv: NonNullable<InstrumentRecord['patentVintage']> }) {
+  return (
+    <div className="mt-4 border-t border-gray-100 pt-4">
+      <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+        Patent vintage <span className="font-normal text-gray-400">· invention side</span>
+      </div>
+      {pv.state === 'reading' && (
+        <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
+          {pv.series && pv.series.length > 1 && (
+            <Sparkline series={pv.series as SeriesPoint[]} width={200} height={56} axis unit="y" />
+          )}
+          <div className="min-w-[10rem] flex-1">
+            {pv.value && <div className="text-lg font-semibold leading-tight text-black">{pv.value}</div>}
+            {pv.measuredAt && (
+              <div className="mt-1 text-[11px] tabular-nums text-gray-400">measured {shortDate(pv.measuredAt)}</div>
+            )}
+            {pv.sources && <SourceLinks sources={pv.sources} />}
+          </div>
+        </div>
+      )}
+      {pv.state === 'unwired' && (
+        <div className="flex items-start gap-4">
+          <div className="shrink-0 pt-1">
+            <GhostChart width={140} height={44} />
+          </div>
+          <div className="text-sm leading-relaxed text-gray-500">
+            <p><span className="font-medium text-gray-700">Intended metric:</span> {pv.candidateMetric}</p>
+            <p className="mt-1"><span className="font-medium text-gray-700">Blocked by:</span> {pv.blocker}</p>
+          </div>
+        </div>
+      )}
+      {pv.state === 'not_applicable' && (
+        <p className="text-sm italic leading-relaxed text-gray-400">{pv.reason}</p>
+      )}
     </div>
   )
 }
@@ -462,9 +523,10 @@ function VelocityModal({
                         {liveMarkets.length} live market{liveMarkets.length === 1 ? '' : 's'}
                       </span>
                     )}
-                    {!isLiveMarkets && r.state === 'reading' && r.direction && (
-                      <span className="ml-auto">
-                        <DirectionChip direction={r.direction} size="lg" />
+                    {!isLiveMarkets && r.state === 'reading' && (shownDirection(r) || isStaleReading(r)) && (
+                      <span className="ml-auto inline-flex items-center gap-2">
+                        {isStaleReading(r) && <StaleMarker size="lg" />}
+                        {shownDirection(r) && <DirectionChip direction={shownDirection(r)!} size="lg" />}
                       </span>
                     )}
                     {!isLiveMarkets && r.state === 'unwired' && (
@@ -505,8 +567,19 @@ function VelocityModal({
                           {r.trend && <div className="mt-1 text-xs text-gray-500">{r.trend}</div>}
                           <div className="mt-1 flex flex-wrap gap-x-3 text-[11px] text-gray-400">
                             {r.window && <span>window {r.window}</span>}
-                            {r.asOf && <span className="tabular-nums">as of {shortDate(r.asOf)}</span>}
+                            {r.measuredAt && (
+                              <span className="tabular-nums">measured {shortDate(r.measuredAt)}</span>
+                            )}
+                            {r.checkedAt && r.checkedAt !== r.measuredAt && (
+                              <span className="tabular-nums">last checked {shortDate(r.checkedAt)}</span>
+                            )}
                           </div>
+                          {isStaleReading(r) && (
+                            <p className="mt-1 text-[11px] leading-relaxed text-amber-700">
+                              Last measured over {STALE_AFTER_MONTHS} months ago and not re-measured since,
+                              so no current direction is claimed.
+                            </p>
+                          )}
                         </div>
                       </div>
                       {r.provenance && (r.provenance.query || r.provenance.generated) && (
@@ -521,6 +594,9 @@ function VelocityModal({
                         </p>
                       )}
                       {r.sources && <SourceLinks sources={r.sources} />}
+                      {r.instrument === 'idea_vintage' && r.patentVintage && (
+                        <PatentVintagePanel pv={r.patentVintage} />
+                      )}
                     </div>
                   )}
 
@@ -721,7 +797,7 @@ function InflectionCard({
   const hasLiveSignal = !!(
     point.liveEvidence?.length ||
     (metrics && metrics.length) ||
-    (signal && signal.match !== 'gap')
+    (signal && isRenderableMarket(signal))
   )
 
   return (
@@ -801,6 +877,11 @@ function CrowdForecast({ signal, divider = false }: { signal: MarketSignal; divi
             {formatUSD(signal.volume)} at stake
           </span>
         )}
+        {signal.resolutionDate && (
+          <span className="text-[11px] tabular-nums text-gray-400" title="When the market resolves">
+            resolves {shortDate(signal.resolutionDate)}
+          </span>
+        )}
         <span className="ml-auto text-2xl font-semibold tabular-nums" style={{ color: FIELD_COLOR }}>
           {signal.readout ?? (pct != null ? `${pct}%` : '—')}
         </span>
@@ -811,7 +892,7 @@ function CrowdForecast({ signal, divider = false }: { signal: MarketSignal; divi
         </a>
       )}
       <p className="mt-2 text-[11px] leading-relaxed text-gray-400">
-        {signal.note} An independent read on whether the field is moving — not a settled outcome.
+        {signal.note} An independent read on whether the field is moving, not a settled outcome.
       </p>
     </div>
   )
@@ -934,7 +1015,7 @@ function InflectionModal({
               </span>
               Live signal
             </div>
-            {(point.liveEvidence?.length || (metrics && metrics.length) || (signal && signal.match !== 'gap')) && (
+            {(point.liveEvidence?.length || (metrics && metrics.length) || (signal && isRenderableMarket(signal))) && (
               <div className="mb-4 rounded-xl border border-gray-200 bg-white p-4">
                 {point.liveEvidence?.map((ev, i) => {
                   const external = /^https?:\/\//.test(ev.href)
@@ -977,7 +1058,7 @@ function InflectionModal({
                   </div>
                 )}
 
-                {signal && signal.match !== 'gap' && (
+                {signal && isRenderableMarket(signal) && (
                   <CrowdForecast signal={signal} divider={!!point.liveEvidence?.length} />
                 )}
               </div>
@@ -1095,7 +1176,7 @@ function HowToReadModal({ onClose }: { onClose: () => void }) {
               </span>
             </span>
             <p className="text-sm leading-relaxed text-gray-600">
-              <span className="font-semibold text-black">Live signal</span> — real-world evidence for and against, refreshed from the field. Never a settled outcome.
+              <span className="font-semibold text-black">Live signal</span>: real-world evidence for and against, refreshed from the field. Never a settled outcome.
             </p>
           </div>
         </div>
@@ -1123,7 +1204,7 @@ function LegendRow({
         aria-hidden
       />
       <p className="text-sm leading-relaxed text-gray-600">
-        <span className="font-semibold" style={{ color }}>{label}</span> — {children}
+        <span className="font-semibold" style={{ color }}>{label}</span>: {children}
       </p>
     </div>
   )

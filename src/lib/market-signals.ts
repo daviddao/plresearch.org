@@ -43,11 +43,20 @@ export type MarketSignal = {
   volume: number | null
   question: string | null
   url: string | null
+  /** ISO resolution / close date. Required to render a market: a forecast without
+   *  a resolution date is uninterpretable, so we suppress markets that lack one. */
+  resolutionDate?: string | null
   /** Pre-formatted headline reading for non-probability markets (e.g. a Metaculus date estimate, “~2068”). */
   readout?: string
   /** True when prob came from the fallback rather than the best-match market. */
   viaFallback: boolean
   note: string
+}
+
+/** A market is renderable only with all four: a question, a venue (platform), an
+ *  outbound URL, and a resolution date. Enforced at the render boundary. */
+export function isRenderableMarket(s: MarketSignal): boolean {
+  return !!(s.question && s.platform && s.url && s.resolutionDate)
 }
 
 // ── Mapping: inflection point → closest market ────────────────────────────────
@@ -207,7 +216,14 @@ function distinctiveToken(s?: string): string | null {
   return num ? num[0].toLowerCase() : null
 }
 
-type Quote = { prob: number | null; volume: number | null; readout?: string }
+type Quote = { prob: number | null; volume: number | null; readout?: string; resolutionDate?: string | null }
+
+/** Normalise an epoch-seconds / ISO / date string to an ISO date, or null. */
+function toIsoDate(v: unknown): string | null {
+  if (v == null) return null
+  const d = typeof v === 'number' ? new Date(v * 1000) : new Date(String(v))
+  return Number.isNaN(d.getTime()) ? null : d.toISOString().slice(0, 10)
+}
 
 async function fetchPolymarket(slug: string, hint?: string): Promise<Quote | null> {
   try {
@@ -217,8 +233,17 @@ async function fetchPolymarket(slug: string, hint?: string): Promise<Quote | nul
     if (!res.ok) return null
     const events = (await res.json()) as Array<{
       title?: string
-      markets?: Array<{ question?: string; outcomes?: string; outcomePrices?: string; volumeNum?: number }>
+      endDate?: string
+      markets?: Array<{
+        question?: string
+        outcomes?: string
+        outcomePrices?: string
+        volumeNum?: number
+        endDate?: string
+        endDateIso?: string
+      }>
     }>
+    const eventEnd = events?.[0]?.endDate
     const markets = events?.[0]?.markets
     if (!markets?.length) return null
     const parsed = markets
@@ -231,13 +256,14 @@ async function fetchPolymarket(slug: string, hint?: string): Promise<Quote | nul
         const yes = Number(prices[yesIdx])
         if (Number.isNaN(yes)) return null
         const volume = typeof m.volumeNum === 'number' && m.volumeNum > 0 ? m.volumeNum : null
-        return { yes, volume, q: (m.question || '').toLowerCase() }
+        const end = m.endDateIso || m.endDate || eventEnd
+        return { yes, volume, q: (m.question || '').toLowerCase(), end }
       })
-      .filter((x): x is { yes: number; volume: number | null; q: string } => x != null)
+      .filter((x): x is { yes: number; volume: number | null; q: string; end: string | undefined } => x != null)
     if (!parsed.length) return null
     const token = distinctiveToken(hint)
     const pick = (token && parsed.find((m) => m.q.includes(token))) || parsed[0]
-    return { prob: pick.yes, volume: pick.volume }
+    return { prob: pick.yes, volume: pick.volume, resolutionDate: toIsoDate(pick.end ?? eventEnd) }
   } catch {
     return null
   }
@@ -249,25 +275,22 @@ async function fetchKalshi(ticker: string): Promise<Quote | null> {
       next: { revalidate: REVALIDATE },
     })
     if (!res.ok) return null
-    const m = ((await res.json()) as { market?: Record<string, number | null> }).market
+    const m = ((await res.json()) as { market?: Record<string, number | string | null> }).market
     if (!m) return null
+    const numOf = (v: unknown): number | null => (typeof v === 'number' ? v : null)
     // dollar_volume is in USD; volume is in contracts (each settles $0-$1), so the
     // contract count is a reasonable USD upper bound when no dollar figure is given.
-    const dollarVol = m.dollar_volume
-    const contractVol = m.volume
-    const volume =
-      typeof dollarVol === 'number' && dollarVol > 0
-        ? dollarVol
-        : typeof contractVol === 'number' && contractVol > 0
-          ? contractVol
-          : null
+    const dollarVol = numOf(m.dollar_volume)
+    const contractVol = numOf(m.volume)
+    const volume = dollarVol && dollarVol > 0 ? dollarVol : contractVol && contractVol > 0 ? contractVol : null
+    const resolutionDate = toIsoDate(m.expiration_time ?? m.close_time)
     // Prices are in cents (0-100). Prefer last trade, else the bid/ask midpoint.
-    const last = m.last_price
-    if (typeof last === 'number' && last > 0) return { prob: last / 100, volume }
-    const bid = m.yes_bid
-    const ask = m.yes_ask
-    if (typeof bid === 'number' && typeof ask === 'number' && (bid > 0 || ask > 0)) {
-      return { prob: (bid + ask) / 2 / 100, volume }
+    const last = numOf(m.last_price)
+    if (last && last > 0) return { prob: last / 100, volume, resolutionDate }
+    const bid = numOf(m.yes_bid)
+    const ask = numOf(m.yes_ask)
+    if (bid != null && ask != null && (bid > 0 || ask > 0)) {
+      return { prob: (bid + ask) / 2 / 100, volume, resolutionDate }
     }
     return null
   } catch {
@@ -289,11 +312,13 @@ async function fetchMetaculus(id: number, kind: 'binary' | 'date' = 'binary'): P
     if (!res.ok) return null
     const d = (await res.json()) as {
       question?: {
+        scheduled_close_time?: string
         scaling?: { range_min?: number; range_max?: number }
         aggregations?: { recency_weighted?: { latest?: { centers?: number[]; means?: number[] } } }
       }
     }
     const q = d.question
+    const resolutionDate = toIsoDate(q?.scheduled_close_time)
     const latest = q?.aggregations?.recency_weighted?.latest
     const center = latest?.centers?.[0] ?? latest?.means?.[0]
     if (typeof center !== 'number') return null
@@ -305,9 +330,9 @@ async function fetchMetaculus(id: number, kind: 'binary' | 'date' = 'binary'): P
       if (typeof min !== 'number' || typeof max !== 'number') return null
       const year = new Date((min + center * (max - min)) * 1000).getFullYear()
       if (!Number.isFinite(year)) return null
-      return { prob: null, volume: null, readout: `~${year}` }
+      return { prob: null, volume: null, readout: `~${year}`, resolutionDate }
     }
-    return { prob: center, volume: null }
+    return { prob: center, volume: null, resolutionDate }
   } catch {
     return null
   }
@@ -337,6 +362,7 @@ export async function resolveSignal(m: MarketMapping): Promise<MarketSignal> {
       prob: primary.prob,
       volume: primary.volume,
       readout: primary.readout,
+      resolutionDate: primary.resolutionDate ?? null,
       question: m.primary.question,
       url: m.primary.url,
       viaFallback: false,
@@ -352,6 +378,7 @@ export async function resolveSignal(m: MarketMapping): Promise<MarketSignal> {
         prob: fb.prob,
         volume: fb.volume,
         readout: fb.readout,
+        resolutionDate: fb.resolutionDate ?? null,
         question: m.fallback.question,
         url: m.fallback.url,
         viaFallback: true,
