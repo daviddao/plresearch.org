@@ -51,7 +51,7 @@ export const VELOCITY_INSTRUMENTS: VelocityInstrument[] = [
     label: 'Idea vintage',
     subtitle: 'Whether the age of the ideas new work builds on is turning.',
     description:
-      'The median age of the references cited by new work in a field, computed from the text a field already produces. We do not read the level, because a field accumulates its own canon and reference age drifts upward as a literature ages, so the level says more about a field’s age than its pace. Instead we fit a two-segment trend and read the slope of the most recent segment only: a falling recent median (newer work leaning on fresher ideas) reads as accelerating, a rising one as decelerating, and we say so only when the slope clears its own noise band. Two honest caveats. A rising reference age is not always stagnation: it is also what a field does as it grows by absorbing entrants from adjacent disciplines, who bring older foundational citations with them. And the reliable window structurally excludes the two most recent years, which OpenAlex has not finished indexing, so the freshest reading a field can have is always about two years old.',
+      'The median age of the references cited by new work in a field, computed from the text a field already produces. We do not read the level, because a field accumulates its own canon and reference age drifts upward as a literature ages, so the level says more about a field’s age than its pace. Instead we fit a two-segment trend and read the slope of the most recent segment only: a falling recent median (newer work leaning on fresher ideas) reads as accelerating, a rising one as decelerating, and we say so only when the slope clears its own noise band. Two honest caveats. A rising reference age is not always stagnation: it is also what a field does as it grows by absorbing entrants from adjacent disciplines, who bring older foundational citations with them. And the reliable window structurally excludes the two most recent years, which OpenAlex has not finished indexing, so the freshest reading a field can have is always about two years old. Because that lag is built in rather than a sign the reading was never refreshed, this instrument is exempt from the staleness flag the other instruments carry; it still only shows a direction when the recent-segment trend is statistically clear.',
   },
   {
     id: 'revealed_commitments',
@@ -153,9 +153,18 @@ export function monthsSince(iso: string | undefined, now: Date = new Date()): nu
   return (now.getFullYear() - then.getFullYear()) * 12 + (now.getMonth() - then.getMonth())
 }
 
-/** A reading is stale when its measured observation is older than the policy. */
+// Instruments whose freshest possible reading is inherently lagged: their
+// reliable window structurally trails ~2 years (OpenAlex finishes indexing a
+// year's references only ~2 years later), so a 2-year-old reading here is the
+// current one, not a neglected one. These are exempt from the staleness policy;
+// their direction still only renders when the changepoint math is confident.
+const STALENESS_EXEMPT: ReadonlySet<InstrumentId> = new Set(['idea_vintage'])
+
+/** A reading is stale when its measured observation is older than the policy,
+ *  unless the instrument is inherently lagged (see STALENESS_EXEMPT). */
 export function isStaleReading(r: InstrumentRecord, now: Date = new Date()): boolean {
   if (r.state !== 'reading') return false
+  if (STALENESS_EXEMPT.has(r.instrument)) return false
   const m = monthsSince(r.measuredAt, now)
   return m != null && m > STALE_AFTER_MONTHS
 }

@@ -103,6 +103,13 @@ export default function MeasuringQuestionsV2({
               three data points, and we separate when a figure was last measured from when the pipeline
               last ran.
             </p>
+            <p className="mt-3 text-sm leading-relaxed text-gray-500">
+              One instrument is exempt from the staleness flag: idea vintage. Its data source finishes
+              indexing a year only about two years later, so its freshest honest reading is always around
+              two years old. That lag is built in, not neglect, so we do not mark it stale. It still shows
+              a direction only when the recent-segment trend is statistically clear, and stays &ldquo;unclear&rdquo;
+              otherwise.
+            </p>
           </div>
 
           <div>
