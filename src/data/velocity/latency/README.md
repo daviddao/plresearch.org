@@ -40,9 +40,12 @@ year,median_lag_days,lag_ci_lo,lag_ci_hi,n_papers,reliable
 
 ## Other focus areas
 
-- **Digital Human Rights** — RFC/CFRG draft → first production implementation
-  (OpenSSL / BoringSSL / libsodium / rustls). Curated JSON corpus, one source URL
-  per entry (Phase 2.2).
+- **Digital Human Rights** — ✅ **wired** (Phase 2.2). Days from a cryptographic
+  standard (IETF RFC / NIST FIPS) to its first stable OpenSSL release. Curated,
+  human-reviewable corpus with a source URL per entry at
+  [`../corpora/dhr-latency-crypto.json`](../corpora/dhr-latency-crypto.json),
+  ingested at build time by `src/lib/velocity-latency.ts`. Not a CSV: this one is
+  small and hand-curated, so it lives as reviewable JSON.
 - **Neurotech** — first nonhuman-primate demonstration → first IDE-approved human
   trial, per modality (Phase 2.4).
 - **Economies & Governance** — too few completed pilot→production transitions
