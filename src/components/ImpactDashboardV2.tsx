@@ -1,7 +1,7 @@
 'use client'
 
 // Impact Dashboard — field velocity. Horizontal, sticky focus-area tabs sit
-// above a wide "field velocity" box (the six velocity instruments, each with a
+// above a wide "field velocity" box (the five velocity instruments, each with a
 // direction indicator, opening a modal) and the inflection points we track,
 // laid out as four cards in two rows with their live signals. The inflection
 // cards mirror the PR #29 design; shared primitives are imported, never forked.
@@ -356,7 +356,7 @@ function FieldVelocityBox({
       </span>
 
       {/* Ragged by design — a field lists only the instruments that apply. */}
-      <div className="grid grid-cols-2 items-start gap-x-6 gap-y-5 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 items-start gap-x-6 gap-y-5 sm:grid-cols-3 lg:grid-cols-5">
         {records.map((r) => (
           <InstrumentCell key={r.instrument} record={r} markets={r.instrument === 'markets' ? markets : undefined} />
         ))}
@@ -382,6 +382,46 @@ function SourceLinks({ sources }: { sources: { label: string; url: string }[] })
           </svg>
         </a>
       ))}
+    </div>
+  )
+}
+
+/** Idea vintage's second chart: the patent-side (invention) twin. Reading shows a
+ *  sparkline; unwired shows a ghost + blocker; not_applicable shows the reason. */
+function PatentVintagePanel({ pv }: { pv: NonNullable<InstrumentRecord['patentVintage']> }) {
+  return (
+    <div className="mt-4 border-t border-gray-100 pt-4">
+      <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+        Patent vintage <span className="font-normal text-gray-400">· invention side</span>
+      </div>
+      {pv.state === 'reading' && (
+        <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
+          {pv.series && pv.series.length > 1 && (
+            <Sparkline series={pv.series as SeriesPoint[]} width={200} height={56} axis unit="y" />
+          )}
+          <div className="min-w-[10rem] flex-1">
+            {pv.value && <div className="text-lg font-semibold leading-tight text-black">{pv.value}</div>}
+            {pv.measuredAt && (
+              <div className="mt-1 text-[11px] tabular-nums text-gray-400">measured {shortDate(pv.measuredAt)}</div>
+            )}
+            {pv.sources && <SourceLinks sources={pv.sources} />}
+          </div>
+        </div>
+      )}
+      {pv.state === 'unwired' && (
+        <div className="flex items-start gap-4">
+          <div className="shrink-0 pt-1">
+            <GhostChart width={140} height={44} />
+          </div>
+          <div className="text-sm leading-relaxed text-gray-500">
+            <p><span className="font-medium text-gray-700">Intended metric:</span> {pv.candidateMetric}</p>
+            <p className="mt-1"><span className="font-medium text-gray-700">Blocked by:</span> {pv.blocker}</p>
+          </div>
+        </div>
+      )}
+      {pv.state === 'not_applicable' && (
+        <p className="text-sm italic leading-relaxed text-gray-400">{pv.reason}</p>
+      )}
     </div>
   )
 }
@@ -451,7 +491,7 @@ function VelocityModal({
             The rate the field is moving
           </h2>
           <p className="mb-6 text-sm leading-relaxed text-gray-500">
-            The six instruments we read velocity with. Where a reading is live, it carries a date and a
+            The five instruments we read velocity with. Where a reading is live, it carries a date and a
             source. Where it is not, we name the metric we intend to use and what is blocking it. Where an
             instrument does not fit this field, we say so.
           </p>
@@ -554,6 +594,9 @@ function VelocityModal({
                         </p>
                       )}
                       {r.sources && <SourceLinks sources={r.sources} />}
+                      {r.instrument === 'idea_vintage' && r.patentVintage && (
+                        <PatentVintagePanel pv={r.patentVintage} />
+                      )}
                     </div>
                   )}
 

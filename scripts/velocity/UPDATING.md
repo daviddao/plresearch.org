@@ -99,14 +99,19 @@ editing the record and **bumping `measuredAt`** (and adding series points):
   (+ required `matteredEvidence`), `predictedBy`/`falsifiesIf`, and `asOf`. Until
   then it reads "pending". The label is derived in `inflectionLabel()`.
 
-## 8. Patents — technology cycle time (`technology_cycle_time`)
+## 8. Patent vintage (idea vintage's invention-side twin)
 
-- Sixth instrument. `unwired` for AI & Robotics and Neurotech (needs a USPTO
-  PatentsView ingestion + a frozen CPC/keyword cohort), `not_applicable` for DHR
-  and Economies & Governance (open-source / public-goods native). To wire: build
-  a PatentsView generator that emits median prior-art age per year, read with the
-  same changepoint logic as idea vintage (`scripts/velocity/vintage-direction.mjs`),
-  carrying the ~18-month publication-lag caveat.
+- **Not a separate instrument.** It is the second reading of **idea vintage**:
+  median age of the patents a new patent cites as prior art. Injected per focus
+  area by `withPatentVintage()` in `src/lib/velocity-instruments.ts` and rendered
+  as a second chart in the idea-vintage modal (`PatentVintagePanel`).
+- `unwired` for AI & Robotics and Neurotech (needs a USPTO PatentsView ingestion +
+  a frozen CPC/keyword cohort; neuro carries an assignee-country split),
+  `not_applicable` for DHR and Economies & Governance (open-source / public-goods
+  native). To wire: build a PatentsView generator that emits median prior-art age
+  per year, read with the same changepoint logic as paper vintage
+  (`scripts/velocity/vintage-direction.mjs`), carrying the ~18-month lag caveat,
+  and populate the `patentVintage` reading fields in `patentVintageFor()`.
 
 ## 9. Direction math (`scripts/velocity/vintage-direction.mjs`)
 

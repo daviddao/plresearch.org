@@ -1,6 +1,6 @@
 // ── Velocity instruments — the single source of truth ─────────────────────────
 //
-// The six instruments we read a field's velocity with. The full description
+// The five instruments we read a field's velocity with. The full description
 // prose lives HERE and is rendered in exactly one place: the individual
 // instrument definition modal. The aggregate "Field velocity" modal shows
 // readings and charts only, and links each instrument title back here.
@@ -20,7 +20,6 @@ export type InstrumentId =
   | 'idea_vintage'
   | 'revealed_commitments'
   | 'markets'
-  | 'technology_cycle_time'
 
 export type VelocityInstrument = {
   id: InstrumentId
@@ -52,7 +51,7 @@ export const VELOCITY_INSTRUMENTS: VelocityInstrument[] = [
     label: 'Idea vintage',
     subtitle: 'Whether the age of the ideas new work builds on is turning.',
     description:
-      'The median age of the references cited by new work in a field, computed from the text a field already produces. We do not read the level, because a field accumulates its own canon and reference age drifts upward as a literature ages, so the level says more about a field’s age than its pace. Instead we fit a two-segment trend and read the slope of the most recent segment only: a falling recent median (newer work leaning on fresher ideas) reads as accelerating, a rising one as decelerating, and we say so only when the slope clears its own noise band. Two honest caveats. A rising reference age is not always stagnation: it is also what a field does as it grows by absorbing entrants from adjacent disciplines, who bring older foundational citations with them. And the reliable window structurally excludes the two most recent years, which OpenAlex has not finished indexing, so the freshest reading a field can have is always about two years old. Because that lag is built in rather than a sign the reading was never refreshed, this instrument is exempt from the staleness flag the other instruments carry; it still only shows a direction when the recent-segment trend is statistically clear.',
+      'The median age of the references cited by new work in a field, computed from the text a field already produces. We do not read the level, because a field accumulates its own canon and reference age drifts upward as a literature ages, so the level says more about a field’s age than its pace. Instead we fit a two-segment trend and read the slope of the most recent segment only: a falling recent median (newer work leaning on fresher ideas) reads as accelerating, a rising one as decelerating, and we say so only when the slope clears its own noise band. Two honest caveats. A rising reference age is not always stagnation: it is also what a field does as it grows by absorbing entrants from adjacent disciplines, who bring older foundational citations with them. And the reliable window structurally excludes the two most recent years, which OpenAlex has not finished indexing, so the freshest reading a field can have is always about two years old. Because that lag is built in rather than a sign the reading was never refreshed, this instrument is exempt from the staleness flag the other instruments carry; it still only shows a direction when the recent-segment trend is statistically clear. We read this two ways. Paper vintage uses academic references (the live reading). Patent vintage is the invention-side twin: the median age of the patents a new patent cites as prior art, which is examiner-curated and venue-neutral, so it does not drift as a field adopts preprints, though it carries the same lag. It does not apply to open-source, public-goods native fields, which deliberately do not patent, so a low patent reading there would measure enclosure rather than slowness.',
   },
   {
     id: 'revealed_commitments',
@@ -68,27 +67,20 @@ export const VELOCITY_INSTRUMENTS: VelocityInstrument[] = [
     description:
       'What forecast markets and prediction platforms imply about when a milestone will arrive, and whether that date is pulling in. Asking the same milestone at several time horizons gives a term structure, a kind of yield curve for a field, where an earlier implied date means expected acceleration. These need careful reading: markets can be thin, questions can resolve ambiguously, and for an org whose main channel is attention, our own work can move the very markets we are reading.',
   },
-  {
-    id: 'technology_cycle_time',
-    label: 'Technology cycle time',
-    subtitle: 'The age of the patents new patents cite as prior art.',
-    description:
-      'The median age of the patents that a new patent cites as prior art on its front page, computed per field per year. It is the patent-side twin of idea vintage, with one advantage that matters here: patent prior art is examiner-curated and venue-neutral, so it does not drift as a field adopts preprints or changes where it publishes. We read the recent-segment break the same way idea vintage does (a falling median means new inventions lean on fresher patents, i.e. acceleration), and it carries the same roughly eighteen-month publication lag. It was validated as a measure of the pace of technological progress in superconductor technology, where the trend reversed from rising to falling after the high-temperature discovery. It does not fit every field: a field that is open-source and public-goods native can read slow here while working exactly as intended, because it deliberately does not patent, so we mark it not applicable there rather than reading its low patent activity as slowness.',
-  },
 ]
 
 export const INSTRUMENT_BY_ID: Record<InstrumentId, VelocityInstrument> = Object.fromEntries(
   VELOCITY_INSTRUMENTS.map((i) => [i.id, i]),
 ) as Record<InstrumentId, VelocityInstrument>
 
-// Rendered as an extra definition card alongside the six instruments in the
+// Rendered as an extra definition card alongside the five instruments in the
 // methodology. Not an instrument, so it is never part of a reading record.
 export const INFLECTION_EXPLAINER = {
   id: 'inflection_points',
   label: 'Inflection points',
   subtitle: 'Dated, falsifiable shifts we expect an accelerating field to produce.',
   description:
-    'Alongside the six instruments, each field names a small set of inflection points: specific, dated, falsifiable shifts that an accelerating field should produce, each paired with a live signal. They are markers rather than targets. Reaching one is evidence the field is moving, and the live signal shows how close it is.',
+    'Alongside the five instruments, each field names a small set of inflection points: specific, dated, falsifiable shifts that an accelerating field should produce, each paired with a live signal. They are markers rather than targets. Reaching one is evidence the field is moving, and the live signal shows how close it is.',
 }
 
 // ── Instrument records ────────────────────────────────────────────────────────
@@ -132,6 +124,28 @@ export type InstrumentRecord = {
   blocker?: string
   owner?: string
 
+  // state: 'not_applicable'
+  reason?: string
+
+  /** Idea vintage only: the patent-side twin reading (median age of the patents a
+   *  new patent cites as prior art). Read the same way as paper vintage, from an
+   *  examiner-curated, venue-neutral source. Rendered as a second chart in the
+   *  idea-vintage modal. Injected per focus area (unwired for patenting fields,
+   *  not_applicable for open-source / public-goods native ones). */
+  patentVintage?: PatentVintage
+}
+
+export type PatentVintage = {
+  state: InstrumentState
+  // state: 'reading'
+  value?: string
+  series?: { x: number; y: number }[]
+  direction?: Direction
+  measuredAt?: string
+  sources?: { label: string; url: string }[]
+  // state: 'unwired'
+  candidateMetric?: string
+  blocker?: string
   // state: 'not_applicable'
   reason?: string
 }
@@ -238,15 +252,6 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
       candidateMetric: 'Implied arrival dates across the identity and AI-regulation markets mapped to this field',
       blocker: 'The term-structure aggregation is not built; the live crowd forecasts are shown per market below.',
     },
-    {
-      // TODO(lukas): confirm this open-source framing. The interesting patent
-      // signal for this field is defensive filing by incumbents around open
-      // protocols (enclosure pressure), which would be a separate instrument.
-      instrument: 'technology_cycle_time',
-      state: 'not_applicable',
-      reason:
-        'This field is open-source and public-goods native. Sparse patents and old prior art here more likely mean it is working as intended (building in the open, not patenting) than moving slowly, so a patent-pace reading would measure enclosure, not velocity.',
-    },
   ],
   'economies-governance': [
     {
@@ -279,14 +284,6 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
       state: 'not_applicable',
       reason:
         'No liquid forecast market prices programmable-allocation or digital-public-infrastructure milestones, so there is no market signal to read.',
-    },
-    {
-      // TODO(lukas): confirm this open-source framing (same as DHR). Defensive
-      // filing around open allocation / DPI protocols would be a separate signal.
-      instrument: 'technology_cycle_time',
-      state: 'not_applicable',
-      reason:
-        'This field is open-source and public-goods native. Sparse patents and old prior art here more likely mean it is working as intended (open protocols, not patents) than moving slowly, so a patent-pace reading would measure enclosure, not velocity.',
     },
   ],
   'ai-robotics': [
@@ -340,15 +337,6 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
       candidateMetric: 'Implied arrival date across the mapped AI milestone markets (their term structure)',
       blocker:
         'The term-structure aggregation is not built, and the reflexivity caveat bites hardest here: our own work can move these markets.',
-    },
-    {
-      instrument: 'technology_cycle_time',
-      state: 'unwired',
-      candidateMetric:
-        'Median age of the patents cited as prior art on new AI / robotics patents, per year (USPTO PatentsView), read with the same recent-segment changepoint as idea vintage',
-      blocker:
-        'PatentsView bulk ingestion is not built, and the AI / robotics patent cohort (a frozen CPC + keyword query) is not yet defined.',
-      owner: 'Lukas',
     },
   ],
   neurotech: [
@@ -414,20 +402,49 @@ export const INSTRUMENT_RECORDS: Partial<Record<FocusAreaKey, InstrumentRecord[]
         'Implied arrival dates across the mapped BCI and whole-brain-emulation questions (Metaculus, Polymarket, Kalshi)',
       blocker: 'The term-structure aggregation is not built; the live crowd forecasts are shown per market below.',
     },
-    {
-      instrument: 'technology_cycle_time',
-      state: 'unwired',
-      candidateMetric:
-        'Median age of the patents cited as prior art on new neurotech patents, per year (USPTO PatentsView), read with the same recent-segment changepoint as idea vintage, plus an assignee-country split to show where neurotech IP is forming',
-      blocker:
-        'PatentsView bulk ingestion is not built, and the neurotech patent cohort (a frozen CPC + keyword query) is not yet defined.',
-      owner: 'Lukas',
-    },
   ],
 }
 
 export function instrumentsForArea(area: FocusAreaKey): InstrumentRecord[] {
   return INSTRUMENT_RECORDS[area] ?? []
+}
+
+// ── Patent vintage (idea-vintage's invention-side twin) ───────────────────────
+// Injected per focus area rather than typed into each identical idea_vintage
+// record. Open-source / public-goods native fields deliberately do not patent,
+// so a patent reading there would measure enclosure, not velocity: mark it n/a.
+const OPEN_SOURCE_NATIVE: ReadonlySet<FocusAreaKey> = new Set([
+  'digital-human-rights',
+  'economies-governance',
+])
+
+function patentVintageFor(area: FocusAreaKey): PatentVintage {
+  if (OPEN_SOURCE_NATIVE.has(area)) {
+    return {
+      state: 'not_applicable',
+      reason:
+        'This field is open-source and public-goods native, so it deliberately does not patent. A low patent-vintage reading here would measure enclosure by incumbents, not the velocity of the field itself.',
+    }
+  }
+  const assignee =
+    area === 'neurotech'
+      ? ', plus an assignee-country split to show where neurotech IP is forming'
+      : ''
+  return {
+    state: 'unwired',
+    candidateMetric: `Median age of the patents cited as prior art on new ${
+      area === 'neurotech' ? 'neurotech' : 'AI / robotics'
+    } patents, per year (USPTO PatentsView), read with the same recent-segment changepoint as paper vintage${assignee}`,
+    blocker:
+      'PatentsView bulk ingestion is not built, and the patent cohort (a frozen CPC + keyword query) is not yet defined.',
+  }
+}
+
+/** Attach the patent-vintage twin to a field's idea_vintage record. */
+export function withPatentVintage(records: InstrumentRecord[], area: FocusAreaKey): InstrumentRecord[] {
+  return records.map((r) =>
+    r.instrument === 'idea_vintage' ? { ...r, patentVintage: patentVintageFor(area) } : r,
+  )
 }
 
 // ── OpenAlex ingestion merge ──────────────────────────────────────────────────
@@ -492,6 +509,7 @@ export function withOpenAlex(records: InstrumentRecord[], data?: OpenAlexArea | 
         seriesScale: 'linear',
         provenance: { query: iv.query, generated: iv.generated },
         sources: [OPENALEX_SOURCE, GENERATOR_SOURCE],
+        patentVintage: r.patentVintage, // carry the injected patent-side twin through the merge
       }
     }
     if (r.instrument === 'revealed_commitments' && data.revealed) {

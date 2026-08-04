@@ -7,7 +7,7 @@ import { fetchGainforestStats } from '@/lib/gainforest'
 import { fetchGlowStats } from '@/lib/glow'
 import { resolveAllSignals } from '@/lib/market-signals'
 import { FOCUS_AREAS, type FocusAreaKey } from '@/lib/inflection-points'
-import { instrumentsForArea, withOpenAlex, type InstrumentRecord } from '@/lib/velocity-instruments'
+import { instrumentsForArea, withOpenAlex, withPatentVintage, type InstrumentRecord } from '@/lib/velocity-instruments'
 import { loadAllOpenAlex } from '@/lib/velocity-openalex'
 import { loadAllLatency, withLatency } from '@/lib/velocity-latency'
 
@@ -60,7 +60,7 @@ async function fetchLiveOutputs(): Promise<LiveOutputs> {
 export const metadata: Metadata = {
   title: 'Impact',
   description:
-    'How we judge PL R&D: whether the fields we back are speeding up. We name the interventions we run, then read field velocity through six instruments and the inflection points we track.',
+    'How we judge PL R&D: whether the fields we back are speeding up. We name the interventions we run, then read field velocity through five instruments and the inflection points we track.',
 }
 
 export default async function ImpactPage() {
@@ -72,7 +72,7 @@ export default async function ImpactPage() {
   const openAlex = loadAllOpenAlex()
   const latency = loadAllLatency()
   const recordsByArea = Object.fromEntries(
-    FOCUS_AREAS.map((fa) => [fa.key, withLatency(withOpenAlex(instrumentsForArea(fa.key), openAlex[fa.key]), latency[fa.key])]),
+    FOCUS_AREAS.map((fa) => [fa.key, withLatency(withOpenAlex(withPatentVintage(instrumentsForArea(fa.key), fa.key), openAlex[fa.key]), latency[fa.key])]),
   ) as Partial<Record<FocusAreaKey, InstrumentRecord[]>>
 
   // Example idea-vintage series per field, for the methodology modal that explains
