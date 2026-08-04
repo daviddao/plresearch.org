@@ -98,9 +98,9 @@ export function IdeaVintageExamples({ examples }: { examples: IdeaVintageExample
 
 // The named-vs-mattered framing for the inflection-points explainer.
 export function InflectionQuadrant() {
-  const cell = (title: string, body: string, tone: string) => (
-    <div className="rounded-lg border border-gray-200 p-3" style={{ borderTopColor: tone, borderTopWidth: 2 }}>
-      <div className="text-[11px] font-semibold" style={{ color: tone }}>{title}</div>
+  const cell = (title: string, body: string) => (
+    <div className="flex min-h-[128px] flex-col rounded-lg border border-gray-200 p-4">
+      <div className="text-[11px] font-semibold text-black">{title}</div>
       <p className="mt-1 text-xs leading-relaxed text-gray-600">{body}</p>
     </div>
   )
@@ -118,23 +118,23 @@ export function InflectionQuadrant() {
       <p className="mt-1 text-sm leading-relaxed text-gray-600">
         Two independent axes. <span className="font-medium text-black">Named in advance</span>: was this the
         milestone the field, its funders, and its press had publicly designated as the thing to watch?{' '}
-        <span className="font-medium text-black">Mattered</span>: did crossing it measurably change the
+        <span className="font-medium text-black">Relevant</span>: did crossing it measurably change the
         field&rsquo;s trajectory: cost curves, entry rates, capital formation, deployment?
       </p>
 
-      {/* 2×2 matrix: columns = Named / Not named, rows = Mattered / Didn’t matter. */}
+      {/* 2×2 matrix: columns = Named / Not named, rows = Relevant / Irrelevant. */}
       <div className="mt-4 grid grid-cols-[auto_1fr_1fr] gap-2">
         <div />
         {colHead('Named in advance')}
         {colHead('Not named')}
 
-        {rowHead('Mattered')}
-        {cell('The good case', 'Prediction and consequence aligned; a public call was gradeable and correct.', '#16a34a')}
-        {cell('Trap 2 · blind acceleration', 'Acceleration through a door nobody was watching. Only a continuous velocity basket catches it.', '#d0894b')}
+        {rowHead('Relevant')}
+        {cell('The good case', 'Prediction and consequence aligned; a public call was gradeable and correct.')}
+        {cell('Trap 2 · blind acceleration', 'Acceleration through a door nobody was watching. Only a continuous velocity basket catches it.')}
 
-        {rowHead('Didn’t matter')}
-        {cell('Trap 1 · the hit that doesn’t lift', 'The sensor resolves true, the field doesn’t move. Pair every marker with a “did it matter” test.', '#dc2626')}
-        {cell('Noise', 'Not interesting, but where most events live, which is why precision matters.', '#6b7280')}
+        {rowHead('Irrelevant')}
+        {cell('Trap 1 · the hit that doesn’t lift', 'The sensor resolves true, the field doesn’t move. Pair every marker with a “did it matter” test.')}
+        {cell('Noise', 'Not interesting, but where most events live, which is why precision matters.')}
       </div>
 
       <div className="mt-4 space-y-1.5 text-xs leading-relaxed text-gray-600">
