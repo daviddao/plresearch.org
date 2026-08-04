@@ -5,12 +5,19 @@ OpenAlex (CC0). Real data only; no synthesised values.
 
 Per publication year Y it emits:
   year,field_works,all_works,corpus_share_per_100k,first_time_authors,
-  idea_vintage_median_years,vintage_ci_lo,vintage_ci_hi,n_refs_sampled,reliable
+  idea_vintage_median_years,vintage_ci_lo,vintage_ci_hi,n_refs_sampled,
+  n_works_sampled,reliable
 
 Idea vintage = the median AGE of the references cited by new work in year Y,
 where age = Y - (referenced work's publication year). We draw a random sample of
 works per year (OpenAlex `sample`), resolve their referenced works' years in
-batches, pool the ages, take the median, and bootstrap a 95% CI.
+batches, pool the ages, take the median, and CLUSTER-bootstrap a 95% CI.
+
+The bootstrap resamples WORKS with replacement (not individual references),
+because references are nested inside works: roughly `works_per_year` sampled
+works each contribute a list of reference ages, and treating those ages as
+independent understates the interval by 2-4x. References are deduped WITHIN a
+work, never across works, so paper membership survives to the CI stage.
 
 Recent years (>= reliable_cutoff_year) are undercounted by OpenAlex indexing lag
 and are flagged reliable=0.
@@ -28,6 +35,7 @@ Usage:
 import argparse
 import datetime as dt
 import json
+import os
 import random
 import ssl
 import statistics
@@ -110,17 +118,29 @@ def resolve_ref_years(ref_ids, email, api_key, batch=50):
     return years
 
 
-def bootstrap_ci(ages, iters=500):
-    if len(ages) < 8:
+def cluster_bootstrap_ci(ages_by_work, iters=500):
+    """Cluster bootstrap: resample WORKS with replacement, pool the ages of the
+    resampled works, take the median, repeat. This respects that reference ages
+    are nested inside works, so the interval reflects between-work variance and
+    not a false independence assumption. Fixed seed for reproducibility."""
+    works = [w for w in ages_by_work if w]
+    if len(works) < 8:
         return (None, None)
     rng = random.Random(42)
     meds = []
-    n = len(ages)
+    n = len(works)
     for _ in range(iters):
-        sample = [ages[rng.randrange(n)] for _ in range(n)]
-        meds.append(statistics.median(sample))
+        pooled = []
+        for _ in range(n):
+            pooled.extend(works[rng.randrange(n)])
+        if pooled:
+            meds.append(statistics.median(pooled))
+    if not meds:
+        return (None, None)
     meds.sort()
-    return (round(meds[int(0.025 * iters)], 2), round(meds[int(0.975 * iters)], 2))
+    lo = meds[int(0.025 * len(meds))]
+    hi = meds[int(0.975 * len(meds))]
+    return (round(lo, 2), round(hi, 2))
 
 
 def year_row(year, search, all_works, works_per_year, max_refs, email, api_key):
@@ -143,16 +163,30 @@ def year_row(year, search, all_works, works_per_year, max_refs, email, api_key):
     )
     works = d.get("results", [])
 
-    ref_ids = []
+    # Keep each work's references grouped, deduped WITHIN the work. Collect the
+    # union of ids once for efficient batch resolution, but never dedupe across
+    # works — paper membership is what the cluster bootstrap resamples on.
+    refs_by_work = []
+    all_ids = []
     for w in works:
-        refs = [r.split("/")[-1] for r in (w.get("referenced_works") or [])]
-        ref_ids += refs[:max_refs]
-    ref_ids = list(dict.fromkeys(ref_ids))  # dedupe, keep order
+        refs = [r.split("/")[-1] for r in (w.get("referenced_works") or [])][:max_refs]
+        refs = list(dict.fromkeys(refs))  # dedupe within this work only
+        if refs:
+            refs_by_work.append(refs)
+            all_ids += refs
+    all_ids = list(dict.fromkeys(all_ids))  # union, for resolution batching only
 
-    ref_years = resolve_ref_years(ref_ids, email, api_key) if ref_ids else {}
-    ages = [year - y for y in ref_years.values() if y and 1900 <= y <= year]
+    ref_years = resolve_ref_years(all_ids, email, api_key) if all_ids else {}
+
+    ages_by_work = []
+    for refs in refs_by_work:
+        ages_w = [year - ref_years[r] for r in refs if ref_years.get(r) and 1900 <= ref_years[r] <= year]
+        if ages_w:
+            ages_by_work.append(ages_w)
+
+    ages = [a for w in ages_by_work for a in w]  # flat pool, for the point median
     median = round(statistics.median(ages), 2) if ages else None
-    lo, hi = bootstrap_ci(ages) if ages else (None, None)
+    lo, hi = cluster_bootstrap_ci(ages_by_work) if ages_by_work else (None, None)
 
     return {
         "year": year,
@@ -163,6 +197,7 @@ def year_row(year, search, all_works, works_per_year, max_refs, email, api_key):
         "vintage_ci_lo": lo,
         "vintage_ci_hi": hi,
         "n_refs_sampled": len(ages),
+        "n_works_sampled": len(ages_by_work),
     }
 
 
@@ -171,6 +206,8 @@ def main():
     ap.add_argument("--search", required=True, help="frozen query, | = OR")
     ap.add_argument("--from-year", type=int, required=True)
     ap.add_argument("--to-year", type=int, default=dt.date.today().year)
+    # Credentials fall back to the environment (matching METACULUS_API_TOKEN's
+    # pattern) so the key never lands in shell history or a CI log. CLI flags win.
     ap.add_argument("--email", default="")
     ap.add_argument("--api-key", default="")
     ap.add_argument("--works-per-year", type=int, default=120)
@@ -179,6 +216,11 @@ def main():
     ap.add_argument("--insecure", action="store_true", help="skip TLS verification (broken CA bundles only)")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
+
+    # Environment fallback: OPENALEX_EMAIL joins the polite pool; OPENALEX_API_KEY
+    # (optional) lifts rate limits. Never echoed, logged, or written to a CSV.
+    a.email = a.email or os.environ.get("OPENALEX_EMAIL", "")
+    a.api_key = a.api_key or os.environ.get("OPENALEX_API_KEY", "")
 
     global SSL_CTX
     SSL_CTX = ssl_context(a.insecure)
@@ -205,7 +247,8 @@ def main():
     generated = dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
     header = (
         "year,field_works,all_works,corpus_share_per_100k,first_time_authors,"
-        "idea_vintage_median_years,vintage_ci_lo,vintage_ci_hi,n_refs_sampled,reliable"
+        "idea_vintage_median_years,vintage_ci_lo,vintage_ci_hi,n_refs_sampled,"
+        "n_works_sampled,reliable"
     )
     lines = [
         f"# generated: {generated}",
@@ -214,7 +257,8 @@ def main():
         f"# from_year: {a.from_year}",
         f"# reliable_cutoff_year: {a.reliable_cutoff_year}",
         f"# sample: works_per_year={a.works_per_year}; max_refs_per_work={a.max_refs_per_work}; "
-        "cluster=title_and_abstract.search; note=first_time_authors intentionally blank (needs per-author history)",
+        "cluster=title_and_abstract.search; ci=cluster_bootstrap(resample=works,iters=500,seed=42); "
+        "note=first_time_authors intentionally blank (needs per-author history)",
         header,
     ]
 
@@ -235,6 +279,7 @@ def main():
                     "vintage_ci_lo",
                     "vintage_ci_hi",
                     "n_refs_sampled",
+                    "n_works_sampled",
                     "reliable",
                 ]
             )

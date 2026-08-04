@@ -37,7 +37,7 @@ export default function MeasuringQuestionsV2({
               A fixed toolkit we bring to every field. Pick the ones a field is missing, then push.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-gray-500">
-              We don&rsquo;t claim these interventions directly cause a field to accelerate &mdash;
+              We don&rsquo;t claim these interventions directly cause a field to accelerate:
               attribution at the field level isn&rsquo;t cleanly identifiable. For now we name what we run
               and watch whether the field moves; making that link clearer is work we intend to do, and to
               publish here later.
@@ -55,7 +55,7 @@ export default function MeasuringQuestionsV2({
               >
                 <div className="mb-1 flex items-center gap-2">
                   <span className="text-sm font-semibold text-black">{t.title}</span>
-                  <span className="text-xs text-gray-400">— {t.subtitle}</span>
+                  <span className="text-xs text-gray-400">· {t.subtitle}</span>
                   {t.proposed && (
                     <span className="ml-auto rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gray-500">
                       Proposed
@@ -89,35 +89,61 @@ export default function MeasuringQuestionsV2({
             <h3 className="text-lg font-semibold tracking-tight text-black">Observed velocity</h3>
             <p className="mt-2 text-sm leading-relaxed text-gray-500">
               The interventions are the input. Field velocity, the rate a field is moving, is what tells
-              us whether they landed. We read it through six lenses: five instruments, plus the inflection
-              points we track (the sixth card below).
+              us whether they landed. We read it through five instruments.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-gray-500">
               Not every instrument fits every field. A field with no single gating unit cost has no
               performance curve to read, and a field no forecast market has priced has no market signal.
               We show the instruments that apply and name the ones that do not.
             </p>
+            <p className="mt-3 text-sm leading-relaxed text-gray-500">
+              A reading is only reported as current for about a year after the observation it refers to.
+              Past that we keep the number but flag it stale and drop the trend arrow: a metric we have
+              not re-measured is unmeasured, not flat. We also never draw a direction from fewer than
+              three data points, and we separate when a figure was last measured from when the pipeline
+              last ran.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            {[...VELOCITY_INSTRUMENTS, INFLECTION_EXPLAINER].map((m) => (
-              <button
-                key={m.id}
-                type="button"
-                onClick={() => setModal({ kind: 'measure', entry: m })}
-                aria-haspopup="dialog"
-                className="group flex flex-col rounded-xl border border-gray-200 bg-white p-4 text-left transition-all hover:border-gray-300 hover:shadow-sm"
-              >
-                <span className="mb-1 text-sm font-semibold text-black">{m.label}</span>
-                <p className="text-xs leading-relaxed text-gray-600">{m.subtitle}</p>
-              </button>
-            ))}
+          <div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {VELOCITY_INSTRUMENTS.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => setModal({ kind: 'measure', entry: m })}
+                  aria-haspopup="dialog"
+                  className="group flex flex-col rounded-xl border border-gray-200 bg-white p-4 text-left transition-all hover:border-gray-300 hover:shadow-sm"
+                >
+                  <span className="mb-1 text-sm font-semibold text-black">{m.label}</span>
+                  <p className="text-xs leading-relaxed text-gray-600">{m.subtitle}</p>
+                </button>
+              ))}
+            </div>
+            <p className="mt-4 max-w-2xl text-xs leading-relaxed text-gray-400">
+              These instruments read the research and capital sides of a field. They do not observe
+              invention directly: prototypes, designs, datasets, and negative results largely lack
+              identifiers to count. Closing that gap is itself part of the work.
+            </p>
+
+            {/* Inflection points are NOT an instrument (they never enter a reading
+                record), so they sit below their own divider rather than in the grid. */}
+            <div className="relative my-6" aria-hidden>
+              <div className="border-t border-gray-200" />
+            </div>
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+              And the markers we track
+            </div>
+            <button
+              type="button"
+              onClick={() => setModal({ kind: 'measure', entry: INFLECTION_EXPLAINER })}
+              aria-haspopup="dialog"
+              className="group flex w-full flex-col rounded-xl border border-gray-200 bg-white p-4 text-left transition-all hover:border-gray-300 hover:shadow-sm sm:max-w-sm"
+            >
+              <span className="mb-1 text-sm font-semibold text-black">{INFLECTION_EXPLAINER.label}</span>
+              <p className="text-xs leading-relaxed text-gray-600">{INFLECTION_EXPLAINER.subtitle}</p>
+            </button>
           </div>
-          <p className="mt-4 max-w-2xl text-xs leading-relaxed text-gray-400">
-            These instruments read the research and capital sides of a field. They do not observe
-            invention directly &mdash; prototypes, designs, datasets, and negative results largely lack
-            identifiers to count. Closing that gap is itself part of the work.
-          </p>
         </div>
       </section>
 
@@ -190,7 +216,7 @@ function InfoModal({
             </span>
             {proposed && (
               <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gray-500">
-                Proposed — our wildcard
+                Proposed: our wildcard
               </span>
             )}
           </div>

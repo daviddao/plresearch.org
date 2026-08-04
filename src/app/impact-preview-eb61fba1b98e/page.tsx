@@ -99,7 +99,7 @@ export default async function ImpactPage() {
             <strong className="font-semibold text-black">Field velocity</strong> is that rate of change:
             how fast talent enters, capital forms, tool costs fall, and output ships.{' '}
             <strong className="font-semibold text-black">Inflection points</strong> are one of the markers
-            we read &mdash; dated, falsifiable shifts an accelerating field should produce.
+            we read: dated, falsifiable shifts an accelerating field should produce.
           </p>
           <p className="mt-4 text-lg text-gray-600 leading-relaxed max-w-none">
             We measure velocity the same way we do the work: as a research program. Whether field

@@ -238,7 +238,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       {
         label: 'Wikipedia kept online via IPFS during Turkey’s block',
         href: 'https://observer.com/2017/05/turkey-wikipedia-ipfs/',
-        note: 'A content-addressed (IPFS) mirror kept Wikipedia reachable under Turkey’s state block — early evidence that information can route around a shutdown, not the population-scale-through-a-shutdown threshold (Q2).',
+        note: 'A content-addressed (IPFS) mirror kept Wikipedia reachable under Turkey’s state block: early evidence that information can route around a shutdown, not the population-scale-through-a-shutdown threshold (Q2).',
       },
     ],
   },
@@ -283,9 +283,9 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     ],
     liveEvidence: [
       {
-        label: 'Starling Lab — content-authenticity displays in newsrooms',
+        label: 'Starling Lab: content-authenticity displays in newsrooms',
         href: 'https://dispatch.starlinglab.org/p/verify-authenticity-displays',
-        note: 'Reuters, AP, Rolling Stone and others ship C2PA content credentials backed by content-addressed archives (IPFS / Filecoin) — early real-world provenance, not the default-everywhere threshold (Q2).',
+        note: 'Reuters, AP, Rolling Stone and others ship C2PA content credentials backed by content-addressed archives (IPFS / Filecoin): early real-world provenance, not the default-everywhere threshold (Q2).',
       },
     ],
   },
@@ -300,7 +300,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     contribution: {
       inputs: 'The Filecoin / open-compute portfolio; PL capital and coordination across storage, compute, and identity.',
       activities: 'Building open compute and storage rails and bridging them with identity for agents.',
-      outputs: 'Filecoin and the open-compute portfolio — Fluence, Spheron, Expanso, Impossible Cloud, Lava, Fleek — with integrations across storage, compute, and identity.',
+      outputs: 'Filecoin and the open-compute portfolio (Fluence, Spheron, Expanso, Impossible Cloud, Lava, Fleek), with integrations across storage, compute, and identity.',
     },
     roles: ['infrastructure', 'connection', 'capital'],
     interventions: [
@@ -352,9 +352,9 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     ],
     liveEvidence: [
       {
-        label: 'Simocracy governance simulation — live participation',
+        label: 'Simocracy governance simulation: live participation',
         href: '/areas/economies-governance/impact/live-dashboard/',
-        note: 'Live activity from a PL-supported mechanism. This is contribution evidence (Q3) from a simulation — not the binding-decision-in-government threshold (Q2).',
+        note: 'Live activity from a PL-supported mechanism. This is contribution evidence (Q3) from a simulation, not the binding-decision-in-government threshold (Q2).',
       },
     ],
   },
@@ -400,9 +400,9 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     ],
     liveEvidence: [
       {
-        label: 'GainForest & Glow — live verification activity',
+        label: 'GainForest & Glow: live verification activity',
         href: '/areas/economies-governance/impact/live-dashboard/',
-        note: 'Live output from PL-backed MRV teams on this critical path. Contribution evidence (Q3) — not the $1B-disbursed-against-verified-outcomes threshold (Q2).',
+        note: 'Live output from PL-backed MRV teams on this critical path. Contribution evidence (Q3), not the $1B-disbursed-against-verified-outcomes threshold (Q2).',
       },
     ],
   },
@@ -493,13 +493,13 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     opportunitySpace: 'Open Compute Networks',
     title: 'A frontier model trained off the hyperscalers',
     signal:
-      'A frontier-scale model is trained end-to-end across independent, decentralized compute — pooled GPUs, edge capacity, and energy-sited hardware — rather than inside a single hyperscaler cluster.',
+      'A frontier-scale model is trained end-to-end across independent, decentralized compute (pooled GPUs, edge capacity, and energy-sited hardware) rather than inside a single hyperscaler cluster.',
     cascade:
       'Compute stops being a bottleneck only a few labs can clear; regions and independents can train at the frontier, and the substrate of AI is set in the open.',
     contribution: {
       inputs: 'The Filecoin / open-compute portfolio; PL capital and coordination across compute, storage, and energy-sited hardware.',
       activities: 'Building open compute and storage rails, funding decentralized-training teams, and coordinating an ecosystem that can pool capacity.',
-      outputs: 'The open-compute portfolio — Fluence, Spheron, Expanso — and the decentralized-training teams building on it.',
+      outputs: 'The open-compute portfolio (Fluence, Spheron, Expanso) and the decentralized-training teams building on it.',
     },
     roles: ['infrastructure', 'connection', 'capital'],
     interventions: [
@@ -513,9 +513,9 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     opportunitySpace: 'Agent Coordination Infrastructure',
     title: 'Agents transact on open rails',
     signal:
-      'A meaningful share of agent-to-agent economic activity — payments, contracting, task markets — settles on open, permissionless identity and coordination protocols rather than one platform’s closed stack.',
+      'A meaningful share of agent-to-agent economic activity (payments, contracting, task markets) settles on open, permissionless identity and coordination protocols rather than one platform’s closed stack.',
     cascade:
-      'The rules of the agent economy — identity, reputation, settlement — are set as neutral public infrastructure instead of owned by whoever ships the dominant platform first.',
+      'The rules of the agent economy (identity, reputation, settlement) are set as neutral public infrastructure instead of owned by whoever ships the dominant platform first.',
     contribution: {
       inputs: 'Open identity and coordination primitives from the PL network; convening capacity across agent-protocol teams.',
       activities: 'Building open identity / coordination rails, convening agent-protocol teams, and funding early coordination-protocol work.',
@@ -533,7 +533,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     opportunitySpace: 'Embodied AI & Robotics Data Networks',
     title: 'A shared real-world robotics data network',
     signal:
-      'An open, multi-operator robot fleet generates a continuous, shared stream of real-world interaction data that outside teams can train on — not a single company’s proprietary logs.',
+      'An open, multi-operator robot fleet generates a continuous, shared stream of real-world interaction data that outside teams can train on, not a single company’s proprietary logs.',
     cascade:
       'The data bottleneck on embodied intelligence breaks; robotics progress compounds across a commons instead of siloing inside whoever owns the largest fleet.',
     contribution: {
@@ -553,7 +553,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     opportunitySpace: 'Agent-Native Economic Infrastructure',
     title: 'Machine-native money moves at scale',
     signal:
-      'Autonomous agents run real, recurring economic activity — paying, contracting, and coordinating machine-to-machine — through primitives built for agents rather than retrofitted human payment rails.',
+      'Autonomous agents run real, recurring economic activity (paying, contracting, and coordinating machine-to-machine) through primitives built for agents rather than retrofitted human payment rails.',
     cascade:
       'Agent economies gain the financial primitives they need to exist at all; coordination and settlement for machine participants become as reliable as they are for humans.',
     contribution: {

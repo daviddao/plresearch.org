@@ -97,20 +97,20 @@ export function InflectionQuadrant() {
         Two independent axes. <span className="font-medium text-black">Named in advance</span>: was this the
         milestone the field, its funders, and its press had publicly designated as the thing to watch?{' '}
         <span className="font-medium text-black">Mattered</span>: did crossing it measurably change the
-        field&rsquo;s trajectory &mdash; cost curves, entry rates, capital formation, deployment?
+        field&rsquo;s trajectory: cost curves, entry rates, capital formation, deployment?
       </p>
 
       <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
         {quad('Named · mattered', 'The good case. Prediction and consequence aligned; a public call was gradeable and correct.', '#16a34a')}
         {quad('Named · didn’t matter', 'Trap 1: the hit that doesn’t lift. The sensor resolves true, the field doesn’t move. Pair every marker with a “did it matter” test.', '#dc2626')}
         {quad('Not named · mattered', 'Trap 2: acceleration through a door nobody was watching. Only a continuous velocity basket catches it.', '#d0894b')}
-        {quad('Not named · didn’t matter', 'Noise. Not interesting, but where most events live — which is why precision matters.', '#6b7280')}
+        {quad('Not named · didn’t matter', 'Noise. Not interesting, but where most events live, which is why precision matters.', '#6b7280')}
       </div>
 
       <div className="mt-4 space-y-1.5 text-xs leading-relaxed text-gray-600">
-        <p><span className="font-medium text-black">Named &amp; mattered:</span> the $1,000 genome (2014); AlphaFold&nbsp;2 at CASP14 (2020) &mdash; a named unit-cost or benchmark that was also the field&rsquo;s rate-limiter.</p>
-        <p><span className="font-medium text-black">Named, didn&rsquo;t matter:</span> Watson wins Jeopardy! (2011); Deep Blue (1997) &mdash; staged demos that didn&rsquo;t bend the trajectory.</p>
-        <p><span className="font-medium text-black">Unnamed, mattered:</span> AlexNet (2012), transformers (2017), HTS fusion magnets at 20&nbsp;T (2021) &mdash; the largest recent accelerations, none on a roadmap.</p>
+        <p><span className="font-medium text-black">Named &amp; mattered:</span> the $1,000 genome (2014); AlphaFold&nbsp;2 at CASP14 (2020). A named unit-cost or benchmark that was also the field&rsquo;s rate-limiter.</p>
+        <p><span className="font-medium text-black">Named, didn&rsquo;t matter:</span> Watson wins Jeopardy! (2011); Deep Blue (1997). Staged demos that didn&rsquo;t bend the trajectory.</p>
+        <p><span className="font-medium text-black">Unnamed, mattered:</span> AlexNet (2012), transformers (2017), HTS fusion magnets at 20&nbsp;T (2021). The largest recent accelerations, none on a roadmap.</p>
       </div>
 
       <div className="mt-4 rounded-lg bg-gray-50 p-3 text-xs leading-relaxed text-gray-600">

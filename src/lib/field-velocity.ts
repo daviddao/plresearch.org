@@ -118,7 +118,7 @@ export const TOOLKIT_V2: ToolkitEntry[] = [
     title: 'Culture',
     subtitle: 'celebrating the improving mentality',
     oneLiner:
-      'Our wildcard: deliberately open-ended creative bets — a film, a book, a photography prize that rewards human ingenuity, worldbuilding competitions. Whatever recruits people into the conviction that things can be improved, and that they can be the ones to improve them.',
+      'Our wildcard: deliberately open-ended creative bets (a film, a book, a photography prize that rewards human ingenuity, worldbuilding competitions). Whatever recruits people into the conviction that things can be improved, and that they can be the ones to improve them.',
     description:
       'Every sustained acceleration of invention has run on a culture that treats improvement as a personal calling, spread from person to person. That culture is the hardest condition to engineer, so we treat this tool as our wildcard: deliberately open-ended creative bets that recruit people into building. That might mean backing a film or a book, a photography prize that rewards human ingenuity, or a worldbuilding competition that makes a field\u2019s future concrete enough to want. Ask inventors where they started and they often name an artifact: a book, a film, a kit. Most of these bets will miss. The hits compound for decades, and we will track them on the same scoreboard as everything else we fund.',
   },
