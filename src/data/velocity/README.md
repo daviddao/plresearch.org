@@ -29,9 +29,9 @@ string is identical.
 # query: content addressing|peer-to-peer network|censorship resistance|decentralized storage
 # from_year: 2005
 # reliable_cutoff_year: 2023
-# sample: refs_per_work=25; max_works_per_year=2000
-year,field_works,all_works,corpus_share_per_100k,first_time_authors,idea_vintage_median_years,vintage_ci_lo,vintage_ci_hi,n_refs_sampled,reliable
-2005,1200,3100000,38.7,410,9.8,9.1,10.5,21000,1
+# sample: works_per_year=80; max_refs_per_work=50; cluster=title_and_abstract.search; ci=cluster_bootstrap(resample=works,iters=500,seed=42)
+year,field_works,all_works,corpus_share_per_100k,first_time_authors,idea_vintage_median_years,vintage_ci_lo,vintage_ci_hi,n_refs_sampled,n_works_sampled,reliable
+2005,1200,3100000,38.7,410,9.8,9.1,10.5,21000,78,1
 ...
 ```
 
@@ -39,6 +39,19 @@ year,field_works,all_works,corpus_share_per_100k,first_time_authors,idea_vintage
   render as a dashed segment and are **excluded** from the direction calculation.
 - `idea_vintage_median_years` drives the primary series; `vintage_ci_lo/hi` draw
   the confidence band. Rows with a null median are skipped.
+- `n_refs_sampled` is the count of resolved reference ages pooled for the median;
+  `n_works_sampled` is the number of source works those references came from. The
+  confidence band is a **cluster bootstrap** that resamples works, not individual
+  references, because references are nested inside works and treating them as
+  independent understates the interval by 2-4x. Older CSVs written before this
+  column existed omit `n_works_sampled`; the ingestion tolerates its absence.
+
+> **TODO(lukas): regenerate all four CSVs with the clustered bootstrap.** The
+> four committed CSVs still carry the old per-reference bootstrap CIs (narrower)
+> and no `n_works_sampled` column. Regenerate them in a **separate** PR so the
+> data diff is reviewable apart from this code change. Step-by-step runbook (with
+> the frozen queries and all checks) lives in
+> [`scripts/velocity/REGENERATE.md`](../../../scripts/velocity/REGENERATE.md).
 - Direction for idea vintage is **inverted**: a falling median reference age means
   the field is building on fresher ideas, i.e. accelerating
   (`scripts/velocity/vintage-direction.mjs`, covered by `npm test`).
