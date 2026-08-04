@@ -27,7 +27,7 @@ export const mainNav: NavItem[] = [
   },
   {
     name: 'Focus Areas',
-    url: '#',
+    url: '/areas/',
     children: [
       { name: 'Digital Human Rights', url: '/areas/digital-human-rights/' },
       { name: 'Economies & Governance', url: '/areas/economies-governance/' },
