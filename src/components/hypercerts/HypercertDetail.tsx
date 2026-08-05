@@ -10,10 +10,12 @@ import { useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { EvidenceEntry, EvidenceKind, Hypercert } from "@/data/hypercerts"
 import FundingCheckout, { FundEffortButton, type MorphFrom } from "@/components/FundingFlow"
+import { useAuth } from "@/lib/atproto"
 import {
   Avatar,
   CommentsSection,
   authorLabel,
+  deleteOwnRecord,
   profileLinkActor,
   useActorProfiles,
   useLiveActivity,
@@ -27,6 +29,7 @@ const KIND_LABEL: Record<EvidenceKind, string> = {
   publication: "Publication",
   artifact: "Artifact",
   release: "Release",
+  other: "Other",
 }
 
 const KIND_GLYPH: Record<EvidenceKind, string> = {
@@ -35,6 +38,7 @@ const KIND_GLYPH: Record<EvidenceKind, string> = {
   publication: "❑",
   artifact: "◈",
   release: "⤴",
+  other: "◌",
 }
 
 function kindLabel(kind: string): string {
@@ -110,7 +114,14 @@ function EvidenceRow({ entry, index }: { entry: EvidenceEntry; index: number }) 
   )
 }
 
-function LiveEvidenceRow({ entry }: { entry: LiveEvidence }) {
+function LiveEvidenceRow({
+  entry,
+  onDelete,
+}: {
+  entry: LiveEvidence
+  /** Present only when the signed-in user authored this entry. */
+  onDelete?: () => void
+}) {
   const [open, setOpen] = useState(false)
   const date = new Date(entry.createdAt)
   const dateLabel = Number.isNaN(date.getTime())
@@ -211,7 +222,7 @@ function LiveEvidenceRow({ entry }: { entry: LiveEvidence }) {
               ))}
             </div>
           )}
-          <div className="mt-2">
+          <div className="mt-2 flex items-center gap-4">
             <a
               href={`https://pdsls.dev/${entry.uri}`}
               target="_blank"
@@ -220,6 +231,15 @@ function LiveEvidenceRow({ entry }: { entry: LiveEvidence }) {
             >
               View ATProto record ↗
             </a>
+            {onDelete && (
+              <button
+                type="button"
+                onClick={onDelete}
+                className={`${eyebrow} cursor-pointer text-gray-400 transition hover:text-pink`}
+              >
+                Delete my entry
+              </button>
+            )}
           </div>
         </motion.div>
       </div>
@@ -256,7 +276,8 @@ export function HypercertDetail({
   variant?: "page" | "modal"
 }) {
   const isModal = variant === "modal"
-  const { data: activity, loading } = useLiveActivity(cert)
+  const { session } = useAuth()
+  const { data: activity, loading, removeLocal } = useLiveActivity(cert)
   const [funding, setFunding] = useState(false)
   // Rect of the hero card at click time, so the funding checkout can fly a
   // clone of it down into its contact-sheet card slot.
@@ -383,6 +404,7 @@ export function HypercertDetail({
           // does NOT cross-morph (a transform on this ancestor would fight the
           // shared-layout projection). The full-bleed page keeps the morph.
           layoutId={isModal ? undefined : `cert-media-${cert.rkey}`}
+          layoutDependency={cert.rkey}
           className="hypercert-on-photo relative overflow-hidden"
           style={{ borderRadius: 26, aspectRatio: "16 / 9" }}
         >
@@ -412,6 +434,26 @@ export function HypercertDetail({
                 <span className="rounded-full border border-white/20 bg-black/30 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/80 backdrop-blur-md">
                   In planning
                 </span>
+              )}
+              {cert.creator && (
+                <a
+                  href={`https://bsky.app/profile/${cert.creator.handle ?? cert.creator.did}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 py-1 pl-1 pr-2.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/90 backdrop-blur-md transition hover:border-white/50"
+                >
+                  {cert.creator.avatar ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={cert.creator.avatar}
+                      alt=""
+                      className="h-4 w-4 rounded-full object-cover ring-1 ring-white/40"
+                    />
+                  ) : (
+                    <span aria-hidden className="block h-4 w-4 rounded-full bg-white/30" />
+                  )}
+                  Claimed by {cert.creator.handle ?? `${cert.creator.did.slice(0, 16)}…`}
+                </a>
               )}
             </div>
             <h1 className="mt-3 max-w-2xl font-serif text-[clamp(24px,3.4vw,40px)] leading-[1.06] tracking-tight text-white">
@@ -456,6 +498,28 @@ export function HypercertDetail({
                 {cert.startDate} → {cert.endDate}
               </span>
             </Meta>
+            <Meta label="Claimed by">
+              {cert.creator ? (
+                <a
+                  href={`https://bsky.app/profile/${cert.creator.handle ?? cert.creator.did}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-blue hover:underline"
+                >
+                  {cert.creator.avatar && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={cert.creator.avatar}
+                      alt=""
+                      className="h-4 w-4 rounded-full object-cover"
+                    />
+                  )}
+                  @{cert.creator.handle ?? cert.creator.did.slice(0, 16)}
+                </a>
+              ) : (
+                <span className="text-gray-600">plrd.org</span>
+              )}
+            </Meta>
             <Meta label="Rights">{cert.rights}</Meta>
             <Meta label="Retreat">
               <a
@@ -486,13 +550,13 @@ export function HypercertDetail({
             animate="show"
             className="mt-10 rounded-2xl border border-gray-200 bg-gray-100 p-6 lg:p-8"
           >
-            <p className={`${eyebrow} text-blue`}>Return on impact</p>
+            <p className={`${eyebrow} text-blue`}>Social return on investment</p>
             <div className="mt-4 flex flex-wrap items-end gap-x-10 gap-y-4">
               <div>
                 <p className="font-serif text-[clamp(34px,4.5vw,52px)] leading-none tracking-tight text-black">
                   {cert.funding.roiLabel}
                 </p>
-                <p className={`${eyebrow} mt-1.5 text-gray-500`}>RoI to date</p>
+                <p className={`${eyebrow} mt-1.5 text-gray-500`}>Social RoI to date</p>
               </div>
               <div>
                 <p className="font-serif text-[clamp(34px,4.5vw,52px)] leading-none tracking-tight text-black">
@@ -533,7 +597,18 @@ export function HypercertDetail({
                   index={i}
                 />
               ) : (
-                <LiveEvidenceRow key={item.entry.uri} entry={item.entry} />
+                <LiveEvidenceRow
+                  key={item.entry.uri}
+                  entry={item.entry}
+                  onDelete={
+                    session?.did === item.entry.did
+                      ? () =>
+                          void deleteOwnRecord(item.entry.uri)
+                            .then(() => removeLocal(item.entry.uri))
+                            .catch(() => {})
+                      : undefined
+                  }
+                />
               ),
             )}
           </div>
@@ -564,7 +639,12 @@ export function HypercertDetail({
           animate="show"
           className="mt-14 border-t border-gray-200 pt-10"
         >
-          <CommentsSection cert={cert} activity={activity} loading={loading} />
+          <CommentsSection
+            cert={cert}
+            activity={activity}
+            loading={loading}
+            onDeleted={removeLocal}
+          />
         </motion.div>
       </motion.div>
     </motion.div>
