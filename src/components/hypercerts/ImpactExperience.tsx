@@ -204,7 +204,10 @@ export function ImpactExperience({
                     transform: `translateX(-50%) translateY(-50%) translateX(${style.translateX}) rotateY(${style.rotateY}deg) translateZ(${style.translateZ}px) scale(${style.scale})`,
                     opacity: style.opacity,
                     zIndex: style.zIndex,
-                    pointerEvents: offset === 0 ? "auto" : "none",
+                    // Side cards stay clickable so a click brings them front
+                    // and center; only fully-hidden cards opt out.
+                    pointerEvents: style.hidden ? "none" : "auto",
+                    cursor: offset === 0 ? undefined : "pointer",
                     display: style.hidden ? "none" : "block",
                   }}
                 >
@@ -212,7 +215,9 @@ export function ImpactExperience({
                     cert={cert}
                     isActive={offset === 0}
                     width={cardWidth}
-                    onSelect={() => setSelected(cert.rkey)}
+                    // Center card opens its detail; a slanted side card first
+                    // navigates itself into the center.
+                    onSelect={() => (offset === 0 ? setSelected(cert.rkey) : navigate(idx))}
                   />
                 </div>
               )
