@@ -232,6 +232,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     interventions: [
       { role: 'infrastructure', label: 'libp2p / IPFS networking stack', href: 'https://libp2p.io/' },
       { role: 'capital', label: 'Fluence, Huddle01 (funded comms teams)', href: 'https://fluence.network/' },
+      { role: 'capital', label: 'Bluesky', href: 'https://bsky.app/' },
       { role: 'legibility', label: 'Latest Digital Human Rights insights', href: '/insights/?area=digital-human-rights' },
     ],
     liveEvidence: [
@@ -358,6 +359,16 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
         label: 'Simocracy governance simulation: live participation',
         href: '/areas/economies-governance/impact/live-dashboard/',
         note: 'Live activity from a PL-supported mechanism. This is contribution evidence (Q3) from a simulation, not the binding-decision-in-government threshold (Q2).',
+      },
+      {
+        label: 'vTaiwan: crowdsourced lawmaking in Taiwan',
+        href: 'https://info.vtaiwan.tw/',
+        note: 'Field evidence (Q2): a real government deliberation process run on computational tools. Not PL contribution.',
+      },
+      {
+        label: 'Team Mirai: AI broad-listening in Japanese politics',
+        href: 'https://team-mir.ai/',
+        note: 'Field evidence (Q2): an elected movement running AI-assisted broad listening at scale. Not PL contribution.',
       },
     ],
   },
