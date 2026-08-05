@@ -88,7 +88,7 @@ export function ImpactExperience({
 
   // Click-and-drag: dragPx follows the pointer while grabbing, and is
   // converted into a fractional index shift for the card poses.
-  const dragRef = useRef<{ pointerId: number; startX: number; dragging: boolean } | null>(null)
+  const dragRef = useRef<{ pointerId: number; startX: number; dragging: boolean; downIdx: number | null } | null>(null)
   const suppressClickRef = useRef(false)
   const [dragPx, setDragPx] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
@@ -160,7 +160,11 @@ export function ImpactExperience({
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType === "mouse" && e.button !== 0) return
-    dragRef.current = { pointerId: e.pointerId, startX: e.clientX, dragging: false }
+    // Remember which card the press began on, so a tap on a slanted side card
+    // can bring it to center even if the pointer jitters past the drag slop.
+    const cardEl = (e.target as HTMLElement).closest<HTMLElement>("[data-card-idx]")
+    const downIdx = cardEl ? Number(cardEl.dataset.cardIdx) : null
+    dragRef.current = { pointerId: e.pointerId, startX: e.clientX, dragging: false, downIdx }
   }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -192,7 +196,13 @@ export function ImpactExperience({
     const frac = -(e.clientX - drag.startX) / stepPx
     let steps = Math.round(frac)
     if (steps === 0 && Math.abs(frac) > CATCH_FRACTION) steps = Math.sign(frac)
-    navigate(safeActive + steps)
+    // A tiny movement that began on a slanted side card reads as a tap → bring
+    // that card front and center instead of snapping back to a no-op.
+    if (steps === 0 && drag.downIdx != null && drag.downIdx !== safeActive) {
+      navigate(drag.downIdx)
+    } else {
+      navigate(safeActive + steps)
+    }
     setIsDragging(false)
     setDragPx(0)
     // The click event fires right after pointerup — let the capture
@@ -254,6 +264,9 @@ export function ImpactExperience({
               return (
                 <div
                   key={cert.rkey}
+                  data-card-idx={idx}
+                  // A clean click anywhere on a slanted side card centers it.
+                  onClick={discreteOffset === 0 ? undefined : () => navigate(idx)}
                   className={`absolute left-1/2 top-1/2 ${
                     isDragging ? "" : "transition-all duration-500 ease-out"
                   }`}
