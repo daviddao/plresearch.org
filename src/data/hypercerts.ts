@@ -61,6 +61,16 @@ export type Hypercert = {
    * hypercerts indexer (set by src/lib/hypercerts.ts at request time).
    */
   published?: boolean;
+  /**
+   * ATProto account that published the claim record (plrd.org),
+   * resolved from the claim DID via the public Bluesky AppView.
+   */
+  creator?: {
+    did: string;
+    handle: string | null;
+    displayName: string | null;
+    avatar: string | null;
+  };
   /** Funding economics shown on the detail page (optional). */
   funding?: {
     costUsd: number;

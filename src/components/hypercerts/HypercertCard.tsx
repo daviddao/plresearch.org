@@ -186,13 +186,23 @@ export function HypercertCard({
         >
           <div className="flex items-start justify-between gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/90 backdrop-blur-md">
-              <span
-                aria-hidden
-                className="hypercert-pulse-dot block h-1.5 w-1.5 rounded-full"
-                style={{
-                  background: cert.status === "upcoming" ? "#12bfdf" : "#1982F4",
-                }}
-              />
+              {cert.creator?.avatar ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={cert.creator.avatar}
+                  alt={cert.creator.handle ?? "claim creator"}
+                  title={`Claimed by @${cert.creator.handle ?? cert.creator.did}`}
+                  className="h-3.5 w-3.5 rounded-full object-cover ring-1 ring-white/40"
+                />
+              ) : (
+                <span
+                  aria-hidden
+                  className="hypercert-pulse-dot block h-1.5 w-1.5 rounded-full"
+                  style={{
+                    background: cert.status === "upcoming" ? "#12bfdf" : "#1982F4",
+                  }}
+                />
+              )}
               {cert.status === "upcoming" ? "Upcoming" : "Hypercert"}
             </span>
             <span className="rounded-full border border-white/20 bg-black/30 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.1em] text-white/80 backdrop-blur-md">

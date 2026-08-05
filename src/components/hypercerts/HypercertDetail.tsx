@@ -341,6 +341,26 @@ export function HypercertDetail({
                   In planning
                 </span>
               )}
+              {cert.creator && (
+                <a
+                  href={`https://bsky.app/profile/${cert.creator.handle ?? cert.creator.did}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/30 py-1 pl-1 pr-2.5 text-[9px] font-semibold uppercase tracking-[0.14em] text-white/90 backdrop-blur-md transition hover:border-white/50"
+                >
+                  {cert.creator.avatar ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={cert.creator.avatar}
+                      alt=""
+                      className="h-4 w-4 rounded-full object-cover ring-1 ring-white/40"
+                    />
+                  ) : (
+                    <span aria-hidden className="block h-4 w-4 rounded-full bg-white/30" />
+                  )}
+                  Claimed by {cert.creator.handle ?? `${cert.creator.did.slice(0, 16)}…`}
+                </a>
+              )}
             </div>
             <h1 className="mt-3 max-w-2xl font-serif text-[clamp(24px,3.4vw,40px)] leading-[1.06] tracking-tight text-white">
               {cert.title}
@@ -383,6 +403,28 @@ export function HypercertDetail({
               <span className="font-mono text-[12px]">
                 {cert.startDate} → {cert.endDate}
               </span>
+            </Meta>
+            <Meta label="Claimed by">
+              {cert.creator ? (
+                <a
+                  href={`https://bsky.app/profile/${cert.creator.handle ?? cert.creator.did}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-blue hover:underline"
+                >
+                  {cert.creator.avatar && (
+                    /* eslint-disable-next-line @next/next/no-img-element */
+                    <img
+                      src={cert.creator.avatar}
+                      alt=""
+                      className="h-4 w-4 rounded-full object-cover"
+                    />
+                  )}
+                  @{cert.creator.handle ?? cert.creator.did.slice(0, 16)}
+                </a>
+              ) : (
+                <span className="text-gray-600">plrd.org</span>
+              )}
             </Meta>
             <Meta label="Rights">{cert.rights}</Meta>
             <Meta label="Retreat">

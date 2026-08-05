@@ -108,6 +108,33 @@ async function fetchIndexedClaims(): Promise<Map<string, IndexedClaim>> {
   return out
 }
 
+type Creator = NonNullable<Hypercert["creator"]>
+
+/** Profile of the account that published the claims (plrd.org). */
+async function fetchCreator(did: string): Promise<Creator | null> {
+  try {
+    const res = await fetch(
+      `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(did)}`,
+      { next: { revalidate: 3600, tags: ["hypercerts"] } },
+    )
+    if (!res.ok) return null
+    const p = (await res.json()) as {
+      did: string
+      handle?: string
+      displayName?: string
+      avatar?: string
+    }
+    return {
+      did: p.did,
+      handle: p.handle ?? null,
+      displayName: p.displayName ?? null,
+      avatar: p.avatar ?? null,
+    }
+  } catch {
+    return null
+  }
+}
+
 /** ISO datetime → plain ISO date (what the UI renders). */
 function isoDate(value: string | null | undefined, fallback: string): string {
   if (!value) return fallback
@@ -121,10 +148,13 @@ function isoDate(value: string | null | undefined, fallback: string): string {
  * the local data wholesale when the indexer has nothing for a claim.
  */
 export async function fetchResearchRetreatHypercerts(): Promise<Hypercert[]> {
-  const indexed = await fetchIndexedClaims()
+  const [indexed, creator] = await Promise.all([
+    fetchIndexedClaims(),
+    fetchCreator(PLRD_DID),
+  ])
   return HYPERCERTS.map((cert) => {
     const claim = indexed.get(cert.rkey)
-    if (!claim) return cert
+    if (!claim) return creator && cert.claim ? { ...cert, creator } : cert
     const workScope = claim.workScope?.scope
       ? claim.workScope.scope.split(",").map((s) => s.trim()).filter(Boolean)
       : cert.workScope
@@ -153,6 +183,7 @@ export async function fetchResearchRetreatHypercerts(): Promise<Hypercert[]> {
       },
       /** Live from the network — flips the provenance copy in the UI. */
       published: true,
+      ...(creator ? { creator } : {}),
     }
   })
 }
