@@ -59,13 +59,21 @@ const MIN_CARD_W = 210
 const MAX_CARD_W = 280
 const CARD_ASPECT = 8 / 5 // matches HypercertCard's aspect-[5/8]
 const SWIPE_THRESHOLD_PX = 32
+// Trackpad two-finger swipe: accumulated horizontal wheel delta that
+// triggers one step, and the cooldown that swallows the momentum tail
+// so one physical swipe advances exactly one card.
+const WHEEL_STEP_PX = 60
+const WHEEL_COOLDOWN_MS = 450
+const WHEEL_IDLE_RESET_MS = 200
 
 export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const carouselRef = useRef<HTMLDivElement>(null)
   const [cardWidth, setCardWidth] = useState<number>(MAX_CARD_W)
   const swipeRef = useRef<{ startX: number; pointerId: number } | null>(null)
+  const wheelRef = useRef({ acc: 0, lockUntil: 0, lastAt: 0 })
 
   const items = certs
   const activeCert = items.find((c) => c.rkey === selected) ?? null
@@ -134,6 +142,38 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
     navigate(safeActive + (dx > 0 ? -1 : 1))
   }
 
+  // macOS trackpad two-finger swipe (horizontal wheel). Attached as a
+  // native non-passive listener so preventDefault can stop the
+  // browser's back/forward history swipe while over the carousel.
+  useEffect(() => {
+    const el = carouselRef.current
+    if (!el) return
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return // vertical scroll passes through
+      e.preventDefault()
+      const now = performance.now()
+      const w = wheelRef.current
+      if (now < w.lockUntil) {
+        w.lastAt = now
+        return
+      }
+      // New gesture (idle gap) or direction flip → restart the tally.
+      if (now - w.lastAt > WHEEL_IDLE_RESET_MS || Math.sign(e.deltaX) !== Math.sign(w.acc)) {
+        w.acc = 0
+      }
+      w.lastAt = now
+      w.acc += e.deltaX
+      if (Math.abs(w.acc) >= WHEEL_STEP_PX) {
+        navigate(safeActive + (w.acc > 0 ? 1 : -1))
+        w.acc = 0
+        w.lockUntil = now + WHEEL_COOLDOWN_MS
+      }
+    }
+    el.addEventListener("wheel", onWheel, { passive: false })
+    return () => el.removeEventListener("wheel", onWheel)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [safeActive, items.length])
+
   const arrowClass =
     "absolute top-1/2 -translate-y-1/2 z-10 hidden sm:grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-full border border-gray-200 bg-white text-[15px] text-gray-600 transition hover:border-blue hover:text-blue disabled:cursor-not-allowed disabled:opacity-30"
 
@@ -142,6 +182,7 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
       {/* Coverflow carousel */}
       <div ref={containerRef}>
         <div
+          ref={carouselRef}
           className="relative w-full touch-pan-y overflow-hidden outline-none"
           style={{ perspective: "1300px", height: carouselHeight }}
           tabIndex={0}
@@ -218,7 +259,7 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
         ))}
       </div>
       <p className="mt-5 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">
-        Swipe to browse past &amp; upcoming editions · click a card to open its impact claim
+        Swipe or two-finger scroll to browse editions · click a card to open its impact claim
       </p>
 
       {/* Detail overlay with shared-layout morph */}
