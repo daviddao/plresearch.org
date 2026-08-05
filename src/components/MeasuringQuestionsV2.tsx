@@ -89,7 +89,7 @@ export default function MeasuringQuestionsV2({
             <h3 className="text-lg font-semibold tracking-tight text-black">Observed velocity</h3>
             <p className="mt-2 text-sm leading-relaxed text-gray-500">
               The interventions are the input. Field velocity, the rate a field is moving, is what tells
-              us whether they landed. We read it through five instruments.
+              us whether they landed. We read it through five instruments, plus the dated markers we track.
             </p>
             <p className="mt-3 text-sm leading-relaxed text-gray-500">
               Not every instrument fits every field. A field with no single gating unit cost has no
@@ -112,30 +112,28 @@ export default function MeasuringQuestionsV2({
                   <p className="text-xs leading-relaxed text-gray-600">{m.subtitle}</p>
                 </button>
               ))}
+              {/* Inflection points share the grid but are markers, not instruments
+                  (they never enter a reading record), so they carry a "Marker" tag. */}
+              <button
+                type="button"
+                onClick={() => setModal({ kind: 'measure', entry: INFLECTION_EXPLAINER })}
+                aria-haspopup="dialog"
+                className="group flex flex-col rounded-xl border border-gray-200 bg-white p-4 text-left transition-all hover:border-gray-300 hover:shadow-sm"
+              >
+                <div className="mb-1 flex items-center gap-2">
+                  <span className="text-sm font-semibold text-black">{INFLECTION_EXPLAINER.label}</span>
+                  <span className="ml-auto rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gray-500">
+                    Marker
+                  </span>
+                </div>
+                <p className="text-xs leading-relaxed text-gray-600">{INFLECTION_EXPLAINER.subtitle}</p>
+              </button>
             </div>
             <p className="mt-4 max-w-2xl text-xs leading-relaxed text-gray-400">
               These instruments read the research and capital sides of a field. They do not observe
               invention directly: prototypes, designs, datasets, and negative results largely lack
               identifiers to count. Closing that gap is itself part of the work.
             </p>
-
-            {/* Inflection points are NOT an instrument (they never enter a reading
-                record), so they sit below their own divider rather than in the grid. */}
-            <div className="relative my-6" aria-hidden>
-              <div className="border-t border-gray-200" />
-            </div>
-            <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-              And the markers we track
-            </div>
-            <button
-              type="button"
-              onClick={() => setModal({ kind: 'measure', entry: INFLECTION_EXPLAINER })}
-              aria-haspopup="dialog"
-              className="group flex w-full flex-col rounded-xl border border-gray-200 bg-white p-4 text-left transition-all hover:border-gray-300 hover:shadow-sm sm:max-w-sm"
-            >
-              <span className="mb-1 text-sm font-semibold text-black">{INFLECTION_EXPLAINER.label}</span>
-              <p className="text-xs leading-relaxed text-gray-600">{INFLECTION_EXPLAINER.subtitle}</p>
-            </button>
           </div>
         </div>
       </section>
