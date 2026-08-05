@@ -300,8 +300,9 @@ function SocialRoiAttribution({ items }: { items: RoiAttribution[] }) {
           const total = items.filter((a) => a.group === g).reduce((s, a) => s + a.share, 0)
           return (
             <span key={g} className="truncate pr-2" style={{ width: `${total * 100}%` }}>
-              {g === "retreat" ? "Retreat chain" : "Community outcomes"} ·{" "}
-              {Math.round(total * 100)}%
+              {total < 0.18
+                ? `${Math.round(total * 100)}%`
+                : `${g === "retreat" ? "Retreat chain" : "Community outcomes"} · ${Math.round(total * 100)}%`}
             </span>
           )
         })}
@@ -328,11 +329,14 @@ function SocialRoiAttribution({ items }: { items: RoiAttribution[] }) {
       </div>
 
       <p className="mt-4 max-w-2xl text-[11.5px] leading-relaxed text-gray-400">
-        Estimated with an exact Shapley decomposition over a counterfactual
-        model of this timeline: each documented outcome needs its own
-        execution plus the retreat&apos;s enabling chain (convening → sessions
-        → publication → open release), with partial substitutability for the
-        later links. Shares sum to the documented social return.
+        Exact Shapley decomposition over a counterfactual model with
+        outcome-specific causal channels: every documented outcome is
+        causally downstream of the retreat — the 22 works are the thinking
+        pieces the GG24 forum drew on, and the IERR artifact plus the Berlin
+        redesign workshop that followed Iceland pushed the Hypercerts v2
+        deploy. Execution entries are discounted because documentation is
+        not causation and some work predates the retreat. Shares sum to the
+        documented social return.
       </p>
     </div>
   )
