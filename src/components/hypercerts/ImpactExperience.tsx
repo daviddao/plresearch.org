@@ -3,7 +3,9 @@
 // Impact surface ported from researchretreat.org: a 3D coverflow
 // carousel of hypercerts — the active card sits front and center while
 // the neighbouring past & upcoming hypercerts stay visible, tilted
-// back at the sides. Clicking the active card morphs its photo (shared
+// back at the sides. The stack can be dragged (click / touch) with the
+// cards tracking the pointer continuously, and snaps to the nearest
+// card on release. Clicking the active card morphs its photo (shared
 // layoutId) up into a full project-page detail with an evidence
 // timeline and live community activity from the ATProto network.
 
@@ -23,34 +25,40 @@ type CardStyle = {
   hidden: boolean
 }
 
+// Coverflow anchor poses at integer offsets 0 / ±1 / ±2 (+ a vanish
+// pose at ±3). Fractional offsets — produced while dragging — are
+// linearly interpolated between the neighbouring anchors so the cards
+// track the pointer continuously.
+const POSES = [
+  { x: 0, rot: 0, z: 0, scale: 1, opacity: 1 },
+  { x: 62, rot: 25, z: -160, scale: 0.85, opacity: 0.65 },
+  { x: 112, rot: 35, z: -260, scale: 0.7, opacity: 0.35 },
+  { x: 150, rot: 40, z: -340, scale: 0.6, opacity: 0 },
+]
+
+function lerp(a: number, b: number, t: number) {
+  return a + (b - a) * t
+}
+
 function getCardStyle(offset: number): CardStyle {
   const abs = Math.abs(offset)
-  if (abs === 0) {
-    return { translateX: "0%", rotateY: 0, translateZ: 0, scale: 1, opacity: 1, zIndex: 5, hidden: false }
+  if (abs >= 3) {
+    return { translateX: "0%", rotateY: 0, translateZ: 0, scale: 1, opacity: 0, zIndex: 0, hidden: true }
   }
-  if (abs === 1) {
-    return {
-      translateX: offset < 0 ? "-62%" : "62%",
-      rotateY: offset < 0 ? 25 : -25,
-      translateZ: -160,
-      scale: 0.85,
-      opacity: 0.65,
-      zIndex: 4,
-      hidden: false,
-    }
+  const side = offset < 0 ? -1 : 1
+  const i = Math.min(Math.floor(abs), POSES.length - 2)
+  const t = abs - i
+  const a = POSES[i]
+  const b = POSES[i + 1]
+  return {
+    translateX: `${side * lerp(a.x, b.x, t)}%`,
+    rotateY: -side * lerp(a.rot, b.rot, t),
+    translateZ: lerp(a.z, b.z, t),
+    scale: lerp(a.scale, b.scale, t),
+    opacity: lerp(a.opacity, b.opacity, t),
+    zIndex: 5 - Math.round(abs),
+    hidden: false,
   }
-  if (abs === 2) {
-    return {
-      translateX: offset < 0 ? "-112%" : "112%",
-      rotateY: offset < 0 ? 35 : -35,
-      translateZ: -260,
-      scale: 0.7,
-      opacity: 0.35,
-      zIndex: 3,
-      hidden: false,
-    }
-  }
-  return { translateX: "0%", rotateY: 0, translateZ: 0, scale: 1, opacity: 0, zIndex: 0, hidden: true }
 }
 
 // Card sizing: measure the container and clamp the card width so the
@@ -58,22 +66,25 @@ function getCardStyle(offset: number): CardStyle {
 const MIN_CARD_W = 210
 const MAX_CARD_W = 280
 const CARD_ASPECT = 8 / 5 // matches HypercertCard's aspect-[5/8]
-const SWIPE_THRESHOLD_PX = 32
-// Trackpad two-finger swipe: accumulated horizontal wheel delta that
-// triggers one step, and the cooldown that swallows the momentum tail
-// so one physical swipe advances exactly one card.
-const WHEEL_STEP_PX = 60
-const WHEEL_COOLDOWN_MS = 450
-const WHEEL_IDLE_RESET_MS = 200
+// Drag tuning: movement below the slop is a click; one card step is
+// the ±62% translate of the first side pose; releases past the catch
+// fraction advance even without a full step.
+const CLICK_SLOP_PX = 6
+const STEP_RATIO = 0.62
+const CATCH_FRACTION = 0.15
 
 export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const carouselRef = useRef<HTMLDivElement>(null)
   const [cardWidth, setCardWidth] = useState<number>(MAX_CARD_W)
-  const swipeRef = useRef<{ startX: number; pointerId: number } | null>(null)
-  const wheelRef = useRef({ acc: 0, lockUntil: 0, lastAt: 0 })
+
+  // Click-and-drag: dragPx follows the pointer while grabbing, and is
+  // converted into a fractional index shift for the card poses.
+  const dragRef = useRef<{ pointerId: number; startX: number; dragging: boolean } | null>(null)
+  const suppressClickRef = useRef(false)
+  const [dragPx, setDragPx] = useState(0)
+  const [isDragging, setIsDragging] = useState(false)
 
   const items = certs
   const activeCert = items.find((c) => c.rkey === selected) ?? null
@@ -118,6 +129,18 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
 
   const carouselHeight = Math.round(cardWidth * CARD_ASPECT) + 24
   const safeActive = Math.min(Math.max(activeIndex, 0), items.length - 1)
+  const stepPx = cardWidth * STEP_RATIO
+  // Fractional shift of the whole stack while dragging (drag left →
+  // positive → next card approaches center). Rubber-band at the ends:
+  // past the first/last card the stack only follows at 25%.
+  let dragShift = isDragging ? -dragPx / stepPx : 0
+  {
+    const last = items.length - 1
+    let center = safeActive + dragShift
+    if (center < 0) center *= 0.25
+    else if (center > last) center = last + (center - last) * 0.25
+    dragShift = center - safeActive
+  }
 
   const navigate = (next: number) => {
     setActiveIndex(Math.max(0, Math.min(items.length - 1, next)))
@@ -129,50 +152,53 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
   }
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return
-    if ((e.target as HTMLElement).closest("button, a, input")) return
-    swipeRef.current = { startX: e.clientX, pointerId: e.pointerId }
-  }
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    const swipe = swipeRef.current
-    if (!swipe || swipe.pointerId !== e.pointerId) return
-    const dx = e.clientX - swipe.startX
-    swipeRef.current = null
-    if (Math.abs(dx) < SWIPE_THRESHOLD_PX) return
-    navigate(safeActive + (dx > 0 ? -1 : 1))
+    if (e.pointerType === "mouse" && e.button !== 0) return
+    dragRef.current = { pointerId: e.pointerId, startX: e.clientX, dragging: false }
   }
 
-  // macOS trackpad two-finger swipe (horizontal wheel). Attached as a
-  // native non-passive listener so preventDefault can stop the
-  // browser's back/forward history swipe while over the carousel.
-  useEffect(() => {
-    const el = carouselRef.current
-    if (!el) return
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return // vertical scroll passes through
-      e.preventDefault()
-      const now = performance.now()
-      const w = wheelRef.current
-      if (now < w.lockUntil) {
-        w.lastAt = now
-        return
-      }
-      // New gesture (idle gap) or direction flip → restart the tally.
-      if (now - w.lastAt > WHEEL_IDLE_RESET_MS || Math.sign(e.deltaX) !== Math.sign(w.acc)) {
-        w.acc = 0
-      }
-      w.lastAt = now
-      w.acc += e.deltaX
-      if (Math.abs(w.acc) >= WHEEL_STEP_PX) {
-        navigate(safeActive + (w.acc > 0 ? 1 : -1))
-        w.acc = 0
-        w.lockUntil = now + WHEEL_COOLDOWN_MS
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current
+    if (!drag || drag.pointerId !== e.pointerId) return
+    const dx = e.clientX - drag.startX
+    if (!drag.dragging) {
+      if (Math.abs(dx) < CLICK_SLOP_PX) return
+      // Passed the slop → this is a drag, not a click. Capture the
+      // pointer so the grab survives leaving the carousel, and swallow
+      // the click that would otherwise open the card on release.
+      drag.dragging = true
+      suppressClickRef.current = true
+      setIsDragging(true)
+      try {
+        e.currentTarget.setPointerCapture(e.pointerId)
+      } catch {
+        /* synthetic or already-released pointer — drag still works */
       }
     }
-    el.addEventListener("wheel", onWheel, { passive: false })
-    return () => el.removeEventListener("wheel", onWheel)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [safeActive, items.length])
+    setDragPx(dx)
+  }
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    const drag = dragRef.current
+    if (!drag || drag.pointerId !== e.pointerId) return
+    dragRef.current = null
+    if (!drag.dragging) return
+    const frac = -(e.clientX - drag.startX) / stepPx
+    let steps = Math.round(frac)
+    if (steps === 0 && Math.abs(frac) > CATCH_FRACTION) steps = Math.sign(frac)
+    navigate(safeActive + steps)
+    setIsDragging(false)
+    setDragPx(0)
+    // The click event fires right after pointerup — let the capture
+    // handler swallow it, then re-arm.
+    setTimeout(() => (suppressClickRef.current = false), 0)
+  }
+
+  const handleClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!suppressClickRef.current) return
+    e.preventDefault()
+    e.stopPropagation()
+    suppressClickRef.current = false
+  }
 
   const arrowClass =
     "absolute top-1/2 -translate-y-1/2 z-10 hidden sm:grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-full border border-gray-200 bg-white text-[15px] text-gray-600 transition hover:border-blue hover:text-blue disabled:cursor-not-allowed disabled:opacity-30"
@@ -182,15 +208,18 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
       {/* Coverflow carousel */}
       <div ref={containerRef}>
         <div
-          ref={carouselRef}
-          className="relative w-full touch-pan-y overflow-hidden outline-none"
+          className={`relative w-full touch-pan-y overflow-hidden outline-none ${
+            isDragging ? "cursor-grabbing" : "cursor-grab"
+          }`}
           style={{ perspective: "1300px", height: carouselHeight }}
           tabIndex={0}
           onKeyDown={handleKeyDown}
           onPointerDown={handlePointerDown}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={() => (swipeRef.current = null)}
-          aria-label="Hypercert carousel — swipe or use the arrows / dots to navigate"
+          onPointerMove={handlePointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onClickCapture={handleClickCapture}
+          aria-label="Hypercert carousel — drag or use the arrows / dots to navigate"
         >
           <button
             type="button"
@@ -213,24 +242,26 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
 
           <div className="relative h-full w-full" style={{ transformStyle: "preserve-3d" }}>
             {items.map((cert, idx) => {
-              const offset = idx - safeActive
-              const style = getCardStyle(offset)
+              const discreteOffset = idx - safeActive
+              const style = getCardStyle(discreteOffset - dragShift)
               return (
                 <div
                   key={cert.rkey}
-                  className="absolute left-1/2 top-1/2 transition-all duration-500 ease-out"
+                  className={`absolute left-1/2 top-1/2 ${
+                    isDragging ? "" : "transition-all duration-500 ease-out"
+                  }`}
                   style={{
                     width: cardWidth,
                     transform: `translateX(-50%) translateY(-50%) translateX(${style.translateX}) rotateY(${style.rotateY}deg) translateZ(${style.translateZ}px) scale(${style.scale})`,
                     opacity: style.opacity,
                     zIndex: style.zIndex,
-                    pointerEvents: offset === 0 ? "auto" : "none",
+                    pointerEvents: discreteOffset === 0 ? "auto" : "none",
                     display: style.hidden ? "none" : "block",
                   }}
                 >
                   <HypercertCard
                     cert={cert}
-                    isActive={offset === 0}
+                    isActive={discreteOffset === 0}
                     width={cardWidth}
                     onSelect={() => setSelected(cert.rkey)}
                   />
@@ -259,7 +290,7 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
         ))}
       </div>
       <p className="mt-5 text-center text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">
-        Swipe or two-finger scroll to browse editions · click a card to open its impact claim
+        Drag to browse past &amp; upcoming editions · click a card to open its impact claim
       </p>
 
       {/* Detail overlay with shared-layout morph */}
