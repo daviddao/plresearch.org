@@ -248,6 +248,7 @@ export function ImpactExperience({
           <HypercertDetail
             key={activeCert.rkey}
             cert={activeCert}
+            certs={items}
             variant={detailVariant}
             onClose={() => setSelected(null)}
           />

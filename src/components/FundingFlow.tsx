@@ -1,25 +1,25 @@
 'use client'
 
-// "Fund this effort" — a GoFundMe-style checkout mockup for a single
-// hypercert. This is a PROTOTYPE, not a working checkout: no payment is
-// taken and no data leaves the browser.
+// "Fund this effort" — a GoFundMe-style funding mockup for the hypercerts.
+// This is a PROTOTYPE, not a working checkout: no payment is taken and no
+// data leaves the browser.
 //
-// Flow: opened from inside a hypercert's detail modal →
-//   1. Amount step: pick a preset chip or type a custom amount. There is no
-//      "price" on the effort; the funder chooses what to give.
-//   2. Pay step: mock "Pay with" (USDC / Card / Wire) + read-back of the gift.
-//   3. Confirmation.
+// Opened from inside a hypercert's detail modal (the opened effort is
+// pre-selected). The funder can:
+//   • select individual hypercerts, OR pick a pre-curated collection, on the
+//     left where every card is presented;
+//   • choose a consumer-scale amount from chips, or enter an open-ended amount;
+//   • run a mock pay → confirmation.
+// There is no price on any effort — the funder chooses what to give.
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Hypercert } from '@/data/hypercerts'
 
-// GoFundMe-style preset tiers. These are funding chips the giver can
-// pre-select — NOT a price on the hypercert. A middle tier is highlighted
-// by default as a gentle suggestion; anything can be typed instead.
-const PRESETS = [100, 500, 1_000, 5_000, 10_000, 25_000]
-const DEFAULT_AMOUNT = 1_000
+// Consumer-scale preset tiers (GoFundMe-style). Not a price — a suggestion.
+const PRESETS = [25, 50, 100, 250]
+const DEFAULT_AMOUNT = 50
 
 function usd(n: number): string {
   return new Intl.NumberFormat('en-US', {
@@ -29,7 +29,38 @@ function usd(n: number): string {
   }).format(n)
 }
 
-type Step = 'amount' | 'pay' | 'done'
+type Collection = { id: string; label: string; desc: string; rkeys: string[] }
+
+// Pre-curated bundles, derived from the real hypercert data.
+function buildCollections(certs: Hypercert[]): Collection[] {
+  const past = certs.filter((c) => c.status !== 'upcoming')
+  const upcoming = certs.filter((c) => c.status === 'upcoming')
+  const out: Collection[] = []
+  if (past.length > 1)
+    out.push({
+      id: 'published',
+      label: 'Published editions',
+      desc: `Back every completed edition — ${past.length} claims with a full evidence trail.`,
+      rkeys: past.map((c) => c.rkey),
+    })
+  if (upcoming.length > 0)
+    out.push({
+      id: 'next',
+      label: "Back what's next",
+      desc: `Fund the upcoming edition${upcoming.length > 1 ? 's' : ''} before it runs.`,
+      rkeys: upcoming.map((c) => c.rkey),
+    })
+  out.push({
+    id: 'all',
+    label: 'The full series',
+    desc: 'Every edition, past and upcoming — the whole Research Retreat line.',
+    rkeys: certs.map((c) => c.rkey),
+  })
+  return out
+}
+
+type Mode = 'individual' | 'collections'
+type Step = 'select' | 'pay' | 'done'
 
 /** Trigger button — drop into a hypercert detail modal. */
 export function FundEffortButton({ onClick }: { onClick: () => void }) {
@@ -53,15 +84,24 @@ export function FundEffortButton({ onClick }: { onClick: () => void }) {
 }
 
 export default function FundingCheckout({
-  cert,
+  certs,
+  initialRkey,
   onClose,
 }: {
-  cert: Hypercert
+  certs: Hypercert[]
+  /** The hypercert the checkout was opened from — pre-selected. */
+  initialRkey?: string
   onClose: () => void
 }) {
-  const [step, setStep] = useState<Step>('amount')
+  const collections = useMemo(() => buildCollections(certs), [certs])
+  const [mode, setMode] = useState<Mode>('individual')
+  const [step, setStep] = useState<Step>('select')
+  const [selected, setSelected] = useState<Set<string>>(
+    () => new Set(initialRkey ? [initialRkey] : []),
+  )
+  const [activeCollection, setActiveCollection] = useState<string | null>(null)
+
   const [amount, setAmount] = useState<number>(DEFAULT_AMOUNT)
-  // custom = the amount was typed, not chosen from a preset chip.
   const [custom, setCustom] = useState(false)
   const [method, setMethod] = useState<'USDC' | 'Card' | 'Wire'>('USDC')
 
@@ -77,159 +117,427 @@ export default function FundingCheckout({
     }
   }, [onClose])
 
-  const valid = amount > 0
+  const selectedList = certs.filter((c) => selected.has(c.rkey))
+  const count = selectedList.length
+  const valid = amount > 0 && count > 0
 
-  // Portal to the body so the fixed overlay is anchored to the viewport and
-  // not to the transformed (scaled) hypercert-detail panel it launches from.
+  const toggleCert = (rkey: string) => {
+    setActiveCollection(null)
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (next.has(rkey)) next.delete(rkey)
+      else next.add(rkey)
+      return next
+    })
+  }
+
+  const pickCollection = (c: Collection) => {
+    setActiveCollection(c.id)
+    setSelected(new Set(c.rkeys))
+  }
+
   if (typeof document === 'undefined') return null
 
   return createPortal(
     <motion.div
-      className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-black/60 p-4 sm:p-6 lg:p-10"
+      className="fixed inset-0 z-[80] flex flex-col bg-white"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2 }}
-      onClick={onClose}
     >
-      <motion.div
-        onClick={(e) => e.stopPropagation()}
-        className="relative my-4 w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl"
-        initial={{ opacity: 0, scale: 0.94, y: 8 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.96 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 24 }}
-      >
-        {/* Header — effort context + mockup badge */}
-        <header className="flex items-start gap-3 border-b border-gray-200 px-5 py-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={cert.image}
-            alt=""
-            className="h-11 w-11 shrink-0 rounded-lg object-cover"
-          />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-blue">
-                Fund this effort
-              </span>
-              <span className="rounded-full border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gray-500">
-                Mockup
-              </span>
-            </div>
-            <h3 className="mt-0.5 line-clamp-2 text-[14px] font-semibold leading-snug text-black">
-              {cert.title}
-            </h3>
+      {/* Header */}
+      <header className="flex shrink-0 items-center justify-between gap-4 border-b border-gray-200 px-6 py-4 lg:px-10">
+        <div className="flex items-baseline gap-3">
+          <h2 className="text-lg font-semibold tracking-tight text-black">Fund this effort</h2>
+          <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+            Mockup
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close"
+          className="flex h-9 w-9 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-black"
+        >
+          <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </header>
+
+      {/* Body: choose efforts (left) + amount / checkout (right) */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[1fr_400px]">
+        {/* Left — individual cards or pre-curated collections */}
+        <div className="min-h-0 overflow-y-auto px-6 py-6 lg:px-10">
+          {/* Mode toggle */}
+          <div className="mb-5 inline-flex rounded-full border border-gray-200 bg-gray-50 p-1">
+            {(
+              [
+                ['individual', 'Individual efforts'],
+                ['collections', 'Collections'],
+              ] as const
+            ).map(([m, label]) => (
+              <button
+                key={m}
+                type="button"
+                aria-pressed={mode === m}
+                onClick={() => setMode(m)}
+                className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${
+                  mode === m ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="-mr-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-black"
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </header>
 
-        <AnimatePresence mode="wait">
-          {step === 'amount' && (
-            <motion.div
-              key="amount"
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -12 }}
-              transition={{ duration: 0.18 }}
-              className="px-5 py-5"
-            >
-              <p className="text-[13px] leading-relaxed text-gray-500">
-                Choose how much to give. There&apos;s no set price — every bit of
-                funding advances the work behind this claim.
+          {mode === 'individual' ? (
+            <>
+              <p className="mb-4 max-w-2xl text-sm leading-relaxed text-gray-500">
+                Pick one effort or select several. Every card is a published hypercert with its own
+                evidence trail.
               </p>
-
-              {/* Preset chips */}
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                {PRESETS.map((p) => {
-                  const active = !custom && amount === p
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                {certs.map((c, i) => (
+                  <EffortCard
+                    key={c.rkey}
+                    cert={c}
+                    index={i}
+                    selected={selected.has(c.rkey)}
+                    onToggle={() => toggleCert(c.rkey)}
+                  />
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <p className="mb-4 max-w-2xl text-sm leading-relaxed text-gray-500">
+                Fund a pre-curated collection in one move. You can still fine-tune the selection under{' '}
+                <button
+                  type="button"
+                  onClick={() => setMode('individual')}
+                  className="font-medium text-blue hover:underline"
+                >
+                  Individual efforts
+                </button>
+                .
+              </p>
+              <div className="flex flex-col gap-3">
+                {collections.map((col) => {
+                  const active = activeCollection === col.id
+                  const previews = col.rkeys
+                    .map((r) => certs.find((c) => c.rkey === r))
+                    .filter((c): c is Hypercert => Boolean(c))
                   return (
                     <button
-                      key={p}
+                      key={col.id}
                       type="button"
                       aria-pressed={active}
-                      onClick={() => {
-                        setAmount(p)
-                        setCustom(false)
-                      }}
-                      className={`rounded-xl border px-2 py-2.5 text-[14px] font-semibold tabular-nums transition-all ${
-                        active
-                          ? 'border-blue bg-blue/5 text-blue ring-1 ring-blue/40'
-                          : 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50'
+                      onClick={() => pickCollection(col)}
+                      className={`flex items-center gap-4 rounded-2xl border p-3 text-left transition-all ${
+                        active ? 'border-blue ring-2 ring-blue/30' : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
                       }`}
                     >
-                      {usd(p)}
+                      {/* Stacked thumbnails */}
+                      <div className="flex shrink-0 -space-x-3">
+                        {previews.slice(0, 3).map((c) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            key={c.rkey}
+                            src={c.image}
+                            alt=""
+                            className="h-12 w-12 rounded-lg border-2 border-white object-cover shadow-sm"
+                          />
+                        ))}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[14px] font-semibold text-black">{col.label}</span>
+                          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold tabular-nums text-gray-500">
+                            {col.rkeys.length}
+                          </span>
+                        </div>
+                        <p className="mt-0.5 text-[12.5px] leading-snug text-gray-500">{col.desc}</p>
+                      </div>
+                      <span
+                        className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all ${
+                          active ? 'border-blue bg-blue text-white' : 'border-gray-300 text-transparent'
+                        }`}
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </span>
                     </button>
                   )
                 })}
               </div>
-
-              {/* Custom amount */}
-              <label
-                className={`mt-3 flex items-center gap-2 rounded-xl border px-3.5 py-3 transition-colors ${
-                  custom ? 'border-blue ring-1 ring-blue/40' : 'border-gray-200 focus-within:border-blue'
-                }`}
-              >
-                <span className="text-lg font-semibold text-gray-400">$</span>
-                <input
-                  type="number"
-                  min={0}
-                  step={100}
-                  inputMode="numeric"
-                  placeholder="Other amount"
-                  value={custom ? (amount || '') : ''}
-                  onFocus={() => setCustom(true)}
-                  onChange={(e) => {
-                    setCustom(true)
-                    setAmount(Math.max(0, Math.round(Number(e.target.value))))
-                  }}
-                  className="w-full bg-transparent text-lg font-semibold tabular-nums text-black outline-none placeholder:text-[15px] placeholder:font-medium placeholder:text-gray-400"
-                />
-              </label>
-
-              <button
-                type="button"
-                disabled={!valid}
-                onClick={() => setStep('pay')}
-                className="mt-5 w-full rounded-lg bg-blue px-4 py-3 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                Continue{valid ? ` · ${usd(amount)}` : ''}
-              </button>
-              <p className="mt-2.5 text-center text-[10px] leading-relaxed text-gray-400">
-                Mockup only — no payment is processed.
-              </p>
-            </motion.div>
+            </>
           )}
+        </div>
 
-          {step === 'pay' && (
-            <motion.div
-              key="pay"
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -12 }}
-              transition={{ duration: 0.18 }}
-              className="px-5 py-5"
-            >
-              {/* Gift read-back */}
-              <div className="flex items-baseline justify-between rounded-xl bg-gray-50 px-4 py-3">
-                <span className="text-[13px] text-gray-500">Your funding</span>
-                <span className="text-xl font-semibold tabular-nums text-black">{usd(amount)}</span>
-              </div>
+        {/* Right — selection + amount + checkout */}
+        <aside className="flex min-h-0 flex-col border-t border-gray-200 bg-gray-50 lg:border-l lg:border-t-0">
+          <AmountPanel
+            step={step}
+            setStep={setStep}
+            selectedList={selectedList}
+            onRemove={(r) => toggleCert(r)}
+            amount={amount}
+            setAmount={setAmount}
+            custom={custom}
+            setCustom={setCustom}
+            method={method}
+            setMethod={setMethod}
+            valid={valid}
+            onClose={onClose}
+            onReset={() => {
+              setSelected(new Set())
+              setActiveCollection(null)
+              setStep('select')
+            }}
+          />
+        </aside>
+      </div>
+    </motion.div>,
+    document.body,
+  )
+}
 
-              {/* Mock payment method */}
-              <div className="mt-4">
-                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                  Pay with
+function EffortCard({
+  cert,
+  index,
+  selected,
+  onToggle,
+}: {
+  cert: Hypercert
+  index: number
+  selected: boolean
+  onToggle: () => void
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onToggle}
+      aria-pressed={selected}
+      initial={{ opacity: 0, y: 14, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay: Math.min(index * 0.03, 0.3), duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+      whileHover={{ y: -3 }}
+      className={`group relative flex aspect-[4/5] flex-col overflow-hidden rounded-xl border text-left transition-shadow ${
+        selected ? 'border-blue ring-2 ring-blue/40' : 'border-gray-200 hover:shadow-md'
+      }`}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={cert.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <span className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+
+      <span
+        className={`absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full border transition-all ${
+          selected ? 'border-blue bg-blue text-white' : 'border-white/70 bg-black/20 text-transparent backdrop-blur-sm'
+        }`}
+      >
+        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+        </svg>
+      </span>
+      {cert.status === 'upcoming' && (
+        <span className="absolute left-2 top-2 rounded-full bg-black/35 px-2 py-0.5 text-[8px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
+          Upcoming
+        </span>
+      )}
+
+      <span className="relative mt-auto p-3">
+        <span className="block text-[9px] font-semibold uppercase tracking-wide text-white/70">{cert.location}</span>
+        <span className="mt-0.5 line-clamp-2 block text-[13px] font-semibold leading-snug text-white">{cert.title}</span>
+      </span>
+    </motion.button>
+  )
+}
+
+function AmountPanel({
+  step,
+  setStep,
+  selectedList,
+  onRemove,
+  amount,
+  setAmount,
+  custom,
+  setCustom,
+  method,
+  setMethod,
+  valid,
+  onClose,
+  onReset,
+}: {
+  step: Step
+  setStep: (s: Step) => void
+  selectedList: Hypercert[]
+  onRemove: (rkey: string) => void
+  amount: number
+  setAmount: (n: number) => void
+  custom: boolean
+  setCustom: (b: boolean) => void
+  method: 'USDC' | 'Card' | 'Wire'
+  setMethod: (m: 'USDC' | 'Card' | 'Wire') => void
+  valid: boolean
+  onClose: () => void
+  onReset: () => void
+}) {
+  const count = selectedList.length
+
+  if (step === 'done') {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue/10 text-blue">
+          <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h3 className="mt-4 text-lg font-semibold text-black">Funding confirmed</h3>
+        <p className="mt-2 max-w-xs text-sm leading-relaxed text-gray-500">
+          This is a mockup — no payment was taken. You pledged {usd(amount)} across {count} effort
+          {count === 1 ? '' : 's'}. In production this would mint an on-chain funding record against each
+          hypercert.
+        </p>
+        <div className="mt-6 flex gap-2">
+          <button
+            type="button"
+            onClick={onReset}
+            className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:border-gray-300"
+          >
+            Fund more
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg bg-blue px-4 py-2 text-sm font-semibold text-white hover:brightness-110"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {/* Selection summary */}
+      <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4">
+        <div className="flex items-center gap-2">
+          <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">
+            {step === 'select' ? 'Funding' : 'Review'}
+          </span>
+          <span className="rounded-full bg-gray-200 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-gray-600">
+            {count} effort{count === 1 ? '' : 's'}
+          </span>
+        </div>
+        {count > 0 && step === 'select' && (
+          <button type="button" onClick={onReset} className="text-[12px] font-medium text-gray-400 hover:text-gray-700">
+            Clear
+          </button>
+        )}
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+        {count === 0 ? (
+          <div className="flex h-full flex-col items-center justify-center px-4 text-center">
+            <p className="text-sm font-medium text-gray-700">Nothing selected yet</p>
+            <p className="mt-1.5 text-xs leading-relaxed text-gray-500">
+              Pick efforts or a collection on the left to fund one or many at once.
+            </p>
+          </div>
+        ) : (
+          <>
+            <ul className="flex flex-col gap-2">
+              {selectedList.map((c) => (
+                <li
+                  key={c.rkey}
+                  className="flex items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-2"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.image} alt="" className="h-9 w-9 shrink-0 rounded-md object-cover" />
+                  <span className="min-w-0 flex-1 line-clamp-2 text-[12.5px] font-semibold leading-snug text-black">
+                    {c.title}
+                  </span>
+                  {step === 'select' && (
+                    <button
+                      type="button"
+                      onClick={() => onRemove(c.rkey)}
+                      aria-label="Remove"
+                      className="shrink-0 text-gray-300 transition-colors hover:text-red-500"
+                    >
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+
+            {step === 'select' && (
+              <div className="mt-5">
+                <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+                  Choose an amount
                 </div>
+                {/* Consumer-scale chips */}
+                <div className="grid grid-cols-2 gap-2">
+                  {PRESETS.map((p) => {
+                    const active = !custom && amount === p
+                    return (
+                      <button
+                        key={p}
+                        type="button"
+                        aria-pressed={active}
+                        onClick={() => {
+                          setAmount(p)
+                          setCustom(false)
+                        }}
+                        className={`rounded-xl border px-2 py-2.5 text-[15px] font-semibold tabular-nums transition-all ${
+                          active
+                            ? 'border-blue bg-blue/5 text-blue ring-1 ring-blue/40'
+                            : 'border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-white'
+                        }`}
+                      >
+                        {usd(p)}
+                      </button>
+                    )
+                  })}
+                </div>
+                {/* Open-ended amount */}
+                <label
+                  className={`mt-2 flex items-center gap-2 rounded-xl border px-3.5 py-3 transition-colors ${
+                    custom ? 'border-blue ring-1 ring-blue/40 bg-white' : 'border-gray-200 bg-white focus-within:border-blue'
+                  }`}
+                >
+                  <span className="text-lg font-semibold text-gray-400">$</span>
+                  <input
+                    type="number"
+                    min={0}
+                    step={5}
+                    inputMode="numeric"
+                    placeholder="Enter any amount"
+                    value={custom ? amount || '' : ''}
+                    onFocus={() => setCustom(true)}
+                    onChange={(e) => {
+                      setCustom(true)
+                      setAmount(Math.max(0, Math.round(Number(e.target.value))))
+                    }}
+                    className="w-full bg-transparent text-lg font-semibold tabular-nums text-black outline-none placeholder:text-[15px] placeholder:font-medium placeholder:text-gray-400"
+                  />
+                </label>
+                <p className="mt-1.5 text-[11px] leading-relaxed text-gray-400">
+                  Give any amount — there&apos;s no set price. Your gift is split across the{' '}
+                  {count === 1 ? 'selected effort' : `${count} selected efforts`}.
+                </p>
+              </div>
+            )}
+
+            {step === 'pay' && (
+              <div className="mt-5">
+                <div className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Pay with</div>
                 <div className="flex gap-1.5">
                   {(['USDC', 'Card', 'Wire'] as const).map((m) => (
                     <button
@@ -238,9 +546,7 @@ export default function FundingCheckout({
                       aria-pressed={method === m}
                       onClick={() => setMethod(m)}
                       className={`flex-1 rounded-lg border px-2 py-2 text-center text-[12px] font-medium transition-all ${
-                        method === m
-                          ? 'border-blue bg-blue/5 text-blue'
-                          : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                        method === m ? 'border-blue bg-blue/5 text-blue' : 'border-gray-200 text-gray-500 hover:border-gray-300'
                       }`}
                     >
                       {m}
@@ -248,61 +554,49 @@ export default function FundingCheckout({
                   ))}
                 </div>
               </div>
+            )}
+          </>
+        )}
+      </div>
 
-              <div className="mt-5 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setStep('amount')}
-                  className="rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 hover:border-gray-300"
-                >
-                  Back
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStep('done')}
-                  className="flex-1 rounded-lg bg-blue px-4 py-3 text-sm font-semibold text-white transition-all hover:brightness-110"
-                >
-                  Confirm funding
-                </button>
-              </div>
-              <p className="mt-2.5 text-center text-[10px] leading-relaxed text-gray-400">
-                Mockup only — no payment is processed.
-              </p>
-            </motion.div>
-          )}
+      {/* Footer — total + CTA */}
+      <div className="border-t border-gray-200 bg-white px-5 py-4">
+        <div className="mb-3 flex items-baseline justify-between">
+          <span className="text-sm text-gray-500">Your gift</span>
+          <span className="text-xl font-semibold tabular-nums text-black">{usd(amount)}</span>
+        </div>
 
-          {step === 'done' && (
-            <motion.div
-              key="done"
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="flex flex-col items-center px-6 py-10 text-center"
+        {step === 'select' ? (
+          <button
+            type="button"
+            disabled={!valid}
+            onClick={() => setStep('pay')}
+            className="w-full rounded-lg bg-blue px-4 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Continue
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setStep('select')}
+              className="rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:border-gray-300"
             >
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-blue/10 text-blue">
-                <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h3 className="mt-4 text-lg font-semibold text-black">Funding confirmed</h3>
-              <p className="mt-2 max-w-xs text-sm leading-relaxed text-gray-500">
-                This is a mockup — no payment was taken. You pledged {usd(amount)} to{' '}
-                <span className="font-medium text-gray-700">{cert.title}</span>. In production this would
-                mint an on-chain funding record against the hypercert.
-              </p>
-              <button
-                type="button"
-                onClick={onClose}
-                className="mt-6 rounded-lg bg-blue px-5 py-2.5 text-sm font-semibold text-white hover:brightness-110"
-              >
-                Done
-              </button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-    </motion.div>,
-    document.body,
+              Back
+            </button>
+            <button
+              type="button"
+              onClick={() => setStep('done')}
+              className="flex-1 rounded-lg bg-blue px-4 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110"
+            >
+              Confirm funding
+            </button>
+          </div>
+        )}
+        <p className="mt-2 text-center text-[10px] leading-relaxed text-gray-400">
+          Mockup only — no payment is processed.
+        </p>
+      </div>
+    </>
   )
 }

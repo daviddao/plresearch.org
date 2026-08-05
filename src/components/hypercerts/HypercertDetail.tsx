@@ -242,10 +242,14 @@ type TimelineItem =
 
 export function HypercertDetail({
   cert,
+  certs,
   onClose,
   variant = "page",
 }: {
   cert: Hypercert
+  /** Full set of hypercerts, so the funding checkout can offer
+   *  individual selection + pre-curated collections. Falls back to [cert]. */
+  certs?: Hypercert[]
   onClose: () => void
   /** "page" = full-bleed takeover (default); "modal" = contained pop-out with
    *  a dimmed backdrop so the rest of the page stays visible around it. */
@@ -341,9 +345,16 @@ export function HypercertDetail({
           </div>
         </motion.div>
 
-        {/* Fund-this-effort checkout (GoFundMe-style: choose an amount) */}
+        {/* Fund-this-effort checkout (GoFundMe-style: individual efforts or a
+            pre-curated collection, then choose an amount) */}
         <AnimatePresence>
-          {funding && <FundingCheckout cert={cert} onClose={() => setFunding(false)} />}
+          {funding && (
+            <FundingCheckout
+              certs={certs ?? [cert]}
+              initialRkey={cert.rkey}
+              onClose={() => setFunding(false)}
+            />
+          )}
         </AnimatePresence>
 
         {/* Hero (shared-layout morph from the card photo) */}
