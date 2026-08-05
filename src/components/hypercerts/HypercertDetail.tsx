@@ -9,10 +9,12 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import type { EvidenceEntry, EvidenceKind, Hypercert } from "@/data/hypercerts"
+import { useAuth } from "@/lib/atproto"
 import {
   Avatar,
   CommentsSection,
   authorLabel,
+  deleteOwnRecord,
   profileLinkActor,
   useActorProfiles,
   useLiveActivity,
@@ -111,7 +113,14 @@ function EvidenceRow({ entry, index }: { entry: EvidenceEntry; index: number }) 
   )
 }
 
-function LiveEvidenceRow({ entry }: { entry: LiveEvidence }) {
+function LiveEvidenceRow({
+  entry,
+  onDelete,
+}: {
+  entry: LiveEvidence
+  /** Present only when the signed-in user authored this entry. */
+  onDelete?: () => void
+}) {
   const [open, setOpen] = useState(false)
   const date = new Date(entry.createdAt)
   const dateLabel = Number.isNaN(date.getTime())
@@ -212,7 +221,7 @@ function LiveEvidenceRow({ entry }: { entry: LiveEvidence }) {
               ))}
             </div>
           )}
-          <div className="mt-2">
+          <div className="mt-2 flex items-center gap-4">
             <a
               href={`https://pdsls.dev/${entry.uri}`}
               target="_blank"
@@ -221,6 +230,15 @@ function LiveEvidenceRow({ entry }: { entry: LiveEvidence }) {
             >
               View ATProto record ↗
             </a>
+            {onDelete && (
+              <button
+                type="button"
+                onClick={onDelete}
+                className={`${eyebrow} cursor-pointer text-gray-400 transition hover:text-pink`}
+              >
+                Delete my entry
+              </button>
+            )}
           </div>
         </motion.div>
       </div>
@@ -253,7 +271,8 @@ export function HypercertDetail({
   variant?: "page" | "modal"
 }) {
   const isModal = variant === "modal"
-  const { data: activity, loading } = useLiveActivity(cert)
+  const { session } = useAuth()
+  const { data: activity, loading, removeLocal } = useLiveActivity(cert)
 
   // Lock body scroll while the overlay is open.
   useEffect(() => {
@@ -537,7 +556,18 @@ export function HypercertDetail({
                   index={i}
                 />
               ) : (
-                <LiveEvidenceRow key={item.entry.uri} entry={item.entry} />
+                <LiveEvidenceRow
+                  key={item.entry.uri}
+                  entry={item.entry}
+                  onDelete={
+                    session?.did === item.entry.did
+                      ? () =>
+                          void deleteOwnRecord(item.entry.uri)
+                            .then(() => removeLocal(item.entry.uri))
+                            .catch(() => {})
+                      : undefined
+                  }
+                />
               ),
             )}
           </div>
@@ -568,7 +598,12 @@ export function HypercertDetail({
           animate="show"
           className="mt-14 border-t border-gray-200 pt-10"
         >
-          <CommentsSection cert={cert} activity={activity} loading={loading} />
+          <CommentsSection
+            cert={cert}
+            activity={activity}
+            loading={loading}
+            onDeleted={removeLocal}
+          />
         </motion.div>
       </motion.div>
     </motion.div>
