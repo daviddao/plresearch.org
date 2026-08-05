@@ -73,7 +73,14 @@ const CLICK_SLOP_PX = 6
 const STEP_RATIO = 0.62
 const CATCH_FRACTION = 0.15
 
-export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
+export function ImpactExperience({
+  certs,
+  detailVariant = "page",
+}: {
+  certs: Hypercert[]
+  /** How the card detail opens: full-bleed "page" (default) or contained "modal". */
+  detailVariant?: "page" | "modal"
+}) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -255,7 +262,10 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
                     transform: `translateX(-50%) translateY(-50%) translateX(${style.translateX}) rotateY(${style.rotateY}deg) translateZ(${style.translateZ}px) scale(${style.scale})`,
                     opacity: style.opacity,
                     zIndex: style.zIndex,
-                    pointerEvents: discreteOffset === 0 ? "auto" : "none",
+                    // Side cards stay clickable so a click brings them front
+                    // and center (a real drag is swallowed by handleClickCapture).
+                    pointerEvents: style.hidden ? "none" : "auto",
+                    cursor: discreteOffset === 0 ? undefined : "pointer",
                     display: style.hidden ? "none" : "block",
                   }}
                 >
@@ -265,7 +275,9 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
                     frozen={isDragging}
                     width={cardWidth}
                     layoutDependency={`${safeActive}|${selected ?? ""}`}
-                    onSelect={() => setSelected(cert.rkey)}
+                    // Center card opens its detail; a slanted side card first
+                    // navigates itself into the center.
+                    onSelect={() => (discreteOffset === 0 ? setSelected(cert.rkey) : navigate(idx))}
                   />
                 </div>
               )
@@ -301,6 +313,7 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
           <HypercertDetail
             key={activeCert.rkey}
             cert={activeCert}
+            variant={detailVariant}
             onClose={() => setSelected(null)}
           />
         )}

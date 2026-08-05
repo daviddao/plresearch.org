@@ -1,8 +1,13 @@
+'use client'
+
 // Shared inline-SVG sparkline + ghost chart for the field-velocity instruments.
 // Pure SVG (no deps). Supports a log axis, a confidence band, a dashed tail for
-// unreliable points, an optional secondary normalizer line, and an optional
+// unreliable points, an optional secondary normalizer line, an optional
 // labelled vertical axis (min/max of the series, so the reader can see what the
-// curve indexes to).
+// curve indexes to), and — when `interactive` — a hover crosshair with a tooltip
+// that reads the value and x-axis position under the cursor.
+
+import { useState } from 'react'
 
 export type SeriesPoint = { x: number | string; y: number; lo?: number; hi?: number; reliable?: boolean }
 
@@ -20,6 +25,7 @@ export function Sparkline({
   band = false,
   axis = false,
   unit = '',
+  interactive = false,
 }: {
   series: SeriesPoint[]
   series2?: { x: number | string; y: number }[]
@@ -29,7 +35,10 @@ export function Sparkline({
   band?: boolean
   axis?: boolean
   unit?: string
+  /** Enable a hover crosshair + value/x tooltip (used in the detail modal). */
+  interactive?: boolean
 }) {
+  const [hover, setHover] = useState<number | null>(null)
   if (!series.length) return null
   const tf = (v: number) => (scale === 'log' ? Math.log10(Math.max(v, 1e-6)) : v)
   const xOf = (p: { x: number | string }, i: number) => (typeof p.x === 'number' ? p.x : i)
@@ -80,8 +89,36 @@ export function Sparkline({
   }
 
   const last = series[series.length - 1]
-  return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden className="overflow-visible">
+
+  // Map the cursor to the nearest data point (by horizontal distance).
+  const onMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const svgX = ((e.clientX - rect.left) / rect.width) * width
+    let best = 0
+    let bestD = Infinity
+    series.forEach((p, i) => {
+      const d = Math.abs(px(xOf(p, i)) - svgX)
+      if (d < bestD) {
+        bestD = d
+        best = i
+      }
+    })
+    setHover(best)
+  }
+
+  const hp = hover != null ? series[hover] : null
+  const hx = hp ? px(xOf(hp, hover as number)) : 0
+  const hy = hp ? py(hp.y) : 0
+
+  const svg = (
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      aria-hidden={!interactive}
+      className={`overflow-visible${interactive ? ' cursor-crosshair' : ''}`}
+      {...(interactive ? { onMouseMove: onMove, onMouseLeave: () => setHover(null) } : {})}
+    >
       {axis && (
         <g>
           <line x1={padL} y1={2} x2={padL} y2={height - 2} stroke="currentColor" className="text-gray-200" strokeWidth={1} />
@@ -118,7 +155,32 @@ export function Sparkline({
         />
       )}
       <circle cx={px(xOf(last, series.length - 1))} cy={py(last.y)} r={1.9} fill="var(--impact-field)" />
+      {interactive && hp && (
+        <g>
+          <line x1={hx} y1={2} x2={hx} y2={height - 2} stroke="currentColor" className="text-gray-400" strokeWidth={1} strokeDasharray="2 2" />
+          <circle cx={hx} cy={hy} r={2.8} fill="var(--impact-field)" stroke="#fff" strokeWidth={1.25} />
+        </g>
+      )}
     </svg>
+  )
+
+  if (!interactive) return svg
+
+  return (
+    <span className="relative inline-block leading-none">
+      {svg}
+      {hp && (
+        <span
+          className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-center shadow-lg"
+          style={{ left: hx, top: hy - 6 }}
+        >
+          <span className="block text-[11px] font-semibold leading-tight tabular-nums text-white">
+            {fmt(hp.y, unit)}
+          </span>
+          <span className="block text-[9px] leading-tight tabular-nums text-gray-300">{String(hp.x)}</span>
+        </span>
+      )}
+    </span>
   )
 }
 

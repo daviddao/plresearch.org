@@ -384,7 +384,7 @@ function PatentVintagePanel({ pv }: { pv: NonNullable<InstrumentRecord['patentVi
       {pv.state === 'reading' && (
         <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
           {pv.series && pv.series.length > 1 && (
-            <Sparkline series={pv.series as SeriesPoint[]} width={200} height={56} axis unit="y" />
+            <Sparkline series={pv.series as SeriesPoint[]} width={200} height={56} axis unit="y" interactive />
           )}
           <div className="min-w-[10rem] flex-1">
             {pv.value && <div className="text-lg font-semibold leading-tight text-black">{pv.value}</div>}
@@ -539,12 +539,13 @@ function VelocityModal({
                               height={56}
                               axis
                               unit={r.instrument === 'idea_vintage' ? 'y' : ''}
+                              interactive
                             />
                           </div>
                         )}
                         {r.series2 && r.series2.length > 1 && (
                           <div className="shrink-0">
-                            <Sparkline series={r.series2 as SeriesPoint[]} width={140} height={44} />
+                            <Sparkline series={r.series2 as SeriesPoint[]} width={140} height={44} interactive />
                             <div className="mt-1 text-[10px] text-gray-400">{r.series2Label ?? 'normalizer'}</div>
                           </div>
                         )}

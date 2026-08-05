@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import { HAND_COLOR, FIELD_COLOR, TOOLKIT_V2, type ToolkitEntry } from '@/lib/field-velocity'
 import { VELOCITY_INSTRUMENTS, INFLECTION_EXPLAINER } from '@/lib/velocity-instruments'
 import { IdeaVintageExamples, InflectionQuadrant, type IdeaVintageExample } from '@/components/velocity-explainers'
+import InterventionExampleCards from '@/components/InterventionExampleCards'
 
 type DefEntry = { id: string; label: string; subtitle: string; description: string }
 export type { IdeaVintageExample }
@@ -192,7 +193,6 @@ function InfoModal({
   const subtitle = modal.entry.subtitle
   const proposed = isTool ? modal.entry.proposed : false
   const description = modal.entry.description
-  const examples = isTool ? modal.entry.examples : []
   const researchSide =
     modal.kind === 'measure' &&
     (modal.entry.id === 'idea_vintage' || modal.entry.id === 'revealed_commitments')
@@ -236,46 +236,7 @@ function InfoModal({
             <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Description</div>
           )}
           <p className={`${subtitle || isTool ? '' : 'mt-4 '}text-sm leading-relaxed text-gray-700`}>{description}</p>
-          {examples.length > 0 && (
-            <div className="mt-6 border-t border-gray-100 pt-5">
-              <div className="mb-3 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Examples</div>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {examples.map((ex) => {
-                  const external = ex.href.startsWith('http')
-                  const host = external ? new URL(ex.href).host.replace(/^www\./, '') : 'plrd.org'
-                  return (
-                    <a
-                      key={ex.href}
-                      href={ex.href}
-                      target={external ? '_blank' : undefined}
-                      rel={external ? 'noopener noreferrer' : undefined}
-                      className="group/ex flex items-start justify-between gap-3 rounded-xl border border-gray-200 p-3.5 transition-all hover:border-gray-300 hover:shadow-sm"
-                    >
-                      <span className="min-w-0">
-                        <span className="block text-sm font-semibold text-black">{ex.label}</span>
-                        <span className="mt-0.5 block text-xs leading-relaxed text-gray-500">
-                          {ex.blurb ?? host}
-                        </span>
-                      </span>
-                      <svg
-                        className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gray-300 transition-colors group-hover/ex:text-black"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d={external ? 'M7 17L17 7M7 7h10v10' : 'M9 5l7 7-7 7'}
-                        />
-                      </svg>
-                    </a>
-                  )
-                })}
-              </div>
-            </div>
-          )}
+          {isTool && <InterventionExampleCards tool={modal.entry} />}
           {researchSide && (
             <p className="mt-4 rounded-lg bg-gray-50 px-4 py-3 text-sm italic leading-relaxed text-gray-500">
               This reads the research side of the field. It does not observe invention directly, and the
