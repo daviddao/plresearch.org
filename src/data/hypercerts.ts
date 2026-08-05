@@ -32,6 +32,11 @@ export type EvidenceEntry = {
   title: string;
   description: string;
   badge?: string;
+  /**
+   * Estimated Shapley influence of this evidence on the documented
+   * social return: share of the total and the resized RoI it carries.
+   */
+  influence?: { share: number; amountUsd: number };
 };
 
 export type HypercertStatus = "past" | "live" | "upcoming";
@@ -113,6 +118,12 @@ export type Hypercert = {
   dateLabel: string; // human-readable timeframe
   stats: { label: string; value: string }[];
   evidence: EvidenceEntry[]; // verifiable trail behind the claim
+  /**
+   * Shapley influence for live community evidence, matched by
+   * case-insensitive substring against the entry title (first match
+   * wins — order specific patterns before generic ones).
+   */
+  liveInfluence?: Array<{ match: string; share: number; amountUsd: number }>;
   href: string; // retreat detail page
 };
 
@@ -195,6 +206,7 @@ export const HYPERCERTS: Hypercert[] = [
         dateLabel: "Jul 26, 2025",
         kind: "milestone",
         title: "Cohort convened in Reykjavík",
+        influence: { share: 0.315, amountUsd: 883_000 },
         description:
           "23 researchers and practitioners arrived in Reykjavík to open the two-week Impact Evaluator Research Retreat, setting the agenda across IE design, measurement, and reward functions.",
         badge: "23 researchers",
@@ -204,6 +216,7 @@ export const HYPERCERTS: Hypercert[] = [
         dateLabel: "Jul 28 – Aug 8, 2025",
         kind: "session",
         title: "Daily working sessions on the IE framework",
+        influence: { share: 0.147, amountUsd: 413_000 },
         description:
           "Structured sessions and breakout tracks drafted design principles and robustness metrics for impact evaluators, and documented implementations observed in the wild.",
         badge: "12 days",
@@ -213,6 +226,7 @@ export const HYPERCERTS: Hypercert[] = [
         dateLabel: "Aug 9, 2025",
         kind: "publication",
         title: "22 works submitted to the proceedings",
+        influence: { share: 0.203, amountUsd: 569_000 },
         description:
           "Participants finalized 22 papers, write-ups, and open-source implementations spanning impact evaluation, mechanism design, and public goods funding.",
         badge: "22 works",
@@ -222,6 +236,7 @@ export const HYPERCERTS: Hypercert[] = [
         dateLabel: "Aug 10, 2025",
         kind: "release",
         title: "Open-access proceedings released",
+        influence: { share: 0.07, amountUsd: 195_000 },
         description:
           "The full retreat proceedings were published open-access, closing IERR 2025 and seeding the next round of impact-evaluation research.",
         badge: "open access",
@@ -231,10 +246,17 @@ export const HYPERCERTS: Hypercert[] = [
         dateLabel: "Aug 2025",
         kind: "milestone",
         title: "Participants report an outstanding experience",
+        influence: { share: 0.156, amountUsd: 436_000 },
         description:
           "Post-retreat feedback from the cohort was overwhelmingly positive. Researchers described the retreat as one of the most productive research environments they had worked in, and many kept collaborating after leaving Iceland.",
         badge: "cohort feedback",
       },
+    ],
+    liveInfluence: [
+      { match: "AI4PG", share: 0.006, amountUsd: 18_000 },
+      { match: "GG24", share: 0.016, amountUsd: 45_000 },
+      { match: "Hypercerts v2", share: 0.082, amountUsd: 231_000 },
+      { match: "Simocracy", share: 0.004, amountUsd: 10_000 },
     ],
     href: "https://www.researchretreat.org/ierr-2025/",
   },

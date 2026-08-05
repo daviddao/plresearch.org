@@ -99,6 +99,7 @@ function EvidenceRow({ entry, index }: { entry: EvidenceEntry; index: number }) 
             </span>
           )}
           <span className={`${eyebrow} text-gray-500`}>{entry.dateLabel}</span>
+          {entry.influence && <InfluenceChip influence={entry.influence} />}
         </div>
         <h4 className="mt-1.5 font-serif text-[18px] leading-snug tracking-tight text-black">
           {entry.title}
@@ -118,11 +119,42 @@ function EvidenceRow({ entry, index }: { entry: EvidenceEntry; index: number }) 
   )
 }
 
+/**
+ * Estimated Shapley influence of an evidence entry: its share of the
+ * documented social return, with the RoI resized to what this entry
+ * actually carries (share × total) rather than the raw outcome value.
+ */
+function InfluenceChip({
+  influence,
+}: {
+  influence: { share: number; amountUsd: number }
+}) {
+  const pct = influence.share >= 0.1
+    ? Math.round(influence.share * 100)
+    : (influence.share * 100).toFixed(1)
+  return (
+    <span
+      className="inline-flex items-center gap-1 rounded-full bg-blue/10 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-blue"
+      title={`Estimated Shapley influence on the documented social return: ${pct}% ≈ ${fmtUsd(influence.amountUsd)}`}
+    >
+      <span
+        aria-hidden
+        className="h-1.5 rounded-full bg-blue"
+        style={{ width: 4 + Math.round(influence.share * 40) }}
+      />
+      {pct}% · ≈{fmtUsd(influence.amountUsd)}
+    </span>
+  )
+}
+
 function LiveEvidenceRow({
   entry,
+  influence,
   onDelete,
 }: {
   entry: LiveEvidence
+  /** Estimated Shapley influence matched from the cert's liveInfluence. */
+  influence?: { share: number; amountUsd: number }
   /** Present only when the signed-in user authored this entry. */
   onDelete?: () => void
 }) {
@@ -167,6 +199,7 @@ function LiveEvidenceRow({
               community · {authorLabel(entry.author)}
             </span>
             <span className={`${eyebrow} text-gray-500`}>{dateLabel}</span>
+            {influence && <InfluenceChip influence={influence} />}
           </div>
           <h4 className="mt-1.5 font-serif text-[18px] leading-snug tracking-tight text-black">
             {entry.title}
@@ -381,6 +414,11 @@ export function HypercertDetail({
       window.removeEventListener("keydown", onKey)
     }
   }, [onClose])
+
+  const liveInfluenceFor = (title: string) =>
+    cert.liveInfluence?.find((m) =>
+      title.toLowerCase().includes(m.match.toLowerCase()),
+    )
 
   const timeline: TimelineItem[] = [
     ...cert.evidence.map((entry) => ({
@@ -658,6 +696,7 @@ export function HypercertDetail({
                 <LiveEvidenceRow
                   key={item.entry.uri}
                   entry={item.entry}
+                  influence={liveInfluenceFor(item.entry.title)}
                   onDelete={
                     session?.did === item.entry.did
                       ? () =>
