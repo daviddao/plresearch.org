@@ -63,6 +63,22 @@ export default function MeasuringQuestionsV2({
                   )}
                 </div>
                 <p className="text-xs leading-relaxed text-gray-600">{t.oneLiner}</p>
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {t.examples.map((ex) => (
+                    <span
+                      key={ex}
+                      className="rounded-md bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500"
+                    >
+                      {ex}
+                    </span>
+                  ))}
+                </div>
+                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium text-gray-400 transition-colors group-hover:text-black">
+                  Learn more
+                  <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
               </button>
             ))}
           </div>
