@@ -46,53 +46,30 @@ export default function MeasuringQuestionsV2({
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {TOOLKIT_V2.map((t) => (
-              <div
+              <button
                 key={t.id}
-                className="group relative flex flex-col rounded-xl border border-gray-200 bg-white p-4 transition-all hover:border-gray-300 hover:shadow-sm"
+                type="button"
+                onClick={() => setModal({ kind: 'tool', entry: t })}
+                aria-haspopup="dialog"
+                className="group flex flex-col rounded-xl border border-gray-200 bg-white p-4 text-left transition-all hover:border-gray-300 hover:shadow-sm"
               >
-                {/* Full-card click target opens the modal; sits behind the content
-                    so the example links (pointer-events-auto) stay individually clickable. */}
-                <button
-                  type="button"
-                  onClick={() => setModal({ kind: 'tool', entry: t })}
-                  aria-haspopup="dialog"
-                  aria-label={`Learn more about ${t.title}`}
-                  className="absolute inset-0 z-0 rounded-xl"
-                />
-                <div className="pointer-events-none relative z-10">
-                  <div className="mb-1 flex items-center gap-2">
-                    <span className="text-sm font-semibold text-black">{t.title}</span>
-                    <span className="text-xs text-gray-400">· {t.subtitle}</span>
-                    {t.proposed && (
-                      <span className="ml-auto rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gray-500">
-                        Proposed
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs leading-relaxed text-gray-600">{t.oneLiner}</p>
+                <div className="mb-1 flex items-center gap-2">
+                  <span className="text-sm font-semibold text-black">{t.title}</span>
+                  <span className="text-xs text-gray-400">· {t.subtitle}</span>
+                  {t.proposed && (
+                    <span className="ml-auto rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gray-500">
+                      Proposed
+                    </span>
+                  )}
                 </div>
-                {t.examples.length > 0 && (
-                  <div className="relative z-10 mt-2.5 flex flex-wrap gap-1.5">
-                    {t.examples.map((ex) => (
-                      <a
-                        key={ex.href}
-                        href={ex.href}
-                        target={ex.href.startsWith('http') ? '_blank' : undefined}
-                        rel={ex.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="pointer-events-auto rounded border border-gray-200 px-1.5 py-0.5 text-[10px] text-gray-500 transition-colors hover:border-gray-400 hover:text-black"
-                      >
-                        {ex.label}
-                      </a>
-                    ))}
-                  </div>
-                )}
-                <span className="pointer-events-none relative z-10 mt-3 inline-flex items-center gap-1 text-[11px] font-medium text-gray-400 transition-colors group-hover:text-black">
+                <p className="text-xs leading-relaxed text-gray-600">{t.oneLiner}</p>
+                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium text-gray-400 transition-colors group-hover:text-black">
                   Learn more
                   <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </span>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -139,6 +116,12 @@ export default function MeasuringQuestionsV2({
                 >
                   <span className="mb-1 text-sm font-semibold text-black">{m.label}</span>
                   <p className="text-xs leading-relaxed text-gray-600">{m.subtitle}</p>
+                  <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium text-gray-400 transition-colors group-hover:text-black">
+                    Learn more
+                    <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
                 </button>
               ))}
               {/* Inflection points share the grid but are markers, not instruments
@@ -156,6 +139,12 @@ export default function MeasuringQuestionsV2({
                   </span>
                 </div>
                 <p className="text-xs leading-relaxed text-gray-600">{INFLECTION_EXPLAINER.subtitle}</p>
+                <span className="mt-3 inline-flex items-center gap-1 text-[11px] font-medium text-gray-400 transition-colors group-hover:text-black">
+                  Learn more
+                  <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </span>
               </button>
             </div>
             <p className="mt-4 max-w-2xl text-xs leading-relaxed text-gray-400">
@@ -203,6 +192,7 @@ function InfoModal({
   const subtitle = modal.entry.subtitle
   const proposed = isTool ? modal.entry.proposed : false
   const description = modal.entry.description
+  const examples = isTool ? modal.entry.examples : []
   const researchSide =
     modal.kind === 'measure' &&
     (modal.entry.id === 'idea_vintage' || modal.entry.id === 'revealed_commitments')
@@ -242,7 +232,33 @@ function InfoModal({
           </div>
           <h2 className="mb-1 text-2xl font-semibold leading-tight tracking-tight text-black">{title}</h2>
           {subtitle && <div className="mb-5 text-sm text-gray-500">{subtitle}</div>}
-          <p className={`${subtitle ? '' : 'mt-4 '}text-sm leading-relaxed text-gray-700`}>{description}</p>
+          {isTool && (
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Description</div>
+          )}
+          <p className={`${subtitle || isTool ? '' : 'mt-4 '}text-sm leading-relaxed text-gray-700`}>{description}</p>
+          {examples.length > 0 && (
+            <div className="mt-6 border-t border-gray-100 pt-5">
+              <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Examples</div>
+              <div className="flex flex-wrap gap-2">
+                {examples.map((ex) => (
+                  <a
+                    key={ex.href}
+                    href={ex.href}
+                    target={ex.href.startsWith('http') ? '_blank' : undefined}
+                    rel={ex.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    className="inline-flex items-center gap-1 rounded-lg border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 hover:text-black"
+                  >
+                    {ex.label}
+                    {ex.href.startsWith('http') && (
+                      <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M7 7h10v10" />
+                      </svg>
+                    )}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
           {researchSide && (
             <p className="mt-4 rounded-lg bg-gray-50 px-4 py-3 text-sm italic leading-relaxed text-gray-500">
               This reads the research side of the field. It does not observe invention directly, and the
