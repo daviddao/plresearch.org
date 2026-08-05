@@ -29,13 +29,12 @@ const LIVE: Record<FocusAreaKey, boolean> = {
 export function HypercertsShowcase({ certs }: { certs: Hypercert[] }) {
   const [area, setArea] = useState<FocusAreaKey>('economies-governance')
   const meta = FOCUS_AREAS.find((f) => f.key === area)
-  const accent = meta?.accent ?? '#1982F4'
   const live = LIVE[area]
 
   return (
     <div>
-      {/* Filter bubbles */}
-      <div className="mb-7 flex flex-wrap gap-2">
+      {/* Filter bubbles (right-aligned, neutral — no focus-area color coding) */}
+      <div className="mb-7 flex flex-wrap justify-end gap-2">
         {FOCUS_AREAS.map((fa) => {
           const active = area === fa.key
           const has = LIVE[fa.key]
@@ -47,23 +46,14 @@ export function HypercertsShowcase({ certs }: { certs: Hypercert[] }) {
               onClick={() => setArea(fa.key)}
               className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-medium transition-all ${
                 active
-                  ? 'shadow-sm'
-                  : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:text-black'
+                  ? 'border-gray-300 bg-white text-black shadow-sm'
+                  : 'border-gray-200 bg-transparent text-gray-500 hover:border-gray-300 hover:text-black'
               }`}
-              style={
-                active
-                  ? { borderColor: accent, color: accent, background: `${accent}12` }
-                  : undefined
-              }
             >
               <AreaIcon type={FA_ICON[fa.key]} className="h-3.5 w-3.5" />
               {fa.label}
               {!has && (
-                <span
-                  className={`rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide ${
-                    active ? 'bg-white/70 text-gray-500' : 'bg-gray-100 text-gray-400'
-                  }`}
-                >
+                <span className="rounded-full bg-gray-100 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-gray-400">
                   Soon
                 </span>
               )}
@@ -75,20 +65,11 @@ export function HypercertsShowcase({ certs }: { certs: Hypercert[] }) {
       {live ? (
         <ImpactExperience certs={certs} detailVariant="modal" showFunding />
       ) : (
-        <div
-          className="flex flex-col items-center justify-center rounded-2xl border border-dashed px-6 py-20 text-center"
-          style={{ borderColor: `${accent}59`, background: `linear-gradient(160deg, ${accent}12, transparent 70%)` }}
-        >
-          <span
-            className="flex h-14 w-14 items-center justify-center rounded-2xl"
-            style={{ background: `${accent}1f`, color: accent }}
-          >
+        <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-300 bg-gray-50/60 px-6 py-20 text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 text-gray-500">
             <AreaIcon type={FA_ICON[area]} className="h-7 w-7" />
           </span>
-          <div
-            className="mt-5 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-semibold uppercase tracking-wide"
-            style={{ borderColor: `${accent}66`, color: accent }}
-          >
+          <div className="mt-5 inline-flex items-center gap-1.5 rounded-full border border-gray-300 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
             Coming soon
           </div>
           <h3 className="mt-4 text-lg font-semibold tracking-tight text-black">

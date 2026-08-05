@@ -195,12 +195,26 @@ export function ImpactExperience({
     const drag = dragRef.current
     if (!drag || drag.pointerId !== e.pointerId) return
     dragRef.current = null
-    // Pure click (never crossed the drag slop): if it began on a slanted side
-    // card, bring that card front and center. Suppress the trailing click so it
-    // doesn't also open the (now-centered) card's detail.
+
+    // Which card did a tap target? The 3D-transformed side cards (perspective +
+    // translateZ behind the center) don't reliably capture pointer events — a
+    // press on a slanted card often falls through to the stage, leaving
+    // downIdx null. When that happens, infer the target from where the press
+    // landed relative to the carousel center so the tap still centers a card.
+    const resolveTap = (): number | null => {
+      if (drag.downIdx != null) return drag.downIdx
+      const rect = e.currentTarget.getBoundingClientRect()
+      const off = drag.startX - (rect.left + rect.width / 2)
+      if (Math.abs(off) < 40) return null // dead-center: leave it alone
+      return safeActive + (off < 0 ? -1 : 1)
+    }
+
+    // Pure click (never crossed the drag slop): center the tapped card. Suppress
+    // the trailing click so it doesn't also open the (now-centered) card.
     if (!drag.dragging) {
-      if (drag.downIdx != null && drag.downIdx !== safeActive) {
-        navigate(drag.downIdx)
+      const target = resolveTap()
+      if (target != null && target !== safeActive) {
+        navigate(target)
         suppressClickRef.current = true
         setTimeout(() => (suppressClickRef.current = false), 0)
       }
@@ -209,10 +223,10 @@ export function ImpactExperience({
     const frac = -(e.clientX - drag.startX) / stepPx
     let steps = Math.round(frac)
     if (steps === 0 && Math.abs(frac) > CATCH_FRACTION) steps = Math.sign(frac)
-    // A tiny movement that began on a slanted side card reads as a tap → bring
-    // that card front and center instead of snapping back to a no-op.
-    if (steps === 0 && drag.downIdx != null && drag.downIdx !== safeActive) {
-      navigate(drag.downIdx)
+    // A tiny movement reads as a tap → center the tapped card instead of a no-op.
+    if (steps === 0) {
+      const target = resolveTap()
+      navigate(target != null ? target : safeActive)
     } else {
       navigate(safeActive + steps)
     }
