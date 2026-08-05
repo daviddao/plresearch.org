@@ -232,6 +232,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     interventions: [
       { role: 'infrastructure', label: 'libp2p / IPFS networking stack', href: 'https://libp2p.io/' },
       { role: 'capital', label: 'Fluence, Huddle01 (funded comms teams)', href: 'https://fluence.network/' },
+      { role: 'capital', label: 'Bluesky', href: 'https://bsky.app/' },
       { role: 'legibility', label: 'Latest Digital Human Rights insights', href: '/insights/?area=digital-human-rights' },
     ],
     liveEvidence: [
@@ -306,6 +307,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     interventions: [
       { role: 'infrastructure', label: 'Filecoin + the open-compute portfolio', href: 'https://filecoin.io/' },
       { role: 'capital', label: 'Fluence, Spheron, Expanso, Fleek', href: 'https://fluence.network/' },
+      { role: 'capital', label: 'Prime Intellect', href: 'https://primeintellect.ai/' },
       { role: 'legibility', label: 'Latest Digital Human Rights insights', href: '/insights/?area=digital-human-rights' },
     ],
   },
@@ -328,6 +330,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     interventions: [
       { role: 'permission', label: 'DPI standards & procurement playbooks' },
       { role: 'connection', label: 'Sovereign–builder convenings (Funding the Commons)', href: 'https://fundingthecommons.io/' },
+      { role: 'connection', label: 'AI4PG', href: 'https://www.ai4pg.com/' },
       { role: 'legibility', label: 'Latest Economies & Governance insights', href: '/insights/?area=economies-governance' },
     ],
   },
@@ -356,6 +359,16 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
         label: 'Simocracy governance simulation: live participation',
         href: '/areas/economies-governance/impact/live-dashboard/',
         note: 'Live activity from a PL-supported mechanism. This is contribution evidence (Q3) from a simulation, not the binding-decision-in-government threshold (Q2).',
+      },
+      {
+        label: 'vTaiwan: crowdsourced lawmaking in Taiwan',
+        href: 'https://info.vtaiwan.tw/',
+        note: 'Field evidence (Q2): a real government deliberation process run on computational tools. Not PL contribution.',
+      },
+      {
+        label: 'Team Mirai: AI broad-listening in Japanese politics',
+        href: 'https://team-mir.ai/',
+        note: 'Field evidence (Q2): an elected movement running AI-assisted broad listening at scale. Not PL contribution.',
       },
     ],
   },
@@ -396,6 +409,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     roles: ['legibility', 'connection', 'capital'],
     interventions: [
       { role: 'capital', label: 'GainForest, Glow, WeatherXM (MRV teams)', href: 'https://gainforest.earth/' },
+      { role: 'capital', label: 'Hypercerts', href: 'https://hypercerts.org/' },
       { role: 'connection', label: 'Verification benchmark & standards convenings' },
       { role: 'legibility', label: 'Latest Economies & Governance insights', href: '/insights/?area=economies-governance' },
     ],
@@ -545,7 +559,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     roles: ['infrastructure', 'capital'],
     interventions: [
       { role: 'infrastructure', label: 'Shared robotics-data network primitives' },
-      { role: 'capital', label: 'Funding for robotics-data teams' },
+      { role: 'capital', label: 'BitRobot', href: 'https://bitrobot.ai/' },
       { role: 'legibility', label: 'Latest AI & Robotics insights', href: '/insights/?area=ai-robotics' },
     ],
   },
