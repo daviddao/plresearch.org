@@ -164,7 +164,7 @@ export default async function ImpactPage() {
                 <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--impact-hand)' }}>
                   Our hand, as verifiable claims
                 </div>
-                <h2 className="text-xl lg:text-2xl font-semibold tracking-tight mb-2">Recorded as hypercerts</h2>
+                <h2 className="text-xl lg:text-2xl font-semibold tracking-tight mb-2">Verified Impact</h2>
                 <p className="text-base text-gray-600 leading-relaxed">
                   A{' '}
                   <a
