@@ -8,7 +8,7 @@
 // hero. Restyled to the plrd.org design system (Aileron sans for UI
 // text, Newsreader serif for titles, blue/teal accents).
 
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 import {
   motion,
   useMotionTemplate,
@@ -87,12 +87,19 @@ export function HypercertCard({
   cert,
   onSelect,
   isActive = true,
+  frozen = false,
   width,
 }: {
   cert: Hypercert
   onSelect: () => void
   /** Side-preview cards in the coverflow are inert + untilted. */
   isActive?: boolean
+  /**
+   * True while the carousel is being dragged: hover zoom, tilt and
+   * glare are suspended so the photo moves rigidly with the card
+   * instead of animating on its own 700ms hover transition.
+   */
+  frozen?: boolean
   /** Explicit width from the carousel; falls back to responsive clamp. */
   width?: number
 }) {
@@ -109,7 +116,7 @@ export function HypercertCard({
 
   function onPointerMove(e: React.PointerEvent<HTMLButtonElement>) {
     const el = ref.current
-    if (!el || !isActive) return
+    if (!el || !isActive || frozen) return
     const r = el.getBoundingClientRect()
     const px = (e.clientX - r.left) / r.width - 0.5
     const py = (e.clientY - r.top) / r.height - 0.5
@@ -125,6 +132,12 @@ export function HypercertCard({
     glareYRaw.set(35)
   }
 
+  // Drag started mid-hover → flatten any in-flight tilt immediately.
+  useEffect(() => {
+    if (frozen) reset()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [frozen])
+
   return (
     <div style={{ perspective: 1400 }}>
       <motion.button
@@ -133,8 +146,8 @@ export function HypercertCard({
         onClick={onSelect}
         onPointerMove={onPointerMove}
         onPointerLeave={reset}
-        whileHover={isActive ? { scale: 1.02 } : undefined}
-        whileTap={isActive ? { scale: 0.99 } : undefined}
+        whileHover={isActive && !frozen ? { scale: 1.02 } : undefined}
+        whileTap={isActive && !frozen ? { scale: 0.99 } : undefined}
         transition={{ type: "spring", ...SPRING }}
         aria-label={`Open impact claim: ${cert.title}`}
         tabIndex={isActive ? 0 : -1}
@@ -159,7 +172,11 @@ export function HypercertCard({
           <img
             src={cert.image}
             alt={cert.imageAlt}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+            className={`absolute inset-0 h-full w-full object-cover ${
+              frozen
+                ? ""
+                : "transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+            }`}
           />
           <ProgressiveBlur tint="linear-gradient(to bottom, transparent 0%, rgba(19,19,22,0.10) 34%, rgba(19,19,22,0.34) 68%, rgba(19,19,22,0.52) 100%)" />
           <div
@@ -175,7 +192,9 @@ export function HypercertCard({
         {/* Pointer glare (not part of the shared element) */}
         <motion.div
           aria-hidden
-          className="pointer-events-none absolute inset-0 rounded-[26px] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+          className={`pointer-events-none absolute inset-0 rounded-[26px] opacity-0 transition-opacity duration-300 ${
+            frozen ? "" : "group-hover:opacity-100"
+          }`}
           style={{ background: glare }}
         />
 

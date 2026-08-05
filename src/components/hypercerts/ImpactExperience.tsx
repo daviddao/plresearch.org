@@ -262,6 +262,7 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
                   <HypercertCard
                     cert={cert}
                     isActive={discreteOffset === 0}
+                    frozen={isDragging}
                     width={cardWidth}
                     onSelect={() => setSelected(cert.rkey)}
                   />
