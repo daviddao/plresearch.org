@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Breadcrumb from '@/components/Breadcrumb'
 import ImpactDashboardV2, { type LiveMetric, type LiveOutputs } from '@/components/ImpactDashboardV2'
 import MeasuringQuestionsV2 from '@/components/MeasuringQuestionsV2'
+import HypercertExamples from '@/components/HypercertExamples'
 import { fetchSimocracyStats } from '@/lib/simocracy'
 import { fetchGainforestStats } from '@/lib/gainforest'
 import { fetchGlowStats } from '@/lib/glow'
@@ -135,6 +136,43 @@ export default async function ImpactPage() {
             ideaVintageExamples={ideaVintageExamples}
           />
         </div>
+      </section>
+
+      {/* Hypercerts — the same interventions, re-cut as impact claims */}
+      <section className="max-w-6xl mx-auto px-6 py-14 lg:py-16">
+        <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-3xl">
+            <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--impact-hand)' }}>
+              Our hand, as impact claims
+            </div>
+            <h2 className="text-xl lg:text-2xl font-semibold tracking-tight mb-2">Recorded as hypercerts</h2>
+            <p className="text-base text-gray-600 leading-relaxed">
+              A{' '}
+              <a
+                href="https://hypercerts.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue hover:underline"
+              >
+                hypercert
+              </a>{' '}
+              is a verifiable, evolving record of impactful work &mdash; what was done, by whom, and where &mdash;
+              published on open infrastructure PL R&amp;D helped originate. Our Research Retreat editions are already
+              published this way; the rest of our interventions are the kind of contribution we record as impact
+              claims. Filter by focus area; each card sits in the intervention bucket it belongs to.
+            </p>
+          </div>
+          <a
+            href="/areas/economies-governance/impact/hypercerts/"
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-blue/40 hover:text-blue hover:shadow-sm"
+          >
+            See live impact claims
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+        <HypercertExamples />
       </section>
 
       {/* Methodology */}
