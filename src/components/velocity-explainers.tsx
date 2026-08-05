@@ -109,7 +109,7 @@ export function InflectionQuadrant() {
   )
   const rowHead = (label: string) => (
     <div className="flex items-center justify-center">
-      <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 [writing-mode:vertical-rl] rotate-180">{label}</span>
+      <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 [writing-mode:vertical-rl]">{label}</span>
     </div>
   )
   return (
