@@ -18,7 +18,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Hypercert } from '@/data/hypercerts'
 import { FOCUS_AREAS, type FocusAreaKey } from '@/lib/inflection-points'
 import { AreaIcon, type AreaIconType } from '@/components/AreaIcons'
-import { TOOLKIT_V2, HAND_COLOR } from '@/lib/field-velocity'
+import { TOOLKIT_V2, HAND_COLOR, type ToolId } from '@/lib/field-velocity'
 
 // Public URL of this prototype page, used for the share-on-X link.
 const SHARE_URL = 'https://www.plrd.org/impact-preview-eb61fba1b98e/'
@@ -43,14 +43,36 @@ const LIVE_AREA: FocusAreaKey = 'economies-governance'
 
 // Placeholder efforts for focus areas without live claims yet — rendered as
 // blurred "coming soon" cards so every focus area has something to show.
-const MOCK_EFFORTS: { id: string; area: FocusAreaKey; title: string }[] = [
-  { id: 'dhr-1', area: 'digital-human-rights', title: 'Censorship-resistant comms retreat' },
-  { id: 'dhr-2', area: 'digital-human-rights', title: 'Provenance & attestation sprint' },
-  { id: 'air-1', area: 'ai-robotics', title: 'Open agent-infrastructure lab' },
-  { id: 'air-2', area: 'ai-robotics', title: 'Robotics safety residency' },
-  { id: 'neuro-1', area: 'neurotech', title: 'BCI open-data workshop' },
-  { id: 'neuro-2', area: 'neurotech', title: 'NeuroAI methods retreat' },
+const MOCK_EFFORTS: { id: string; area: FocusAreaKey; title: string; interventions: ToolId[] }[] = [
+  { id: 'dhr-1', area: 'digital-human-rights', title: 'Censorship-resistant comms retreat', interventions: ['connection', 'infrastructure'] },
+  { id: 'dhr-2', area: 'digital-human-rights', title: 'Provenance & attestation sprint', interventions: ['infrastructure', 'legibility'] },
+  { id: 'air-1', area: 'ai-robotics', title: 'Open agent-infrastructure lab', interventions: ['infrastructure', 'translation'] },
+  { id: 'air-2', area: 'ai-robotics', title: 'Robotics safety residency', interventions: ['connection', 'policy'] },
+  { id: 'neuro-1', area: 'neurotech', title: 'BCI open-data workshop', interventions: ['legibility', 'connection'] },
+  { id: 'neuro-2', area: 'neurotech', title: 'NeuroAI methods retreat', interventions: ['connection', 'funding'] },
 ]
+
+// Mock intervention tags for the live claims (prototype). Real claims would
+// carry these on the record itself.
+const CERT_INTERVENTIONS: Record<string, ToolId[]> = {
+  'ierr-2025': ['connection', 'funding', 'legibility'],
+  'dacc-2025': ['connection', 'funding', 'culture'],
+  'rr-2026': ['connection', 'funding', 'legibility'],
+}
+
+function certInterventions(rkey: string): ToolId[] {
+  return CERT_INTERVENTIONS[rkey] ?? ['connection', 'funding']
+}
+
+// Popularity proxy for the “Most popular” sort (prototype): documented spend
+// plus the length of the evidence trail.
+function certPopularity(c: Hypercert): number {
+  return (c.funding?.costUsd ?? 0) + (c.evidence?.length ?? 0) * 1000
+}
+
+function certTime(c: Hypercert): number {
+  return new Date(c.startDate || c.endDate || 0).getTime()
+}
 
 function accentFor(area: FocusAreaKey): string {
   return FOCUS_AREAS.find((f) => f.key === area)?.accent ?? '#1982F4'
@@ -72,6 +94,21 @@ type Mode = 'individual' | 'collections'
 type CollectionGroup = 'focus' | 'intervention'
 type Step = 'select' | 'pay' | 'done'
 type PayMethod = 'USDC' | 'Card' | 'PayPal' | 'Apple Pay' | 'Wire'
+type SortKey = 'recent' | 'popular' | 'title'
+type AreaFilter = FocusAreaKey | 'all'
+type InterventionFilter = ToolId | 'all'
+
+// A collection selected into the cart, rendered as a single line item.
+type ActiveCollection = { key: string; group: CollectionGroup; label: string; images: string[]; count: number }
+
+// How many effort cards to reveal before the reader scrolls for more.
+const PAGE_SIZE = 6
+
+const SORT_OPTIONS: { id: SortKey; label: string }[] = [
+  { id: 'recent', label: 'Most recent' },
+  { id: 'popular', label: 'Most popular' },
+  { id: 'title', label: 'A–Z' },
+]
 
 /** Trigger button — drop into a hypercert detail modal. */
 export function FundEffortButton({ onClick }: { onClick: () => void }) {
@@ -111,7 +148,13 @@ export default function FundingCheckout({
   const [selected, setSelected] = useState<Set<string>>(
     () => new Set(initialRkey ? [initialRkey] : []),
   )
-  const [activeCollection, setActiveCollection] = useState<string | null>(null)
+  const [activeCollection, setActiveCollection] = useState<ActiveCollection | null>(null)
+
+  // Individual-mode filter + sort + progressive reveal.
+  const [filterArea, setFilterArea] = useState<AreaFilter>('all')
+  const [filterIntervention, setFilterIntervention] = useState<InterventionFilter>('all')
+  const [sortBy, setSortBy] = useState<SortKey>('recent')
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
   const [amount, setAmount] = useState<number>(DEFAULT_AMOUNT)
   const [custom, setCustom] = useState(false)
@@ -180,6 +223,83 @@ export default function FundingCheckout({
     [certs],
   )
 
+  // Unified, filterable grid: live claims + “coming soon” placeholders. Filter
+  // by focus area / intervention type, then sort, then progressively reveal.
+  const gridItems = useMemo(() => {
+    type Item =
+      | { kind: 'cert'; key: string; area: FocusAreaKey; interventions: ToolId[]; time: number; pop: number; cert: Hypercert }
+      | { kind: 'mock'; key: string; area: FocusAreaKey; interventions: ToolId[]; time: number; pop: number; title: string }
+
+    const items: Item[] = [
+      ...certs.map((c) => ({
+        kind: 'cert' as const,
+        key: c.rkey,
+        area: LIVE_AREA,
+        interventions: certInterventions(c.rkey),
+        time: certTime(c),
+        pop: certPopularity(c),
+        cert: c,
+      })),
+      ...MOCK_EFFORTS.map((m) => ({
+        kind: 'mock' as const,
+        key: m.id,
+        area: m.area,
+        interventions: m.interventions,
+        time: 0,
+        pop: -1,
+        title: m.title,
+      })),
+    ]
+
+    const filtered = items.filter(
+      (it) =>
+        (filterArea === 'all' || it.area === filterArea) &&
+        (filterIntervention === 'all' || it.interventions.includes(filterIntervention)),
+    )
+
+    filtered.sort((a, b) => {
+      // Live claims always rank above “coming soon” placeholders.
+      if ((a.kind === 'cert') !== (b.kind === 'cert')) return a.kind === 'cert' ? -1 : 1
+      if (sortBy === 'title') {
+        const at = a.kind === 'cert' ? a.cert.title : a.title
+        const bt = b.kind === 'cert' ? b.cert.title : b.title
+        return at.localeCompare(bt)
+      }
+      if (sortBy === 'popular') return b.pop - a.pop
+      return b.time - a.time // recent
+    })
+
+    return filtered
+  }, [certs, filterArea, filterIntervention, sortBy])
+
+  const visibleItems = gridItems.slice(0, visibleCount)
+  const hasMore = visibleCount < gridItems.length
+
+  // Reset the reveal window whenever the filter or sort changes.
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE)
+  }, [filterArea, filterIntervention, sortBy])
+
+  // Infinite scroll: reveal another page when the sentinel enters the list.
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  useEffect(() => {
+    if (mode !== 'individual' || !hasMore) return
+    const root = scrollRef.current
+    const target = sentinelRef.current
+    if (!root || !target) return
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setVisibleCount((n) => Math.min(n + PAGE_SIZE, gridItems.length))
+        }
+      },
+      { root, rootMargin: '200px' },
+    )
+    io.observe(target)
+    return () => io.disconnect()
+  }, [mode, hasMore, gridItems.length])
+
   const toggleCert = (rkey: string) => {
     setActiveCollection(null)
     setSelected((prev) => {
@@ -190,10 +310,16 @@ export default function FundingCheckout({
     })
   }
 
-  const pickCollection = (key: string, rkeys: string[], comingSoon: boolean) => {
+  const pickCollection = (col: ActiveCollection, rkeys: string[], comingSoon: boolean) => {
     if (comingSoon) return
-    setActiveCollection(key)
+    setActiveCollection(col)
     setSelected(new Set(rkeys))
+  }
+
+  const clearCart = () => {
+    setSelected(new Set())
+    setActiveCollection(null)
+    setStep('select')
   }
 
   if (typeof document === 'undefined') return null
@@ -240,67 +366,59 @@ export default function FundingCheckout({
         {/* Body */}
         <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[1fr_380px]">
           {/* Left — individual cards or per-focus-area collections */}
-          <div className="min-h-0 overflow-y-auto px-6 py-6">
-            <div className="mb-5 inline-flex rounded-full border border-gray-200 bg-gray-50 p-1">
-              {(
-                [
-                  ['individual', 'Individual efforts'],
-                  ['collections', 'Collections'],
-                ] as const
-              ).map(([m, label]) => (
-                <button
-                  key={m}
-                  type="button"
-                  aria-pressed={mode === m}
-                  onClick={() => setMode(m)}
-                  className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${
-                    mode === m ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            {mode === 'individual' ? (
-              <>
-                <p className="mb-4 max-w-2xl text-sm leading-relaxed text-gray-500">
-                  Pick one effort or select several. Live hypercerts carry a photo and an evidence
-                  trail; other focus areas are <span className="font-medium text-gray-600">coming soon</span>.
-                </p>
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-                  <FundCollectionCta onClick={() => setMode('collections')} />
-                  {certs.map((c, i) => (
-                    <EffortCard
-                      key={c.rkey}
-                      cert={c}
-                      index={i}
-                      selected={selected.has(c.rkey)}
-                      onToggle={() => toggleCert(c.rkey)}
-                      noEntrance={c.rkey === initialRkey && Boolean(morphFrom)}
-                      hidden={c.rkey === initialRkey && Boolean(clone)}
-                      innerRef={c.rkey === initialRkey ? (el) => (launchRef.current = el) : undefined}
-                    />
-                  ))}
-                  {MOCK_EFFORTS.map((m, i) => (
-                    <MockCard key={m.id} area={m.area} title={m.title} index={certs.length + i} />
-                  ))}
-                </div>
-              </>
-            ) : (
-              <>
-                <p className="mb-4 max-w-2xl text-sm leading-relaxed text-gray-500">
-                  Fund a whole group in one move. You can still fine-tune the mix under{' '}
+          <div ref={scrollRef} className="min-h-0 overflow-y-auto">
+            {/* Sticky controls: mode toggle + filters / sort */}
+            <div className="sticky top-0 z-20 border-b border-gray-100 bg-white/95 px-6 pb-3 pt-6 backdrop-blur">
+              <div className="inline-flex rounded-full border border-gray-200 bg-gray-50 p-1">
+                {(
+                  [
+                    ['individual', 'Individual efforts'],
+                    ['collections', 'Collections'],
+                  ] as const
+                ).map(([m, label]) => (
                   <button
+                    key={m}
                     type="button"
-                    onClick={() => setMode('individual')}
-                    className="font-medium text-blue hover:underline"
+                    aria-pressed={mode === m}
+                    onClick={() => setMode(m)}
+                    className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-all ${
+                      mode === m ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'
+                    }`}
                   >
-                    Individual efforts
+                    {label}
                   </button>
-                  .
-                </p>
-                <div className="mb-5 inline-flex rounded-full border border-gray-200 bg-gray-50 p-1">
+                ))}
+              </div>
+
+              {mode === 'individual' ? (
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <FilterSelect
+                    label="Focus area"
+                    value={filterArea}
+                    onChange={(v) => setFilterArea(v as AreaFilter)}
+                    options={[
+                      { value: 'all', label: 'All focus areas' },
+                      ...FOCUS_AREAS.map((f) => ({ value: f.key, label: f.label })),
+                    ]}
+                  />
+                  <FilterSelect
+                    label="Intervention"
+                    value={filterIntervention}
+                    onChange={(v) => setFilterIntervention(v as InterventionFilter)}
+                    options={[
+                      { value: 'all', label: 'All interventions' },
+                      ...TOOLKIT_V2.map((t) => ({ value: t.id, label: t.title })),
+                    ]}
+                  />
+                  <FilterSelect
+                    label="Sort"
+                    value={sortBy}
+                    onChange={(v) => setSortBy(v as SortKey)}
+                    options={SORT_OPTIONS.map((s) => ({ value: s.id, label: s.label }))}
+                  />
+                </div>
+              ) : (
+                <div className="mt-3 inline-flex rounded-full border border-gray-200 bg-gray-50 p-1">
                   {(
                     [
                       ['focus', 'By focus area'],
@@ -320,39 +438,114 @@ export default function FundingCheckout({
                     </button>
                   ))}
                 </div>
-                {collectionGroup === 'focus' ? (
-                  <div className="flex flex-col gap-3.5">
-                    {collections.map((col) => (
-                      <CollectionRow
-                        key={col.key}
-                        area={col.key}
-                        label={col.label}
-                        images={col.images}
-                        count={col.rkeys.length}
-                        comingSoon={col.comingSoon}
-                        active={activeCollection === col.key}
-                        onPick={() => pickCollection(col.key, col.rkeys, col.comingSoon)}
-                      />
-                    ))}
+              )}
+            </div>
+
+            <div className="px-6 pb-6 pt-4">
+              {mode === 'individual' ? (
+                <>
+                  {gridItems.length === 0 ? (
+                    <p className="py-10 text-center text-sm text-gray-500">
+                      No efforts match these filters yet.
+                    </p>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                      {visibleItems.map((it, i) =>
+                        it.kind === 'cert' ? (
+                          <EffortCard
+                            key={it.key}
+                            cert={it.cert}
+                            index={i}
+                            selected={selected.has(it.key)}
+                            onToggle={() => toggleCert(it.key)}
+                            noEntrance={it.key === initialRkey && Boolean(morphFrom)}
+                            hidden={it.key === initialRkey && Boolean(clone)}
+                            innerRef={it.key === initialRkey ? (el) => (launchRef.current = el) : undefined}
+                          />
+                        ) : (
+                          <MockCard key={it.key} area={it.area} title={it.title} index={i} />
+                        ),
+                      )}
+                    </div>
+                  )}
+
+                  {/* Sentinel — reveals another page as it scrolls into view */}
+                  {hasMore && (
+                    <div ref={sentinelRef} className="flex justify-center py-6 text-[12px] text-gray-400">
+                      Loading more efforts…
+                    </div>
+                  )}
+
+                  {/* Understated text link (not a card) to the collections view */}
+                  <div className="mt-6 border-t border-gray-100 pt-5 text-center">
+                    <button
+                      type="button"
+                      onClick={() => setMode('collections')}
+                      className="text-[13px] font-medium text-gray-500 underline decoration-gray-300 underline-offset-4 transition-colors hover:text-blue hover:decoration-blue"
+                    >
+                      Or fund a whole collection instead →
+                    </button>
                   </div>
-                ) : (
-                  <div className="flex flex-col gap-3.5">
-                    {interventionCollections.map((col) => (
-                      <InterventionRow
-                        key={col.key}
-                        label={col.label}
-                        subtitle={col.subtitle}
-                        oneLiner={col.oneLiner}
-                        images={col.images}
-                        count={col.rkeys.length}
-                        active={activeCollection === col.key}
-                        onPick={() => pickCollection(col.key, col.rkeys, false)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
+                </>
+              ) : (
+                <>
+                  <p className="mb-4 max-w-2xl text-sm leading-relaxed text-gray-500">
+                    Fund a whole group in one move. You can still fine-tune the mix under{' '}
+                    <button
+                      type="button"
+                      onClick={() => setMode('individual')}
+                      className="font-medium text-blue hover:underline"
+                    >
+                      Individual efforts
+                    </button>
+                    .
+                  </p>
+                  {collectionGroup === 'focus' ? (
+                    <div className="flex flex-col gap-3.5">
+                      {collections.map((col) => (
+                        <CollectionRow
+                          key={col.key}
+                          area={col.key}
+                          label={col.label}
+                          images={col.images}
+                          count={col.rkeys.length}
+                          comingSoon={col.comingSoon}
+                          active={activeCollection?.key === col.key}
+                          onPick={() =>
+                            pickCollection(
+                              { key: col.key, group: 'focus', label: col.label, images: col.images, count: col.rkeys.length },
+                              col.rkeys,
+                              col.comingSoon,
+                            )
+                          }
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-3.5">
+                      {interventionCollections.map((col) => (
+                        <InterventionRow
+                          key={col.key}
+                          label={col.label}
+                          subtitle={col.subtitle}
+                          oneLiner={col.oneLiner}
+                          images={col.images}
+                          count={col.rkeys.length}
+                          active={activeCollection?.key === col.key}
+                          onPick={() =>
+                            pickCollection(
+                              { key: col.key, group: 'intervention', label: col.label, images: col.images, count: col.rkeys.length },
+                              col.rkeys,
+                              false,
+                            )
+                          }
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
           {/* Right — selection + amount + checkout */}
@@ -361,7 +554,9 @@ export default function FundingCheckout({
               step={step}
               setStep={setStep}
               selectedList={selectedList}
+              activeCollection={activeCollection}
               onRemove={(r) => toggleCert(r)}
+              onRemoveCollection={clearCart}
               amount={amount}
               setAmount={setAmount}
               custom={custom}
@@ -370,11 +565,7 @@ export default function FundingCheckout({
               setMethod={setMethod}
               valid={valid}
               onClose={onClose}
-              onReset={() => {
-                setSelected(new Set())
-                setActiveCollection(null)
-                setStep('select')
-              }}
+              onReset={clearCart}
             />
           </aside>
         </div>
@@ -499,26 +690,33 @@ function MockCard({ area, title, index }: { area: FocusAreaKey; title: string; i
   )
 }
 
-// Grid-cell CTA (same footprint as an effort card) that jumps to Collections.
-function FundCollectionCta({ onClick }: { onClick: () => void }) {
+// Compact labelled dropdown used in the sticky filter/sort bar.
+function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string
+  value: string
+  onChange: (v: string) => void
+  options: { value: string; label: string }[]
+}) {
   return (
-    <motion.button
-      type="button"
-      onClick={onClick}
-      initial={{ opacity: 0, y: 14, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-      whileHover={{ y: -3 }}
-      className="group relative flex aspect-[4/5] flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-dashed border-blue/40 bg-blue/5 p-3 text-center transition-shadow hover:shadow-md"
-    >
-      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue/10 text-blue">
-        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </span>
-      <span className="text-[13px] font-semibold leading-snug text-blue">Fund a collection instead</span>
-      <span className="text-[10px] leading-snug text-blue/70">Back a focus area or intervention type in one move</span>
-    </motion.button>
+    <label className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white pl-2.5 pr-1 py-1 text-[12px] transition-colors focus-within:border-blue hover:border-gray-300">
+      <span className="font-medium text-gray-400">{label}</span>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="cursor-pointer bg-transparent pr-1 text-[12px] font-semibold text-black outline-none"
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+    </label>
   )
 }
 
@@ -737,7 +935,9 @@ function AmountPanel({
   step,
   setStep,
   selectedList,
+  activeCollection,
   onRemove,
+  onRemoveCollection,
   amount,
   setAmount,
   custom,
@@ -751,7 +951,9 @@ function AmountPanel({
   step: Step
   setStep: (s: Step) => void
   selectedList: Hypercert[]
+  activeCollection: ActiveCollection | null
   onRemove: (rkey: string) => void
+  onRemoveCollection: () => void
   amount: number
   setAmount: (n: number) => void
   custom: boolean
@@ -844,29 +1046,67 @@ function AmountPanel({
           </div>
         ) : (
           <>
-            <ul className="flex flex-col gap-2">
-              {selectedList.map((c) => (
-                <li key={c.rkey} className="flex items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-2">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={c.image} alt="" className="h-9 w-9 shrink-0 rounded-md object-cover" />
-                  <span className="min-w-0 flex-1 line-clamp-2 text-[12.5px] font-semibold leading-snug text-black">
-                    {c.title}
-                  </span>
-                  {step === 'select' && (
-                    <button
-                      type="button"
-                      onClick={() => onRemove(c.rkey)}
-                      aria-label="Remove"
-                      className="shrink-0 text-gray-300 transition-colors hover:text-red-500"
-                    >
-                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  )}
-                </li>
-              ))}
-            </ul>
+            {activeCollection ? (
+              // A picked collection reads as ONE line item, not its members.
+              <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-2.5">
+                <div className="flex shrink-0 -space-x-3">
+                  {activeCollection.images.slice(0, 3).map((src, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={i}
+                      src={src}
+                      alt=""
+                      className="h-10 w-10 rounded-lg border-2 border-white object-cover shadow-sm"
+                    />
+                  ))}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                    {activeCollection.group === 'focus' ? 'Focus-area collection' : 'Intervention collection'}
+                  </div>
+                  <div className="truncate text-[13px] font-semibold text-black">{activeCollection.label}</div>
+                  <div className="text-[11px] text-gray-500">
+                    {activeCollection.count} effort{activeCollection.count === 1 ? '' : 's'}
+                  </div>
+                </div>
+                {step === 'select' && (
+                  <button
+                    type="button"
+                    onClick={onRemoveCollection}
+                    aria-label="Remove collection"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                  >
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {selectedList.map((c) => (
+                  <li key={c.rkey} className="flex items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={c.image} alt="" className="h-9 w-9 shrink-0 rounded-md object-cover" />
+                    <span className="min-w-0 flex-1 line-clamp-2 text-[12.5px] font-semibold leading-snug text-black">
+                      {c.title}
+                    </span>
+                    {step === 'select' && (
+                      <button
+                        type="button"
+                        onClick={() => onRemove(c.rkey)}
+                        aria-label="Remove"
+                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                      >
+                        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
 
             {step === 'select' && (
               <div className="mt-5">
