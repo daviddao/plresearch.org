@@ -32,9 +32,24 @@ export type EvidenceEntry = {
   title: string;
   description: string;
   badge?: string;
+  /**
+   * Estimated Shapley influence of this evidence on the documented
+   * social return: share of the total and the resized RoI it carries.
+   */
+  influence?: { share: number; amountUsd: number };
 };
 
 export type HypercertStatus = "past" | "live" | "upcoming";
+
+/** One slice of the Shapley decomposition of the social return. */
+export type RoiAttribution = {
+  label: string;
+  /** Shapley share of the documented social return (0–1). */
+  share: number;
+  amountUsd: number;
+  /** Enabling retreat chain vs. documented community outcomes. */
+  group: "retreat" | "community";
+};
 
 export type Hypercert = {
   /** Record key used as a stable identifier / anchor. */
@@ -78,6 +93,12 @@ export type Hypercert = {
     costLabel: string;
     roiLabel: string;
     roiNote: string;
+    /**
+     * Shapley attribution of the documented social return across the
+     * evidence timeline (see the methodology note in the detail UI).
+     * Shares sum to ~1 and map to the documented downstream value.
+     */
+    attribution?: RoiAttribution[];
   };
   // ── Claim record fields ─────────────────────────────────────
   title: string;
@@ -97,6 +118,12 @@ export type Hypercert = {
   dateLabel: string; // human-readable timeframe
   stats: { label: string; value: string }[];
   evidence: EvidenceEntry[]; // verifiable trail behind the claim
+  /**
+   * Shapley influence for live community evidence, matched by
+   * case-insensitive substring against the entry title (first match
+   * wins — order specific patterns before generic ones).
+   */
+  liveInfluence?: Array<{ match: string; share: number; amountUsd: number }>;
   href: string; // retreat detail page
 };
 
@@ -116,6 +143,26 @@ export const HYPERCERTS: Hypercert[] = [
       roiLabel: "20×",
       roiNote:
         "The Iceland edition cost 140,000 USD to run. It seeded the Hypercerts v2 redesign that raised about 2.2M USD from 12,000 donors, helped close the GG24 Deep Funding (400K matching pool) and AI4PG (150K) rounds, and launched Simocracy, which now governs more than 50K of funding. Roughly a 20× social return on investment so far, documented as attachment records in the timeline below.",
+      // Exact Shapley values over a counterfactual model with
+      // outcome-specific causal channels: every documented outcome is
+      // causally downstream of the retreat. The 22 works are the
+      // thinking pieces the GG24 forum used (and the IERR artifact by
+      // Sharfy & the ATProto cohort that pushed the Hypercerts v2
+      // deploy, reinforced by the Berlin redesign workshop that
+      // resulted from Iceland). Execution evidence is discounted —
+      // documentation is not causation, and the Hypercerts v2 work
+      // predates the retreat. Shares sum to the documented ~$2.8M.
+      attribution: [
+        { label: "Cohort convened in Reykjavík", share: 0.315, amountUsd: 883_000, group: "retreat" },
+        { label: "12 days of working sessions", share: 0.147, amountUsd: 413_000, group: "retreat" },
+        { label: "22 works — thinking pieces & IERR artifact", share: 0.203, amountUsd: 569_000, group: "retreat" },
+        { label: "Open-access proceedings", share: 0.07, amountUsd: 195_000, group: "retreat" },
+        { label: "Continued collabs incl. Berlin redesign workshop", share: 0.156, amountUsd: 436_000, group: "retreat" },
+        { label: "Hypercerts v2 deploy & raise (≈$2.2M)", share: 0.082, amountUsd: 231_000, group: "community" },
+        { label: "GG24 Deep Funding ($400k pool)", share: 0.016, amountUsd: 45_000, group: "community" },
+        { label: "AI4PG launch ($150k)", share: 0.006, amountUsd: 18_000, group: "community" },
+        { label: "Simocracy launch (>$50k)", share: 0.004, amountUsd: 10_000, group: "community" },
+      ],
     },
     title: "IERR 2025 · Impact Evaluator Research Retreat",
     shortDescription:
@@ -159,6 +206,7 @@ export const HYPERCERTS: Hypercert[] = [
         dateLabel: "Jul 26, 2025",
         kind: "milestone",
         title: "Cohort convened in Reykjavík",
+        influence: { share: 0.315, amountUsd: 883_000 },
         description:
           "23 researchers and practitioners arrived in Reykjavík to open the two-week Impact Evaluator Research Retreat, setting the agenda across IE design, measurement, and reward functions.",
         badge: "23 researchers",
@@ -168,6 +216,7 @@ export const HYPERCERTS: Hypercert[] = [
         dateLabel: "Jul 28 – Aug 8, 2025",
         kind: "session",
         title: "Daily working sessions on the IE framework",
+        influence: { share: 0.147, amountUsd: 413_000 },
         description:
           "Structured sessions and breakout tracks drafted design principles and robustness metrics for impact evaluators, and documented implementations observed in the wild.",
         badge: "12 days",
@@ -177,6 +226,7 @@ export const HYPERCERTS: Hypercert[] = [
         dateLabel: "Aug 9, 2025",
         kind: "publication",
         title: "22 works submitted to the proceedings",
+        influence: { share: 0.203, amountUsd: 569_000 },
         description:
           "Participants finalized 22 papers, write-ups, and open-source implementations spanning impact evaluation, mechanism design, and public goods funding.",
         badge: "22 works",
@@ -186,6 +236,7 @@ export const HYPERCERTS: Hypercert[] = [
         dateLabel: "Aug 10, 2025",
         kind: "release",
         title: "Open-access proceedings released",
+        influence: { share: 0.07, amountUsd: 195_000 },
         description:
           "The full retreat proceedings were published open-access, closing IERR 2025 and seeding the next round of impact-evaluation research.",
         badge: "open access",
@@ -195,10 +246,17 @@ export const HYPERCERTS: Hypercert[] = [
         dateLabel: "Aug 2025",
         kind: "milestone",
         title: "Participants report an outstanding experience",
+        influence: { share: 0.156, amountUsd: 436_000 },
         description:
           "Post-retreat feedback from the cohort was overwhelmingly positive. Researchers described the retreat as one of the most productive research environments they had worked in, and many kept collaborating after leaving Iceland.",
         badge: "cohort feedback",
       },
+    ],
+    liveInfluence: [
+      { match: "AI4PG", share: 0.006, amountUsd: 18_000 },
+      { match: "GG24", share: 0.016, amountUsd: 45_000 },
+      { match: "Hypercerts v2", share: 0.082, amountUsd: 231_000 },
+      { match: "Simocracy", share: 0.004, amountUsd: 10_000 },
     ],
     href: "https://www.researchretreat.org/ierr-2025/",
   },
