@@ -236,6 +236,16 @@ ul:not([class]) li li {
   .gf-track { animation: none; }
 }
 
+/* ===== Hypercert cards (impact/hypercerts) ===== */
+@keyframes hypercert-pulse-dot {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+.hypercert-pulse-dot { animation: hypercert-pulse-dot 2.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .hypercert-pulse-dot { animation: none; }
+}
+
 /* ===== Sticky nav ===== */
 [data-selector="nav"] [data-selector="nav-contents"] {
   transition: padding-top .4s ease-in-out, padding-bottom .4s ease-in-out;

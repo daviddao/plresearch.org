@@ -13,6 +13,7 @@
 *.pem
 *.pdf
 .env
+.env.*
 .env*.local
 !.env.example
 
@@ -25,3 +26,4 @@ next-env.d.ts
 .dolt/
 *.db
 .beads-credential-key
+.vercel
