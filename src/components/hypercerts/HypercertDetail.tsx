@@ -26,6 +26,7 @@ const KIND_LABEL: Record<EvidenceKind, string> = {
   publication: "Publication",
   artifact: "Artifact",
   release: "Release",
+  other: "Other",
 }
 
 const KIND_GLYPH: Record<EvidenceKind, string> = {
@@ -34,6 +35,7 @@ const KIND_GLYPH: Record<EvidenceKind, string> = {
   publication: "❑",
   artifact: "◈",
   release: "⤴",
+  other: "◌",
 }
 
 function kindLabel(kind: string): string {
@@ -311,6 +313,7 @@ export function HypercertDetail({
         {/* Hero (shared-layout morph from the card photo) */}
         <motion.div
           layoutId={`cert-media-${cert.rkey}`}
+          layoutDependency={cert.rkey}
           className="hypercert-on-photo relative overflow-hidden"
           style={{ borderRadius: 26, aspectRatio: "16 / 9" }}
         >

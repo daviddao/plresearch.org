@@ -22,7 +22,8 @@ export type EvidenceKind =
   | "session"
   | "publication"
   | "artifact"
-  | "release";
+  | "release"
+  | "other";
 
 export type EvidenceEntry = {
   date: string; // ISO date

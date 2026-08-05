@@ -264,6 +264,7 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
                     isActive={discreteOffset === 0}
                     frozen={isDragging}
                     width={cardWidth}
+                    layoutDependency={`${safeActive}|${selected ?? ""}`}
                     onSelect={() => setSelected(cert.rkey)}
                   />
                 </div>

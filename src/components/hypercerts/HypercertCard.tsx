@@ -89,6 +89,7 @@ export function HypercertCard({
   isActive = true,
   frozen = false,
   width,
+  layoutDependency,
 }: {
   cert: Hypercert
   onSelect: () => void
@@ -102,6 +103,15 @@ export function HypercertCard({
   frozen?: boolean
   /** Explicit width from the carousel; falls back to responsive clamp. */
   width?: number
+  /**
+   * Forwarded to the shared-layout photo's `layoutDependency`. Without
+   * it, framer-motion re-measures the layoutId element on every
+   * render — during a drag that injects a projection transform each
+   * frame, making the photo travel faster than its card. With it, the
+   * layout system only re-measures when this value changes (active
+   * index / detail open), keeping the photo rigid while dragging.
+   */
+  layoutDependency?: unknown
 }) {
   const ref = useRef<HTMLButtonElement>(null)
   const rotateXRaw = useMotionValue(0)
@@ -165,6 +175,7 @@ export function HypercertCard({
         {/* Shared-layout photo → morphs into the detail hero */}
         <motion.div
           layoutId={`cert-media-${cert.rkey}`}
+          layoutDependency={layoutDependency}
           className="absolute inset-0 overflow-hidden rounded-[26px]"
           style={{ borderRadius: 26 }}
         >
