@@ -16,6 +16,7 @@ export default async function ImpactOverviewPage() {
   const heroSection = getSection(page, "hero")
   const cardReport = getSection(page, "card-report-2025")
   const cardDashboard = getSection(page, "card-live-dashboard")
+  const cardHypercerts = getSection(page, "card-hypercerts")
 
   return (
     <div className="max-w-6xl mx-auto px-6 pt-8 pb-16">
@@ -41,6 +42,29 @@ export default async function ImpactOverviewPage() {
 
       {/* Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Link
+          href="/areas/economies-governance/impact/hypercerts/"
+          className="group flex items-center justify-between p-6 bg-gray-50 border border-gray-100 rounded-xl hover:bg-white hover:border-blue/30 hover:shadow-md transition-all"
+        >
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+              <svg className="w-6 h-6 text-blue/60 group-hover:text-blue transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+              </svg>
+              <h2 className="text-lg font-medium text-black group-hover:text-blue transition-colors">
+                {cardHypercerts?.title || "Hypercerts"}
+              </h2>
+            </div>
+            <MarkdownContent
+              content={cardHypercerts?.body || "Research Retreat editions as verifiable impact claims on the ATProto network, with evidence timelines."}
+              className="text-base text-gray-500 leading-relaxed [&_p]:mb-0"
+            />
+          </div>
+          <svg className="w-5 h-5 text-gray-300 group-hover:text-blue group-hover:translate-x-1 transition-all shrink-0 ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </Link>
+
         <Link
           href="/areas/economies-governance/impact/report-2025/"
           className="group flex items-center justify-between p-6 bg-gray-50 border border-gray-100 rounded-xl hover:bg-white hover:border-blue/30 hover:shadow-md transition-all"

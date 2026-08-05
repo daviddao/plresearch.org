@@ -9,6 +9,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
   ROLE_META,
+  PL_ROLE_ORDER,
   TEAM_LINKS,
   resolutionFor,
   inflectionLabel,
@@ -383,7 +384,7 @@ function PatentVintagePanel({ pv }: { pv: NonNullable<InstrumentRecord['patentVi
       {pv.state === 'reading' && (
         <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
           {pv.series && pv.series.length > 1 && (
-            <Sparkline series={pv.series as SeriesPoint[]} width={200} height={56} axis unit="y" />
+            <Sparkline series={pv.series as SeriesPoint[]} width={200} height={56} axis unit="y" interactive />
           )}
           <div className="min-w-[10rem] flex-1">
             {pv.value && <div className="text-lg font-semibold leading-tight text-black">{pv.value}</div>}
@@ -538,12 +539,13 @@ function VelocityModal({
                               height={56}
                               axis
                               unit={r.instrument === 'idea_vintage' ? 'y' : ''}
+                              interactive
                             />
                           </div>
                         )}
                         {r.series2 && r.series2.length > 1 && (
                           <div className="shrink-0">
-                            <Sparkline series={r.series2 as SeriesPoint[]} width={140} height={44} />
+                            <Sparkline series={r.series2 as SeriesPoint[]} width={140} height={44} interactive />
                             <div className="mt-1 text-[10px] text-gray-400">{r.series2Label ?? 'normalizer'}</div>
                           </div>
                         )}
@@ -724,29 +726,49 @@ function CategoryTag({ role }: { role: PLRole }) {
 function InterventionExamples({
   point,
   limit,
+  tagsOnly,
 }: {
   point: InflectionPoint
   limit?: number
+  /** Preview mode: show only the intervention category pills inline, no
+   *  named examples/links (those live in the detail modal). */
+  tagsOnly?: boolean
 }) {
   const items = point.interventions ?? []
-  if (!items.length) {
+  if (tagsOnly || !items.length) {
+    const roles = items.length
+      ? PL_ROLE_ORDER.filter((r) => items.some((it) => it.role === r))
+      : point.roles
     return (
       <div className="flex flex-wrap items-center gap-1.5">
-        {point.roles.map((r) => (
+        {roles.map((r) => (
           <CategoryTag key={r} role={r} />
         ))}
       </div>
     )
   }
   const shown = limit ? items.slice(0, limit) : items
+  // Group by category so multiple examples of one role sit behind a single pill,
+  // comma-separated, rather than repeating the pill per example.
+  const roles = PL_ROLE_ORDER.filter((r) => shown.some((it) => it.role === r))
   return (
     <ul className="flex flex-col gap-2">
-      {shown.map((it, i) => (
-        <li key={i} className="flex items-center gap-2">
-          <CategoryTag role={it.role} />
-          <InterventionLabel item={it} />
-        </li>
-      ))}
+      {roles.map((r) => {
+        const group = shown.filter((it) => it.role === r)
+        return (
+          <li key={r} className="flex items-start gap-2">
+            <CategoryTag role={r} />
+            <span className="text-[13px] leading-snug text-gray-600">
+              {group.map((it, i) => (
+                <span key={i}>
+                  {i > 0 && ', '}
+                  <InterventionLabel item={it} />
+                </span>
+              ))}
+            </span>
+          </li>
+        )
+      })}
     </ul>
   )
 }
@@ -824,7 +846,7 @@ function InflectionCard({
           </span>
           <span className="text-[11px] text-gray-400">· PL R&D interventions</span>
         </div>
-        <InterventionExamples point={point} limit={3} />
+        <InterventionExamples point={point} tagsOnly />
       </div>
 
       {hasLiveSignal && (

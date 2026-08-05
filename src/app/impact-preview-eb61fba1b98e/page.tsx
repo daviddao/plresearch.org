@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Breadcrumb from '@/components/Breadcrumb'
 import ImpactDashboardV2, { type LiveMetric, type LiveOutputs } from '@/components/ImpactDashboardV2'
 import MeasuringQuestionsV2 from '@/components/MeasuringQuestionsV2'
+import { ImpactExperience } from '@/components/hypercerts/ImpactExperience'
+import { fetchResearchRetreatHypercerts } from '@/lib/hypercerts'
 import { fetchSimocracyStats } from '@/lib/simocracy'
 import { fetchGainforestStats } from '@/lib/gainforest'
 import { fetchGlowStats } from '@/lib/glow'
@@ -68,7 +70,11 @@ export const metadata: Metadata = {
 }
 
 export default async function ImpactPage() {
-  const [liveOutputs, marketSignals] = await Promise.all([fetchLiveOutputs(), resolveAllSignals()])
+  const [liveOutputs, marketSignals, certs] = await Promise.all([
+    fetchLiveOutputs(),
+    resolveAllSignals(),
+    fetchResearchRetreatHypercerts(),
+  ])
 
   // Merge any OpenAlex CSV readings (idea vintage + talent entry) into the static
   // instrument records, per focus area. Parsed at build time; absent CSVs are a
@@ -146,6 +152,48 @@ export default async function ImpactPage() {
         </p>
         <MeasuringQuestionsV2 ideaVintageExamples={ideaVintageExamples} />
       </div>
+
+      {/* Hypercerts — the impact claims themselves, as a cover carousel. The
+          toned-down card view of intervention examples lives in the methodology
+          modals above; here we surface only the real, published hypercerts. */}
+      {certs.length > 0 && (
+        <section className="border-t border-gray-200 bg-gray-50">
+          <div className="max-w-6xl mx-auto px-6 py-14 lg:py-16">
+            <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--impact-hand)' }}>
+                  Our hand, as verifiable claims
+                </div>
+                <h2 className="text-xl lg:text-2xl font-semibold tracking-tight mb-2">Recorded as hypercerts</h2>
+                <p className="text-base text-gray-600 leading-relaxed">
+                  A{' '}
+                  <a
+                    href="https://hypercerts.org"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue hover:underline"
+                  >
+                    hypercert
+                  </a>{' '}
+                  is a verifiable, evolving record of impactful work &mdash; what was done, by whom, and where.
+                  Each Research Retreat edition is published as one on open infrastructure PL R&amp;D helped
+                  originate. Open a card to walk its evidence timeline.
+                </p>
+              </div>
+              <a
+                href="/areas/economies-governance/impact/hypercerts/"
+                className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-blue/40 hover:text-blue hover:shadow-sm"
+              >
+                See all impact claims
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            </div>
+            <ImpactExperience certs={certs} detailVariant="modal" />
+          </div>
+        </section>
+      )}
     </div>
   )
 }

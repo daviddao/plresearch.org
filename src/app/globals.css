@@ -236,6 +236,27 @@ ul:not([class]) li li {
   .gf-track { animation: none; }
 }
 
+/* ===== Hypercert cards (impact/hypercerts) ===== */
+/* On-photo surfaces (card + detail hero) always sit on a photograph,
+   so their white text / dark scrims are intentional in both themes.
+   Dark mode remaps the semantic color tokens site-wide (white↔black),
+   which would flip the overlay text to near-black on the photo — so,
+   like the footer, we re-pin the tokens back to their literal values
+   inside these surfaces. */
+html.dark .hypercert-on-photo {
+  --color-white: #ffffff;
+  --color-black: #131316;
+}
+
+@keyframes hypercert-pulse-dot {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+.hypercert-pulse-dot { animation: hypercert-pulse-dot 2.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .hypercert-pulse-dot { animation: none; }
+}
+
 /* ===== Sticky nav ===== */
 [data-selector="nav"] [data-selector="nav-contents"] {
   transition: padding-top .4s ease-in-out, padding-bottom .4s ease-in-out;

@@ -349,8 +349,8 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     },
     roles: ['connection', 'translation'],
     interventions: [
-      { role: 'translation', label: 'Simocracy', href: 'https://www.simocracy.org/' },
-      { role: 'translation', label: 'Broad Listening', href: 'https://broadlistening.org/' },
+      { role: 'translation', label: 'Simocracy', href: 'https://simocracy.org/' },
+      { role: 'translation', label: 'Broad Listening', href: 'https://www.broadlistening.org/' },
       { role: 'connection', label: 'Government–tool convenings' },
       { role: 'legibility', label: 'Latest Economies & Governance insights', href: '/insights/?area=economies-governance' },
     ],

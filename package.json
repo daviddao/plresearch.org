@@ -19,6 +19,7 @@
     "@next/third-parties": "^15.5.20",
     "d3-force": "^3.0.0",
     "envalid": "^8.1.1",
+    "framer-motion": "^13.0.0",
     "fuse.js": "^7.0.0",
     "iron-session": "^8.0.4",
     "next": "15.5.9",
