@@ -6,10 +6,10 @@
 // curated entries with live community evidence pulled from the ATProto
 // network via Constellation. Restyled to the plrd.org design system.
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import type { EvidenceEntry, EvidenceKind, Hypercert } from "@/data/hypercerts"
-import FundingCheckout, { FundEffortButton } from "@/components/FundingFlow"
+import FundingCheckout, { FundEffortButton, type MorphFrom } from "@/components/FundingFlow"
 import {
   Avatar,
   CommentsSection,
@@ -258,6 +258,23 @@ export function HypercertDetail({
   const isModal = variant === "modal"
   const { data: activity, loading } = useLiveActivity(cert)
   const [funding, setFunding] = useState(false)
+  // Rect of the hero card at click time, so the funding checkout can fly a
+  // clone of it down into its contact-sheet card slot.
+  const [morphFrom, setMorphFrom] = useState<MorphFrom | null>(null)
+  const heroRef = useRef<HTMLDivElement>(null)
+
+  const openFunding = () => {
+    const el = heroRef.current
+    if (el) {
+      const r = el.getBoundingClientRect()
+      setMorphFrom({ top: r.top, left: r.left, width: r.width, height: r.height, image: cert.image })
+    }
+    setFunding(true)
+  }
+  const closeFunding = () => {
+    setFunding(false)
+    setMorphFrom(null)
+  }
 
   // Lock body scroll while the overlay is open.
   useEffect(() => {
@@ -331,7 +348,7 @@ export function HypercertDetail({
             <span aria-hidden>{isModal ? "✕" : "←"}</span> {isModal ? "Close" : "Back to hypercerts"}
           </button>
           <div className="flex items-center gap-4">
-            <FundEffortButton onClick={() => setFunding(true)} />
+            <FundEffortButton onClick={openFunding} />
             {cert.claim && (
               <a
                 href={`https://pdsls.dev/${cert.claim.uri}`}
@@ -346,19 +363,22 @@ export function HypercertDetail({
         </motion.div>
 
         {/* Fund-this-effort checkout (GoFundMe-style: individual efforts or a
-            pre-curated collection, then choose an amount) */}
+            pre-curated collection, then choose an amount). The hero card flies
+            down into its contact-sheet slot as the checkout opens. */}
         <AnimatePresence>
           {funding && (
             <FundingCheckout
               certs={certs ?? [cert]}
               initialRkey={cert.rkey}
-              onClose={() => setFunding(false)}
+              morphFrom={morphFrom}
+              onClose={closeFunding}
             />
           )}
         </AnimatePresence>
 
         {/* Hero (shared-layout morph from the card photo) */}
         <motion.div
+          ref={heroRef}
           // In the contained modal the whole panel zooms as a unit, so the hero
           // does NOT cross-morph (a transform on this ancestor would fight the
           // shared-layout projection). The full-bleed page keeps the morph.

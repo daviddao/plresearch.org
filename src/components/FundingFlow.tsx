@@ -12,10 +12,14 @@
 //   • run a mock pay → confirmation.
 // There is no price on any effort — the funder chooses what to give.
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Hypercert } from '@/data/hypercerts'
+
+/** Viewport rect of the detail hero at click time, so the checkout can fly a
+ *  clone of that card down into its contact-sheet slot. */
+export type MorphFrom = { top: number; left: number; width: number; height: number; image: string }
 
 // Consumer-scale preset tiers (GoFundMe-style). Not a price — a suggestion.
 const PRESETS = [25, 50, 100, 250]
@@ -86,11 +90,14 @@ export function FundEffortButton({ onClick }: { onClick: () => void }) {
 export default function FundingCheckout({
   certs,
   initialRkey,
+  morphFrom,
   onClose,
 }: {
   certs: Hypercert[]
   /** The hypercert the checkout was opened from — pre-selected. */
   initialRkey?: string
+  /** Hero rect to fly a clone down from into the launching card's slot. */
+  morphFrom?: MorphFrom | null
   onClose: () => void
 }) {
   const collections = useMemo(() => buildCollections(certs), [certs])
@@ -104,6 +111,20 @@ export default function FundingCheckout({
   const [amount, setAmount] = useState<number>(DEFAULT_AMOUNT)
   const [custom, setCustom] = useState(false)
   const [method, setMethod] = useState<'USDC' | 'Card' | 'Wire'>('USDC')
+
+  // Fly-down clone: measure the launching card's slot on mount, then animate a
+  // fixed clone of the hero from its click-time rect into that slot.
+  const launchRef = useRef<HTMLButtonElement | null>(null)
+  const [clone, setClone] = useState<{ from: MorphFrom; to: MorphFrom } | null>(null)
+  useLayoutEffect(() => {
+    if (!morphFrom || !launchRef.current) return
+    const r = launchRef.current.getBoundingClientRect()
+    setClone({
+      from: morphFrom,
+      to: { top: r.top, left: r.left, width: r.width, height: r.height, image: morphFrom.image },
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Lock body scroll + close on Escape while the checkout is open.
   useEffect(() => {
@@ -199,15 +220,24 @@ export default function FundingCheckout({
                 evidence trail.
               </p>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
-                {certs.map((c, i) => (
-                  <EffortCard
-                    key={c.rkey}
-                    cert={c}
-                    index={i}
-                    selected={selected.has(c.rkey)}
-                    onToggle={() => toggleCert(c.rkey)}
-                  />
-                ))}
+                {certs.map((c, i) => {
+                  const isLaunch = c.rkey === initialRkey
+                  return (
+                    <EffortCard
+                      key={c.rkey}
+                      cert={c}
+                      index={i}
+                      selected={selected.has(c.rkey)}
+                      onToggle={() => toggleCert(c.rkey)}
+                      // The launching card is the morph target: skip its
+                      // fan-out so its slot is measurable immediately, and hide
+                      // it until the flying clone lands.
+                      noEntrance={isLaunch && Boolean(morphFrom)}
+                      hidden={isLaunch && Boolean(clone)}
+                      innerRef={isLaunch ? (el) => (launchRef.current = el) : undefined}
+                    />
+                  )
+                })}
               </div>
             </>
           ) : (
@@ -300,6 +330,33 @@ export default function FundingCheckout({
           />
         </aside>
       </div>
+
+      {/* Flying clone — shrinks the hero card into its contact-sheet slot */}
+      {clone && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <motion.img
+          src={clone.from.image}
+          alt=""
+          className="pointer-events-none fixed object-cover shadow-2xl"
+          style={{ zIndex: 90 }}
+          initial={{
+            top: clone.from.top,
+            left: clone.from.left,
+            width: clone.from.width,
+            height: clone.from.height,
+            borderRadius: 22,
+          }}
+          animate={{
+            top: clone.to.top,
+            left: clone.to.left,
+            width: clone.to.width,
+            height: clone.to.height,
+            borderRadius: 12,
+          }}
+          transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          onAnimationComplete={() => setClone(null)}
+        />
+      )}
     </motion.div>,
     document.body,
   )
@@ -310,20 +367,29 @@ function EffortCard({
   index,
   selected,
   onToggle,
+  innerRef,
+  noEntrance,
+  hidden,
 }: {
   cert: Hypercert
   index: number
   selected: boolean
   onToggle: () => void
+  innerRef?: (el: HTMLButtonElement | null) => void
+  /** Skip the fan-out entrance (used for the morph-target card). */
+  noEntrance?: boolean
+  /** Keep the slot but hide the card while the flying clone lands on it. */
+  hidden?: boolean
 }) {
   return (
     <motion.button
+      ref={innerRef}
       type="button"
       onClick={onToggle}
       aria-pressed={selected}
-      initial={{ opacity: 0, y: 14, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay: Math.min(index * 0.03, 0.3), duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+      initial={noEntrance ? false : { opacity: 0, y: 14, scale: 0.96 }}
+      animate={{ opacity: hidden ? 0 : 1, y: 0, scale: 1 }}
+      transition={{ delay: noEntrance ? 0 : Math.min(index * 0.03, 0.3), duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
       whileHover={{ y: -3 }}
       className={`group relative flex aspect-[4/5] flex-col overflow-hidden rounded-xl border text-left transition-shadow ${
         selected ? 'border-blue ring-2 ring-blue/40' : 'border-gray-200 hover:shadow-md'
