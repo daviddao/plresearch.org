@@ -18,6 +18,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import type { Hypercert } from '@/data/hypercerts'
 import { FOCUS_AREAS, type FocusAreaKey } from '@/lib/inflection-points'
 import { AreaIcon, type AreaIconType } from '@/components/AreaIcons'
+import { TOOLKIT_V2, HAND_COLOR } from '@/lib/field-velocity'
+
+// Public URL of this prototype page, used for the share-on-X link.
+const SHARE_URL = 'https://www.plrd.org/impact-preview-eb61fba1b98e/'
 
 /** Viewport rect of the detail hero at click time, so the checkout can fly a
  *  clone of that card down into its contact-sheet slot. */
@@ -65,6 +69,7 @@ function usd(n: number): string {
 }
 
 type Mode = 'individual' | 'collections'
+type CollectionGroup = 'focus' | 'intervention'
 type Step = 'select' | 'pay' | 'done'
 type PayMethod = 'USDC' | 'Card' | 'PayPal' | 'Apple Pay' | 'Wire'
 
@@ -101,6 +106,7 @@ export default function FundingCheckout({
   onClose: () => void
 }) {
   const [mode, setMode] = useState<Mode>('individual')
+  const [collectionGroup, setCollectionGroup] = useState<CollectionGroup>('focus')
   const [step, setStep] = useState<Step>('select')
   const [selected, setSelected] = useState<Set<string>>(
     () => new Set(initialRkey ? [initialRkey] : []),
@@ -155,6 +161,22 @@ export default function FundingCheckout({
           comingSoon: !live,
         }
       }),
+    [certs],
+  )
+
+  // Intervention-type collections — the PL R&D toolkit from the methodology
+  // section. In this prototype every intervention backs the live claims; the
+  // copy frames the gift around the kind of work being funded.
+  const interventionCollections = useMemo(
+    () =>
+      TOOLKIT_V2.map((t) => ({
+        key: t.id,
+        label: t.title,
+        subtitle: t.subtitle,
+        oneLiner: t.oneLiner,
+        rkeys: certs.map((c) => c.rkey),
+        images: certs.map((c) => c.image),
+      })),
     [certs],
   )
 
@@ -247,6 +269,7 @@ export default function FundingCheckout({
                   trail; other focus areas are <span className="font-medium text-gray-600">coming soon</span>.
                 </p>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+                  <FundCollectionCta onClick={() => setMode('collections')} />
                   {certs.map((c, i) => (
                     <EffortCard
                       key={c.rkey}
@@ -267,7 +290,7 @@ export default function FundingCheckout({
             ) : (
               <>
                 <p className="mb-4 max-w-2xl text-sm leading-relaxed text-gray-500">
-                  Fund a whole focus area in one move. You can still fine-tune the mix under{' '}
+                  Fund a whole group in one move. You can still fine-tune the mix under{' '}
                   <button
                     type="button"
                     onClick={() => setMode('individual')}
@@ -277,20 +300,57 @@ export default function FundingCheckout({
                   </button>
                   .
                 </p>
-                <div className="flex flex-col gap-3.5">
-                  {collections.map((col) => (
-                    <CollectionRow
-                      key={col.key}
-                      area={col.key}
-                      label={col.label}
-                      images={col.images}
-                      count={col.rkeys.length}
-                      comingSoon={col.comingSoon}
-                      active={activeCollection === col.key}
-                      onPick={() => pickCollection(col.key, col.rkeys, col.comingSoon)}
-                    />
+                <div className="mb-5 inline-flex rounded-full border border-gray-200 bg-gray-50 p-1">
+                  {(
+                    [
+                      ['focus', 'By focus area'],
+                      ['intervention', 'By intervention type'],
+                    ] as const
+                  ).map(([g, label]) => (
+                    <button
+                      key={g}
+                      type="button"
+                      aria-pressed={collectionGroup === g}
+                      onClick={() => setCollectionGroup(g)}
+                      className={`rounded-full px-3.5 py-1.5 text-[12.5px] font-semibold transition-all ${
+                        collectionGroup === g ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'
+                      }`}
+                    >
+                      {label}
+                    </button>
                   ))}
                 </div>
+                {collectionGroup === 'focus' ? (
+                  <div className="flex flex-col gap-3.5">
+                    {collections.map((col) => (
+                      <CollectionRow
+                        key={col.key}
+                        area={col.key}
+                        label={col.label}
+                        images={col.images}
+                        count={col.rkeys.length}
+                        comingSoon={col.comingSoon}
+                        active={activeCollection === col.key}
+                        onPick={() => pickCollection(col.key, col.rkeys, col.comingSoon)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3.5">
+                    {interventionCollections.map((col) => (
+                      <InterventionRow
+                        key={col.key}
+                        label={col.label}
+                        subtitle={col.subtitle}
+                        oneLiner={col.oneLiner}
+                        images={col.images}
+                        count={col.rkeys.length}
+                        active={activeCollection === col.key}
+                        onPick={() => pickCollection(col.key, col.rkeys, false)}
+                      />
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -436,6 +496,100 @@ function MockCard({ area, title, index }: { area: FocusAreaKey; title: string; i
         <span className="line-clamp-2 block text-[12px] font-semibold leading-snug text-gray-500 blur-[0.3px]">{title}</span>
       </span>
     </motion.div>
+  )
+}
+
+// Grid-cell CTA (same footprint as an effort card) that jumps to Collections.
+function FundCollectionCta({ onClick }: { onClick: () => void }) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      initial={{ opacity: 0, y: 14, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+      whileHover={{ y: -3 }}
+      className="group relative flex aspect-[4/5] flex-col items-center justify-center gap-2 overflow-hidden rounded-xl border border-dashed border-blue/40 bg-blue/5 p-3 text-center transition-shadow hover:shadow-md"
+    >
+      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue/10 text-blue">
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </span>
+      <span className="text-[13px] font-semibold leading-snug text-blue">Fund a collection instead</span>
+      <span className="text-[10px] leading-snug text-blue/70">Back a focus area or intervention type in one move</span>
+    </motion.button>
+  )
+}
+
+// Intervention-type collection row (PL R&D toolkit). Styled like a focus-area
+// row but tinted with the “our hand” intervention color and lettered badges.
+function InterventionRow({
+  label,
+  subtitle,
+  oneLiner,
+  images,
+  count,
+  active,
+  onPick,
+}: {
+  label: string
+  subtitle: string
+  oneLiner: string
+  images: string[]
+  count: number
+  active: boolean
+  onPick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onPick}
+      className={`flex items-center gap-4 rounded-2xl border p-4 text-left transition-all ${
+        active ? 'border-blue ring-2 ring-blue/30' : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+      }`}
+    >
+      {/* Lettered badge + stacked live thumbnails */}
+      <div className="flex shrink-0 -space-x-3.5">
+        <span
+          className="z-10 flex h-16 w-16 items-center justify-center rounded-xl border-2 border-white text-lg font-bold text-white shadow-sm"
+          style={{ background: HAND_COLOR }}
+        >
+          {label[0]}
+        </span>
+        {images.slice(0, 2).map((src) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={src}
+            src={src}
+            alt=""
+            className="h-16 w-16 rounded-xl border-2 border-white object-cover shadow-sm"
+          />
+        ))}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <span className="text-[15.5px] font-semibold text-black">{label}</span>
+          <span className="hidden text-[12px] font-medium text-gray-400 sm:inline">· {subtitle}</span>
+          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-gray-500">
+            {count}
+          </span>
+        </div>
+        <p className="mt-1 text-[13px] leading-snug text-gray-500">{oneLiner}</p>
+      </div>
+
+      <span
+        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all ${
+          active ? 'border-blue bg-blue text-white' : 'border-gray-300 text-transparent'
+        }`}
+      >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+        </svg>
+      </span>
+    </button>
   )
 }
 
@@ -624,7 +778,25 @@ function AmountPanel({
           {count === 1 ? '' : 's'}. In production this would mint an on-chain funding record against each
           hypercert.
         </p>
-        <div className="mt-6 flex gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            const text = `I just backed ${count} PL R&D effort${
+              count === 1 ? '' : 's'
+            } accelerating open, verifiable science with a ${usd(amount)} gift. Fund the future of computing 👇`
+            const url = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(
+              SHARE_URL,
+            )}`
+            window.open(url, '_blank', 'noopener,noreferrer')
+          }}
+          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-black px-4 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-125"
+        >
+          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.45-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z" />
+          </svg>
+          Share on X
+        </button>
+        <div className="mt-3 flex gap-2">
           <button
             type="button"
             onClick={onReset}
