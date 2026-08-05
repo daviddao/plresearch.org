@@ -98,7 +98,13 @@ export const TOOLKIT_V2: ToolkitEntry[] = [
     title: 'Funding',
     subtitle: 'grants, prizes & fellowships',
     oneLiner: 'Early money and prizes where small amounts unlock outsized effort.',
-    examples: [],
+    examples: [
+      {
+        label: 'FIL-PropGF',
+        href: 'https://www.filecoin.io/blog/introducing-fil-propgf-a-new-era-in-community-led-public-goods-funding-for-the-filecoin-ecosystem',
+        blurb: 'Community-led public goods funding for the Filecoin ecosystem.',
+      },
+    ],
     description:
       'Many important ideas are too early for venture capital and too applied for traditional academic funding. Some need small grants to test whether a primitive works. Others need prizes, RFPs, fellowships, or retroactive funding to pull effort into an underbuilt area. A well-designed prize does more than pay out: it defines what counts as "first" in a field and sets the ambition bar for everyone watching. Where breakthrough variance is the goal, we prefer funding people over projects, with longer horizons and tolerance for early failure. Some of the highest-return grants buy entry rather than output: fellowships, residencies with equipment access, and support for the educators who give newcomers their first hands-on contact with a field. PL R&D deploys and helps coordinate early funding where a field-level bottleneck is clear and where small early funding can unlock much larger downstream effort.',
   },
@@ -120,6 +126,7 @@ export const TOOLKIT_V2: ToolkitEntry[] = [
     oneLiner: 'Open protocols and cheap tools that collapse the cost of trying things.',
     examples: [
       { label: 'atproto', href: 'https://atproto.com/', blurb: 'The open protocol behind Bluesky.' },
+      { label: 'IPFS', href: 'https://ipfs.tech/', blurb: 'The content-addressed storage protocol.' },
     ],
     description:
       'Sometimes the missing piece is open protocols, public-good infrastructure, or neutral rails that no single company has sufficient incentive to build alone. When a missing primitive or shared infrastructure layer is blocking a field, PL R&D may help build it directly, support the teams building it, or coordinate an ecosystem capable of maintaining it over time. Two kinds of rails get special attention. Tool-cost infrastructure: open reference designs, shared facilities, and instrument cost-down programs that collapse the price of trying things, especially in hardware fields where a single experiment can cost a career. And attribution infrastructure: content-addressed, timestamped records of who built what, and when, so that priority and credit work for protocols, designs, datasets, and negative results the way they already work for papers.',

@@ -306,6 +306,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     interventions: [
       { role: 'infrastructure', label: 'Filecoin + the open-compute portfolio', href: 'https://filecoin.io/' },
       { role: 'capital', label: 'Fluence, Spheron, Expanso, Fleek', href: 'https://fluence.network/' },
+      { role: 'capital', label: 'Prime Intellect', href: 'https://primeintellect.ai/' },
       { role: 'legibility', label: 'Latest Digital Human Rights insights', href: '/insights/?area=digital-human-rights' },
     ],
   },
@@ -328,6 +329,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     interventions: [
       { role: 'permission', label: 'DPI standards & procurement playbooks' },
       { role: 'connection', label: 'Sovereign–builder convenings (Funding the Commons)', href: 'https://fundingthecommons.io/' },
+      { role: 'connection', label: 'AI4PG', href: 'https://www.ai4pg.com/' },
       { role: 'legibility', label: 'Latest Economies & Governance insights', href: '/insights/?area=economies-governance' },
     ],
   },
@@ -344,9 +346,10 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
       activities: 'Supporting mechanism teams and convening government teams with tool teams.',
       outputs: 'Simocracy and broad-listening tools, and the government–tool convenings around them.',
     },
-    roles: ['connection', 'capital'],
+    roles: ['connection', 'translation'],
     interventions: [
-      { role: 'capital', label: 'Simocracy & broad-listening tools' },
+      { role: 'translation', label: 'Simocracy', href: 'https://www.simocracy.org/' },
+      { role: 'translation', label: 'Broad Listening', href: 'https://broadlistening.org/' },
       { role: 'connection', label: 'Government–tool convenings' },
       { role: 'legibility', label: 'Latest Economies & Governance insights', href: '/insights/?area=economies-governance' },
     ],
@@ -395,6 +398,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     roles: ['legibility', 'connection', 'capital'],
     interventions: [
       { role: 'capital', label: 'GainForest, Glow, WeatherXM (MRV teams)', href: 'https://gainforest.earth/' },
+      { role: 'capital', label: 'Hypercerts', href: 'https://hypercerts.org/' },
       { role: 'connection', label: 'Verification benchmark & standards convenings' },
       { role: 'legibility', label: 'Latest Economies & Governance insights', href: '/insights/?area=economies-governance' },
     ],
@@ -544,7 +548,7 @@ export const INFLECTION_POINTS: InflectionPoint[] = [
     roles: ['infrastructure', 'capital'],
     interventions: [
       { role: 'infrastructure', label: 'Shared robotics-data network primitives' },
-      { role: 'capital', label: 'Funding for robotics-data teams' },
+      { role: 'capital', label: 'BitRobot', href: 'https://bitrobot.ai/' },
       { role: 'legibility', label: 'Latest AI & Robotics insights', href: '/insights/?area=ai-robotics' },
     ],
   },
