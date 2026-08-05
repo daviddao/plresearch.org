@@ -3,7 +3,6 @@ import Breadcrumb from '@/components/Breadcrumb'
 import ImpactDashboardV2, { type LiveMetric, type LiveOutputs } from '@/components/ImpactDashboardV2'
 import MeasuringQuestionsV2 from '@/components/MeasuringQuestionsV2'
 import { ImpactExperience } from '@/components/hypercerts/ImpactExperience'
-import FundingFlow from '@/components/FundingFlow'
 import { fetchResearchRetreatHypercerts } from '@/lib/hypercerts'
 import { fetchSimocracyStats } from '@/lib/simocracy'
 import { fetchGainforestStats } from '@/lib/gainforest'
@@ -182,7 +181,6 @@ export default async function ImpactPage() {
                 </p>
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-3">
-                <FundingFlow certs={certs} />
                 <a
                   href="/areas/economies-governance/impact/hypercerts/"
                   className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-blue/40 hover:text-blue hover:shadow-sm"

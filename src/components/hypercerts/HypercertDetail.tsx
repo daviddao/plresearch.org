@@ -7,8 +7,9 @@
 // network via Constellation. Restyled to the plrd.org design system.
 
 import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import type { EvidenceEntry, EvidenceKind, Hypercert } from "@/data/hypercerts"
+import FundingCheckout, { FundEffortButton } from "@/components/FundingFlow"
 import {
   Avatar,
   CommentsSection,
@@ -252,6 +253,7 @@ export function HypercertDetail({
 }) {
   const isModal = variant === "modal"
   const { data: activity, loading } = useLiveActivity(cert)
+  const [funding, setFunding] = useState(false)
 
   // Lock body scroll while the overlay is open.
   useEffect(() => {
@@ -291,13 +293,24 @@ export function HypercertDetail({
       transition={{ duration: 0.25 }}
       onClick={isModal ? onClose : undefined}
     >
-      <div
+      <motion.div
         className={
           isModal
             ? "relative my-4 w-full max-w-4xl rounded-2xl bg-white shadow-2xl px-6 pb-16 pt-6 lg:px-10"
             : "mx-auto max-w-5xl px-6 pb-24 pt-6 lg:px-10"
         }
         onClick={isModal ? (e) => e.stopPropagation() : undefined}
+        {...(isModal
+          ? {
+              // Zoom the whole panel in as one unit so the white frame and the
+              // photo arrive together (elegant), instead of the box popping in.
+              initial: { opacity: 0, scale: 0.92 },
+              animate: { opacity: 1, scale: 1 },
+              exit: { opacity: 0, scale: 0.96 },
+              transition: { type: "spring" as const, stiffness: 240, damping: 24 },
+              style: { transformOrigin: "center" },
+            }
+          : {})}
       >
         {/* Back */}
         <motion.div
@@ -313,21 +326,32 @@ export function HypercertDetail({
           >
             <span aria-hidden>{isModal ? "✕" : "←"}</span> {isModal ? "Close" : "Back to hypercerts"}
           </button>
-          {cert.claim && (
-            <a
-              href={`https://pdsls.dev/${cert.claim.uri}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`${eyebrow} text-gray-400 transition hover:text-blue`}
-            >
-              View claim record ↗
-            </a>
-          )}
+          <div className="flex items-center gap-4">
+            <FundEffortButton onClick={() => setFunding(true)} />
+            {cert.claim && (
+              <a
+                href={`https://pdsls.dev/${cert.claim.uri}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${eyebrow} text-gray-400 transition hover:text-blue`}
+              >
+                View claim record ↗
+              </a>
+            )}
+          </div>
         </motion.div>
+
+        {/* Fund-this-effort checkout (GoFundMe-style: choose an amount) */}
+        <AnimatePresence>
+          {funding && <FundingCheckout cert={cert} onClose={() => setFunding(false)} />}
+        </AnimatePresence>
 
         {/* Hero (shared-layout morph from the card photo) */}
         <motion.div
-          layoutId={`cert-media-${cert.rkey}`}
+          // In the contained modal the whole panel zooms as a unit, so the hero
+          // does NOT cross-morph (a transform on this ancestor would fight the
+          // shared-layout projection). The full-bleed page keeps the morph.
+          layoutId={isModal ? undefined : `cert-media-${cert.rkey}`}
           className="hypercert-on-photo relative overflow-hidden"
           style={{ borderRadius: 26, aspectRatio: "16 / 9" }}
         >
@@ -511,7 +535,7 @@ export function HypercertDetail({
         >
           <CommentsSection cert={cert} activity={activity} loading={loading} />
         </motion.div>
-      </div>
+      </motion.div>
     </motion.div>
   )
 }
