@@ -366,9 +366,9 @@ export default function FundingCheckout({
         {/* Body */}
         <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[1fr_380px]">
           {/* Left — individual cards or per-focus-area collections */}
-          <div ref={scrollRef} className="min-h-0 overflow-y-auto">
-            {/* Sticky controls: mode toggle + filters / sort */}
-            <div className="sticky top-0 z-20 border-b border-gray-100 bg-white/95 px-6 pb-3 pt-6 backdrop-blur">
+          <div className="flex min-h-0 flex-col">
+            {/* Fixed controls: mode toggle + filters / sort (always visible) */}
+            <div className="shrink-0 border-b border-gray-100 bg-white px-6 pb-3 pt-6">
               <div className="inline-flex rounded-full border border-gray-200 bg-gray-50 p-1">
                 {(
                   [
@@ -418,30 +418,22 @@ export default function FundingCheckout({
                   />
                 </div>
               ) : (
-                <div className="mt-3 inline-flex rounded-full border border-gray-200 bg-gray-50 p-1">
-                  {(
-                    [
-                      ['focus', 'By focus area'],
-                      ['intervention', 'By intervention type'],
-                    ] as const
-                  ).map(([g, label]) => (
-                    <button
-                      key={g}
-                      type="button"
-                      aria-pressed={collectionGroup === g}
-                      onClick={() => setCollectionGroup(g)}
-                      className={`rounded-full px-3.5 py-1.5 text-[12.5px] font-semibold transition-all ${
-                        collectionGroup === g ? 'bg-white text-black shadow-sm' : 'text-gray-500 hover:text-black'
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  ))}
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <FilterSelect
+                    label="Group by"
+                    value={collectionGroup}
+                    onChange={(v) => setCollectionGroup(v as CollectionGroup)}
+                    options={[
+                      { value: 'focus', label: 'Focus area' },
+                      { value: 'intervention', label: 'Intervention type' },
+                    ]}
+                  />
                 </div>
               )}
             </div>
 
-            <div className="px-6 pb-6 pt-4">
+            {/* Scrollable list */}
+            <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-4">
               {mode === 'individual' ? (
                 <>
                   {gridItems.length === 0 ? (
@@ -475,17 +467,6 @@ export default function FundingCheckout({
                       Loading more efforts…
                     </div>
                   )}
-
-                  {/* Understated text link (not a card) to the collections view */}
-                  <div className="mt-6 border-t border-gray-100 pt-5 text-center">
-                    <button
-                      type="button"
-                      onClick={() => setMode('collections')}
-                      className="text-[13px] font-medium text-gray-500 underline decoration-gray-300 underline-offset-4 transition-colors hover:text-blue hover:decoration-blue"
-                    >
-                      Or fund a whole collection instead →
-                    </button>
-                  </div>
                 </>
               ) : (
                 <>
@@ -546,6 +527,19 @@ export default function FundingCheckout({
                 </>
               )}
             </div>
+
+            {/* Always-visible footer link (not a card) to the collections view */}
+            {mode === 'individual' && (
+              <div className="shrink-0 border-t border-gray-100 bg-white px-6 py-3 text-center">
+                <button
+                  type="button"
+                  onClick={() => setMode('collections')}
+                  className="text-[13px] font-medium text-gray-500 underline decoration-gray-300 underline-offset-4 transition-colors hover:text-blue hover:decoration-blue"
+                >
+                  Fund a whole collection instead →
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Right — selection + amount + checkout */}
