@@ -8,7 +8,12 @@
 
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import type { EvidenceEntry, EvidenceKind, Hypercert } from "@/data/hypercerts"
+import type {
+  EvidenceEntry,
+  EvidenceKind,
+  Hypercert,
+  RoiAttribution,
+} from "@/data/hypercerts"
 import { useAuth } from "@/lib/atproto"
 import {
   Avatar,
@@ -243,6 +248,93 @@ function LiveEvidenceRow({
         </motion.div>
       </div>
     </article>
+  )
+}
+
+// ── Social RoI attribution (Shapley decomposition) ─────────────────
+
+const RETREAT_COLORS = ["#1982F4", "#3966FE", "#3158A5", "#839BC9", "#C3E1FF"]
+const COMMUNITY_COLORS = ["#0d9488", "#14b8a6", "#5eead4", "#99f6e4"]
+
+function attributionColor(items: RoiAttribution[], index: number): string {
+  const item = items[index]
+  const palette = item.group === "retreat" ? RETREAT_COLORS : COMMUNITY_COLORS
+  const nth = items.slice(0, index).filter((a) => a.group === item.group).length
+  return palette[nth % palette.length]
+}
+
+function fmtUsd(n: number): string {
+  return n >= 1_000_000 ? `$${(n / 1_000_000).toFixed(1)}M` : `$${Math.round(n / 1000)}k`
+}
+
+function SocialRoiAttribution({ items }: { items: RoiAttribution[] }) {
+  return (
+    <div className="mt-8 border-t border-gray-200 pt-6">
+      <div className="flex flex-wrap items-baseline justify-between gap-2">
+        <p className={`${eyebrow} text-gray-500`}>
+          Where the social return comes from
+        </p>
+        <p className={`${eyebrow} text-gray-400`}>Shapley attribution · est.</p>
+      </div>
+
+      {/* Stacked share bar — segments grow in, staggered */}
+      <div className="mt-3 flex h-7 w-full overflow-hidden rounded-full">
+        {items.map((a, i) => (
+          <motion.div
+            key={a.label}
+            className="group/seg relative h-full cursor-default"
+            style={{ background: attributionColor(items, i) }}
+            title={`${a.label} — ${(a.share * 100).toFixed(1)}% · ≈${fmtUsd(a.amountUsd)}`}
+            initial={{ width: 0 }}
+            animate={{ width: `${a.share * 100}%` }}
+            transition={{ delay: 0.15 + i * 0.07, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+          >
+            <span className="absolute inset-0 opacity-0 transition-opacity group-hover/seg:opacity-100" style={{ background: "rgba(255,255,255,0.25)" }} />
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Group brackets */}
+      <div className="mt-2 flex text-[9px] font-semibold uppercase tracking-[0.14em] text-gray-400">
+        {(["retreat", "community"] as const).map((g) => {
+          const total = items.filter((a) => a.group === g).reduce((s, a) => s + a.share, 0)
+          return (
+            <span key={g} className="truncate pr-2" style={{ width: `${total * 100}%` }}>
+              {g === "retreat" ? "Retreat chain" : "Community outcomes"} ·{" "}
+              {Math.round(total * 100)}%
+            </span>
+          )
+        })}
+      </div>
+
+      {/* Legend */}
+      <div className="mt-4 grid grid-cols-1 gap-x-8 gap-y-1.5 sm:grid-cols-2">
+        {items.map((a, i) => (
+          <div key={a.label} className="flex items-center gap-2 text-[12.5px]">
+            <span
+              aria-hidden
+              className="h-2.5 w-2.5 shrink-0 rounded-[3px]"
+              style={{ background: attributionColor(items, i) }}
+            />
+            <span className="min-w-0 flex-1 truncate text-gray-600">{a.label}</span>
+            <span className="shrink-0 font-semibold text-black">
+              {(a.share * 100).toFixed(1)}%
+            </span>
+            <span className="w-12 shrink-0 text-right text-gray-500">
+              {fmtUsd(a.amountUsd)}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <p className="mt-4 max-w-2xl text-[11.5px] leading-relaxed text-gray-400">
+        Estimated with an exact Shapley decomposition over a counterfactual
+        model of this timeline: each documented outcome needs its own
+        execution plus the retreat&apos;s enabling chain (convening → sessions
+        → publication → open release), with partial substitutability for the
+        later links. Shares sum to the documented social return.
+      </p>
+    </div>
   )
 }
 
@@ -527,6 +619,9 @@ export function HypercertDetail({
                 {cert.funding.roiNote}
               </p>
             </div>
+            {cert.funding.attribution && (
+              <SocialRoiAttribution items={cert.funding.attribution} />
+            )}
           </motion.div>
         )}
 

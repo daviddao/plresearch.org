@@ -36,6 +36,16 @@ export type EvidenceEntry = {
 
 export type HypercertStatus = "past" | "live" | "upcoming";
 
+/** One slice of the Shapley decomposition of the social return. */
+export type RoiAttribution = {
+  label: string;
+  /** Shapley share of the documented social return (0–1). */
+  share: number;
+  amountUsd: number;
+  /** Enabling retreat chain vs. documented community outcomes. */
+  group: "retreat" | "community";
+};
+
 export type Hypercert = {
   /** Record key used as a stable identifier / anchor. */
   rkey: string;
@@ -78,6 +88,12 @@ export type Hypercert = {
     costLabel: string;
     roiLabel: string;
     roiNote: string;
+    /**
+     * Shapley attribution of the documented social return across the
+     * evidence timeline (see the methodology note in the detail UI).
+     * Shares sum to ~1 and map to the documented downstream value.
+     */
+    attribution?: RoiAttribution[];
   };
   // ── Claim record fields ─────────────────────────────────────
   title: string;
@@ -116,6 +132,23 @@ export const HYPERCERTS: Hypercert[] = [
       roiLabel: "20×",
       roiNote:
         "The Iceland edition cost 140,000 USD to run. It seeded the Hypercerts v2 redesign that raised about 2.2M USD from 12,000 donors, helped close the GG24 Deep Funding (400K matching pool) and AI4PG (150K) rounds, and launched Simocracy, which now governs more than 50K of funding. Roughly a 20× social return on investment so far, documented as attachment records in the timeline below.",
+      // Exact Shapley values over a counterfactual model of the
+      // evidence timeline: each documented outcome requires its own
+      // execution evidence plus the retreat's enabling chain, with
+      // partial substitutability for the later links (sessions 0.3,
+      // publication 0.5, open release 0.7, feedback 0.9 fallback
+      // weights). Shares sum to the documented ~$2.8M.
+      attribution: [
+        { label: "Cohort convened in Reykjavík", share: 0.297, amountUsd: 830_000, group: "retreat" },
+        { label: "12 days of working sessions", share: 0.186, amountUsd: 521_000, group: "retreat" },
+        { label: "22 works submitted", share: 0.126, amountUsd: 352_000, group: "retreat" },
+        { label: "Open-access proceedings", share: 0.072, amountUsd: 202_000, group: "retreat" },
+        { label: "Cohort feedback & continued collaborations", share: 0.023, amountUsd: 64_000, group: "retreat" },
+        { label: "Hypercerts v2 raise (≈$2.2M)", share: 0.233, amountUsd: 652_000, group: "community" },
+        { label: "GG24 Deep Funding ($400k pool)", share: 0.042, amountUsd: 119_000, group: "community" },
+        { label: "AI4PG launch ($150k)", share: 0.016, amountUsd: 44_000, group: "community" },
+        { label: "Simocracy launch (>$50k)", share: 0.005, amountUsd: 15_000, group: "community" },
+      ],
     },
     title: "IERR 2025 · Impact Evaluator Research Retreat",
     shortDescription:
