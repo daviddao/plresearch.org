@@ -115,7 +115,7 @@ export const HYPERCERTS: Hypercert[] = [
       costLabel: "$140k",
       roiLabel: "20×",
       roiNote:
-        "The Iceland edition cost 140,000 USD to run. It seeded the Hypercerts v2 redesign that raised about 2.2M USD from 12,000 donors, helped close the GG24 Deep Funding (400K matching pool) and AI4PG (150K) rounds, and launched Simocracy, which now governs more than 50K of funding. Roughly a 20× return so far, documented as attachment records in the timeline below.",
+        "The Iceland edition cost 140,000 USD to run. It seeded the Hypercerts v2 redesign that raised about 2.2M USD from 12,000 donors, helped close the GG24 Deep Funding (400K matching pool) and AI4PG (150K) rounds, and launched Simocracy, which now governs more than 50K of funding. Roughly a 20× social return on investment so far, documented as attachment records in the timeline below.",
     },
     title: "IERR 2025 · Impact Evaluator Research Retreat",
     shortDescription:
@@ -148,7 +148,7 @@ export const HYPERCERTS: Hypercert[] = [
     imageCredit: "Reykjavík, Iceland",
     dateLabel: "Jul 26 – Aug 10, 2025",
     stats: [
-      { label: "RoI to date", value: "20×" },
+      { label: "Social RoI", value: "20×" },
       { label: "Invested", value: "$140k" },
       { label: "Published works", value: "22" },
       { label: "Researchers", value: "23" },

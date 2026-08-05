@@ -509,13 +509,13 @@ export function HypercertDetail({
             animate="show"
             className="mt-10 rounded-2xl border border-gray-200 bg-gray-100 p-6 lg:p-8"
           >
-            <p className={`${eyebrow} text-blue`}>Return on impact</p>
+            <p className={`${eyebrow} text-blue`}>Social return on investment</p>
             <div className="mt-4 flex flex-wrap items-end gap-x-10 gap-y-4">
               <div>
                 <p className="font-serif text-[clamp(34px,4.5vw,52px)] leading-none tracking-tight text-black">
                   {cert.funding.roiLabel}
                 </p>
-                <p className={`${eyebrow} mt-1.5 text-gray-500`}>RoI to date</p>
+                <p className={`${eyebrow} mt-1.5 text-gray-500`}>Social RoI to date</p>
               </div>
               <div>
                 <p className="font-serif text-[clamp(34px,4.5vw,52px)] leading-none tracking-tight text-black">
