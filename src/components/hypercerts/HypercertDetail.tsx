@@ -263,6 +263,7 @@ type TimelineItem =
 export function HypercertDetail({
   cert,
   certs,
+  showFunding = false,
   onClose,
   variant = "page",
 }: {
@@ -270,6 +271,9 @@ export function HypercertDetail({
   /** Full set of hypercerts, so the funding checkout can offer
    *  individual selection + pre-curated collections. Falls back to [cert]. */
   certs?: Hypercert[]
+  /** Show the "Fund this effort" flow. Only enabled on the Impact preview —
+   *  the live hypercerts page keeps the read-only detail. */
+  showFunding?: boolean
   onClose: () => void
   /** "page" = full-bleed takeover (default); "modal" = contained pop-out with
    *  a dimmed backdrop so the rest of the page stays visible around it. */
@@ -338,7 +342,7 @@ export function HypercertDetail({
       <motion.div
         className={
           isModal
-            ? "relative my-4 w-full max-w-4xl rounded-2xl bg-white shadow-2xl px-6 pb-16 pt-6 lg:px-10"
+            ? "relative my-4 w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl px-6 pb-16 pt-6 lg:px-10"
             : "mx-auto max-w-5xl px-6 pb-24 pt-6 lg:px-10"
         }
         onClick={isModal ? (e) => e.stopPropagation() : undefined}
@@ -359,23 +363,31 @@ export function HypercertDetail({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1, transition: { delay: 0.15 } }}
           exit={{ opacity: 0 }}
-          className="mb-5 flex flex-wrap items-center justify-between gap-3"
+          className={
+            isModal
+              ? "absolute inset-x-0 top-0 z-20 flex flex-wrap items-center justify-between gap-3 px-5 py-4 lg:px-6"
+              : "mb-5 flex flex-wrap items-center justify-between gap-3"
+          }
         >
           <button
             type="button"
             onClick={onClose}
-            className={`${eyebrow} inline-flex cursor-pointer items-center gap-2 text-gray-600 transition hover:text-blue`}
+            className={`${eyebrow} inline-flex cursor-pointer items-center gap-2 transition ${
+              isModal ? "text-white/85 hover:text-white" : "text-gray-600 hover:text-blue"
+            }`}
           >
             <span aria-hidden>{isModal ? "✕" : "←"}</span> {isModal ? "Close" : "Back to hypercerts"}
           </button>
           <div className="flex items-center gap-4">
-            <FundEffortButton onClick={openFunding} />
+            {showFunding && <FundEffortButton onClick={openFunding} />}
             {cert.claim && (
               <a
                 href={`https://pdsls.dev/${cert.claim.uri}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${eyebrow} text-gray-400 transition hover:text-blue`}
+                className={`${eyebrow} transition ${
+                  isModal ? "text-white/70 hover:text-white" : "text-gray-400 hover:text-blue"
+                }`}
               >
                 View claim record ↗
               </a>
@@ -387,7 +399,7 @@ export function HypercertDetail({
             pre-curated collection, then choose an amount). The hero card flies
             down into its contact-sheet slot as the checkout opens. */}
         <AnimatePresence>
-          {funding && (
+          {showFunding && funding && (
             <FundingCheckout
               certs={certs ?? [cert]}
               initialRkey={cert.rkey}
@@ -405,8 +417,12 @@ export function HypercertDetail({
           // shared-layout projection). The full-bleed page keeps the morph.
           layoutId={isModal ? undefined : `cert-media-${cert.rkey}`}
           layoutDependency={cert.rkey}
-          className="hypercert-on-photo relative overflow-hidden"
-          style={{ borderRadius: 26, aspectRatio: "16 / 9" }}
+          // In the modal the photo bleeds to the panel edges (full-width hero,
+          // no frame); on the page it keeps its rounded card shape.
+          className={`hypercert-on-photo relative overflow-hidden ${
+            isModal ? "-mx-6 -mt-6 lg:-mx-10" : ""
+          }`}
+          style={{ borderRadius: isModal ? 0 : 26, aspectRatio: "16 / 9" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -414,6 +430,13 @@ export function HypercertDetail({
             alt={cert.imageAlt}
             className="absolute inset-0 h-full w-full object-cover"
           />
+          {/* Top scrim so the overlaid Close / Fund controls stay legible. */}
+          {isModal && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/55 via-black/20 to-transparent"
+            />
+          )}
           {/* Progressive blur — same treatment as the card, so the
               shared-layout morph feels continuous. */}
           <ProgressiveBlur

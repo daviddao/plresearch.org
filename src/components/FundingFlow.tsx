@@ -813,7 +813,7 @@ function AmountPanel({
               onClick={() => setStep('done')}
               className="flex-1 rounded-lg bg-blue px-4 py-2.5 text-sm font-semibold text-white transition-all hover:brightness-110"
             >
-              Confirm funding
+              Fund now
             </button>
           </div>
         )}

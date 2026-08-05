@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Breadcrumb from '@/components/Breadcrumb'
 import ImpactDashboardV2, { type LiveMetric, type LiveOutputs } from '@/components/ImpactDashboardV2'
 import MeasuringQuestionsV2 from '@/components/MeasuringQuestionsV2'
-import { ImpactExperience } from '@/components/hypercerts/ImpactExperience'
+import { HypercertsShowcase } from '@/components/hypercerts/HypercertsShowcase'
 import { fetchResearchRetreatHypercerts } from '@/lib/hypercerts'
 import { fetchSimocracyStats } from '@/lib/simocracy'
 import { fetchGainforestStats } from '@/lib/gainforest'
@@ -192,7 +192,7 @@ export default async function ImpactPage() {
                 </a>
               </div>
             </div>
-            <ImpactExperience certs={certs} detailVariant="modal" />
+            <HypercertsShowcase certs={certs} />
           </div>
         </section>
       )}
