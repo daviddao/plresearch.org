@@ -76,10 +76,13 @@ const CATCH_FRACTION = 0.15
 export function ImpactExperience({
   certs,
   detailVariant = "page",
+  showFunding = false,
 }: {
   certs: Hypercert[]
   /** How the card detail opens: full-bleed "page" (default) or contained "modal". */
   detailVariant?: "page" | "modal"
+  /** Enable the "Fund this effort" flow in the detail (preview only). */
+  showFunding?: boolean
 }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
@@ -192,7 +195,17 @@ export function ImpactExperience({
     const drag = dragRef.current
     if (!drag || drag.pointerId !== e.pointerId) return
     dragRef.current = null
-    if (!drag.dragging) return
+    // Pure click (never crossed the drag slop): if it began on a slanted side
+    // card, bring that card front and center. Suppress the trailing click so it
+    // doesn't also open the (now-centered) card's detail.
+    if (!drag.dragging) {
+      if (drag.downIdx != null && drag.downIdx !== safeActive) {
+        navigate(drag.downIdx)
+        suppressClickRef.current = true
+        setTimeout(() => (suppressClickRef.current = false), 0)
+      }
+      return
+    }
     const frac = -(e.clientX - drag.startX) / stepPx
     let steps = Math.round(frac)
     if (steps === 0 && Math.abs(frac) > CATCH_FRACTION) steps = Math.sign(frac)
@@ -326,6 +339,8 @@ export function ImpactExperience({
           <HypercertDetail
             key={activeCert.rkey}
             cert={activeCert}
+            certs={items}
+            showFunding={showFunding}
             variant={detailVariant}
             onClose={() => setSelected(null)}
           />

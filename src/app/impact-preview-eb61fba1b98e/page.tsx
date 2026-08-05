@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Breadcrumb from '@/components/Breadcrumb'
 import ImpactDashboardV2, { type LiveMetric, type LiveOutputs } from '@/components/ImpactDashboardV2'
 import MeasuringQuestionsV2 from '@/components/MeasuringQuestionsV2'
-import { ImpactExperience } from '@/components/hypercerts/ImpactExperience'
+import { HypercertsShowcase } from '@/components/hypercerts/HypercertsShowcase'
 import { fetchResearchRetreatHypercerts } from '@/lib/hypercerts'
 import { fetchSimocracyStats } from '@/lib/simocracy'
 import { fetchGainforestStats } from '@/lib/gainforest'
@@ -180,17 +180,19 @@ export default async function ImpactPage() {
                   originate. Open a card to walk its evidence timeline.
                 </p>
               </div>
-              <a
-                href="/areas/economies-governance/impact/hypercerts/"
-                className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-blue/40 hover:text-blue hover:shadow-sm"
-              >
-                See all impact claims
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
+              <div className="flex shrink-0 flex-wrap items-center gap-3">
+                <a
+                  href="/areas/economies-governance/impact/hypercerts/"
+                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-blue/40 hover:text-blue hover:shadow-sm"
+                >
+                  See all impact claims
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </a>
+              </div>
             </div>
-            <ImpactExperience certs={certs} detailVariant="modal" />
+            <HypercertsShowcase certs={certs} />
           </div>
         </section>
       )}
