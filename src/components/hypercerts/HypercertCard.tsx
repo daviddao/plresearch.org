@@ -139,7 +139,7 @@ export function HypercertCard({
         aria-label={`Open impact claim: ${cert.title}`}
         tabIndex={isActive ? 0 : -1}
         aria-hidden={!isActive}
-        className="group relative block aspect-[5/8] cursor-pointer rounded-[26px] text-left"
+        className="hypercert-on-photo group relative block aspect-[5/8] cursor-pointer rounded-[26px] text-left"
         style={{
           width: width ?? "min(72vw, 280px)",
           rotateX,

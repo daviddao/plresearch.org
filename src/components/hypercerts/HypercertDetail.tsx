@@ -311,7 +311,7 @@ export function HypercertDetail({
         {/* Hero (shared-layout morph from the card photo) */}
         <motion.div
           layoutId={`cert-media-${cert.rkey}`}
-          className="relative overflow-hidden"
+          className="hypercert-on-photo relative overflow-hidden"
           style={{ borderRadius: 26, aspectRatio: "16 / 9" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -377,7 +377,7 @@ export function HypercertDetail({
 
           <div className="grid grid-cols-2 gap-5 border-t border-gray-200 pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
             <Meta label="Record">
-              <span className="font-mono text-[12px]">{cert.collection}</span>
+              <span className="break-all font-mono text-[11px]">{cert.collection}</span>
             </Meta>
             <Meta label="Timeframe">
               <span className="font-mono text-[12px]">
