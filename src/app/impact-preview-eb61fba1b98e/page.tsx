@@ -190,7 +190,7 @@ export default async function ImpactPage() {
                 </svg>
               </a>
             </div>
-            <ImpactExperience certs={certs} />
+            <ImpactExperience certs={certs} detailVariant="modal" />
           </div>
         </section>
       )}

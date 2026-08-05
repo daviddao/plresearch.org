@@ -60,12 +60,21 @@ const MAX_CARD_W = 280
 const CARD_ASPECT = 8 / 5 // matches HypercertCard's aspect-[5/8]
 const SWIPE_THRESHOLD_PX = 32
 
-export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
+export function ImpactExperience({
+  certs,
+  detailVariant = "page",
+}: {
+  certs: Hypercert[]
+  /** How the card detail opens: full-bleed "page" (default) or contained "modal". */
+  detailVariant?: "page" | "modal"
+}) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [selected, setSelected] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [cardWidth, setCardWidth] = useState<number>(MAX_CARD_W)
   const swipeRef = useRef<{ startX: number; pointerId: number } | null>(null)
+  // Throttle trackpad wheel navigation so one two-finger swipe = one card.
+  const wheelLockRef = useRef(0)
 
   const items = certs
   const activeCert = items.find((c) => c.rkey === selected) ?? null
@@ -134,6 +143,17 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
     navigate(safeActive + (dx > 0 ? -1 : 1))
   }
 
+  // Two-finger trackpad scroll: a dominant horizontal gesture steps the
+  // carousel; a vertical gesture is left alone so the page scrolls normally.
+  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return
+    if (Math.abs(e.deltaX) < 16) return
+    const now = Date.now()
+    if (now < wheelLockRef.current) return
+    wheelLockRef.current = now + 350
+    navigate(safeActive + (e.deltaX > 0 ? 1 : -1))
+  }
+
   const arrowClass =
     "absolute top-1/2 -translate-y-1/2 z-10 hidden sm:grid h-11 w-11 shrink-0 cursor-pointer place-items-center rounded-full border border-gray-200 bg-white text-[15px] text-gray-600 transition hover:border-blue hover:text-blue disabled:cursor-not-allowed disabled:opacity-30"
 
@@ -149,6 +169,7 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
           onPointerDown={handlePointerDown}
           onPointerUp={handlePointerUp}
           onPointerCancel={() => (swipeRef.current = null)}
+          onWheel={handleWheel}
           aria-label="Hypercert carousel — swipe or use the arrows / dots to navigate"
         >
           <button
@@ -227,6 +248,7 @@ export function ImpactExperience({ certs }: { certs: Hypercert[] }) {
           <HypercertDetail
             key={activeCert.rkey}
             cert={activeCert}
+            variant={detailVariant}
             onClose={() => setSelected(null)}
           />
         )}

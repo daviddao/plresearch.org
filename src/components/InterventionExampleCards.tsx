@@ -100,6 +100,11 @@ export default function InterventionExampleCards({ tool }: { tool: ToolkitEntry 
   if (!cards.length) return null
 
   const showPills = presentAreas.length > 1
+  // Only ever preview two cards — this keeps the modal height constant across
+  // filter changes, so the scroll position doesn't jump when a pill is clicked.
+  const PREVIEW = 2
+  const preview = visible.slice(0, PREVIEW)
+  const remaining = visible.length - preview.length
 
   return (
     <div className="mt-6 border-t border-gray-100 pt-5">
@@ -120,10 +125,38 @@ export default function InterventionExampleCards({ tool }: { tool: ToolkitEntry 
           </div>
         )}
       </div>
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        {visible.map((c) => (
-          <ExampleCard key={c.key} card={c} />
-        ))}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+        <div className="grid flex-1 grid-cols-1 gap-2 sm:grid-cols-2">
+          {preview.map((c) => (
+            <ExampleCard key={c.key} card={c} />
+          ))}
+        </div>
+        {remaining > 0 && (
+          <div
+            aria-hidden
+            className="flex shrink-0 flex-row items-center justify-center gap-1.5 rounded-xl border border-dashed border-gray-300 bg-gray-50/40 px-3 py-3 text-gray-400 sm:w-16 sm:flex-col sm:py-4"
+            title={`${remaining} more`}
+          >
+            <span className="text-sm font-semibold">+{remaining}</span>
+            <span className="text-[10px] font-medium uppercase tracking-wide">more</span>
+            <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-3">
+        {/* Dead for now — will point to a full interventions listing. */}
+        <button
+          type="button"
+          className="inline-flex cursor-pointer items-center gap-1 text-[13px] font-medium text-blue hover:underline"
+        >
+          See all interventions
+          <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
       </div>
     </div>
   )
@@ -168,17 +201,36 @@ function ExampleCard({ card }: { card: Card }) {
   const external = !!card.href && /^https?:\/\//.test(card.href)
   const body = (
     <>
-      {card.areas.length > 0 && (
-        <div className="mb-2 flex items-center gap-1">
-          {card.areas.map((a) => (
-            <span
-              key={a}
-              title={FOCUS_AREAS.find((f) => f.key === a)?.label}
-              className="flex h-4 w-4 items-center justify-center text-gray-300"
+      {(card.areas.length > 0 || card.href) && (
+        <div className="mb-2 flex items-start justify-between gap-2">
+          <div className="flex items-center gap-1">
+            {card.areas.map((a) => (
+              <span
+                key={a}
+                title={FOCUS_AREAS.find((f) => f.key === a)?.label}
+                className="flex h-4 w-4 items-center justify-center text-gray-300"
+              >
+                <AreaIcon type={FA_ICON[a]} className="block h-3.5 w-3.5" />
+              </span>
+            ))}
+          </div>
+          {card.href && (
+            <svg
+              className="h-3.5 w-3.5 shrink-0 text-gray-300 transition-colors group-hover:text-blue"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              aria-hidden
             >
-              <AreaIcon type={FA_ICON[a]} className="block h-3.5 w-3.5" />
-            </span>
-          ))}
+              {/* Up-right arrow = leaves for another property; chevron = stays on site. */}
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={external ? 'M7 17L17 7M7 7h10v10' : 'M9 5l7 7-7 7'}
+              />
+            </svg>
+          )}
         </div>
       )}
       <span className="block text-sm font-semibold leading-snug text-black">{card.label}</span>

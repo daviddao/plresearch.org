@@ -242,10 +242,15 @@ type TimelineItem =
 export function HypercertDetail({
   cert,
   onClose,
+  variant = "page",
 }: {
   cert: Hypercert
   onClose: () => void
+  /** "page" = full-bleed takeover (default); "modal" = contained pop-out with
+   *  a dimmed backdrop so the rest of the page stays visible around it. */
+  variant?: "page" | "modal"
 }) {
+  const isModal = variant === "modal"
   const { data: activity, loading } = useLiveActivity(cert)
 
   // Lock body scroll while the overlay is open.
@@ -275,13 +280,25 @@ export function HypercertDetail({
 
   return (
     <motion.div
-      className="fixed inset-0 z-[60] overflow-y-auto bg-white"
+      className={
+        isModal
+          ? "fixed inset-0 z-[60] flex items-start justify-center overflow-y-auto bg-black/50 p-4 sm:p-6 lg:p-10"
+          : "fixed inset-0 z-[60] overflow-y-auto bg-white"
+      }
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
+      onClick={isModal ? onClose : undefined}
     >
-      <div className="mx-auto max-w-5xl px-6 pb-24 pt-6 lg:px-10">
+      <div
+        className={
+          isModal
+            ? "relative my-4 w-full max-w-4xl rounded-2xl bg-white shadow-2xl px-6 pb-16 pt-6 lg:px-10"
+            : "mx-auto max-w-5xl px-6 pb-24 pt-6 lg:px-10"
+        }
+        onClick={isModal ? (e) => e.stopPropagation() : undefined}
+      >
         {/* Back */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -294,7 +311,7 @@ export function HypercertDetail({
             onClick={onClose}
             className={`${eyebrow} inline-flex cursor-pointer items-center gap-2 text-gray-600 transition hover:text-blue`}
           >
-            <span aria-hidden>←</span> Back to hypercerts
+            <span aria-hidden>{isModal ? "✕" : "←"}</span> {isModal ? "Close" : "Back to hypercerts"}
           </button>
           {cert.claim && (
             <a
