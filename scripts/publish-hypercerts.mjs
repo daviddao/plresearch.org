@@ -37,9 +37,9 @@ const CLAIMS = [
       $type: 'org.hypercerts.claim.activity',
       title: 'IERR 2025 · Impact Evaluator Research Retreat',
       shortDescription:
-        'Two-week research retreat in the Westfjords of Iceland producing 22 published works on impact evaluators, evaluation mechanisms, and public goods funding.',
+        'Two-week research retreat in Reykjavík, Iceland producing 22 published works on impact evaluators, evaluation mechanisms, and public goods funding.',
       description:
-        'A two-week intensive residency in Iceland exploring the Impact Evaluator framework. 23 researchers developed design principles and robustness metrics for IEs, documented implementations in the wild, and prototyped new scopes, measurement, evaluation, and reward functions. They published 22 open-access works into the retreat proceedings.',
+        'A two-week intensive residency in Reykjavík, Iceland exploring the Impact Evaluator framework. 23 researchers developed design principles and robustness metrics for IEs, documented implementations in the wild, and prototyped new scopes, measurement, evaluation, and reward functions. They published 22 open-access works into the retreat proceedings.',
       startDate: '2025-07-26T00:00:00.000Z',
       endDate: '2025-08-10T00:00:00.000Z',
       workScope:
@@ -54,7 +54,7 @@ const CLAIMS = [
         { contributorIdentity: '23 retreat researchers', contributionDetails: 'Authors of the proceedings' },
       ],
       image: {
-        uri: 'https://res.cloudinary.com/icelandtours/g_auto,f_auto,c_fill,w_1600,q_auto:good/Westfjords_1300x867_4a5b2425be.jpg',
+        uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Reykjavik_skyline_%284046575309%29.jpg/1920px-Reykjavik_skyline_%284046575309%29.jpg',
       },
       createdAt: new Date().toISOString(),
     },

@@ -22,7 +22,8 @@ export type EvidenceKind =
   | "session"
   | "publication"
   | "artifact"
-  | "release";
+  | "release"
+  | "other";
 
 export type EvidenceEntry = {
   date: string; // ISO date
@@ -61,6 +62,16 @@ export type Hypercert = {
    * hypercerts indexer (set by src/lib/hypercerts.ts at request time).
    */
   published?: boolean;
+  /**
+   * ATProto account that published the claim record (plrd.org),
+   * resolved from the claim DID via the public Bluesky AppView.
+   */
+  creator?: {
+    did: string;
+    handle: string | null;
+    displayName: string | null;
+    avatar: string | null;
+  };
   /** Funding economics shown on the detail page (optional). */
   funding?: {
     costUsd: number;
@@ -97,7 +108,7 @@ export const HYPERCERTS: Hypercert[] = [
     subjectUri: "https://researchretreat.org/impact/ierr-2025",
     claim: {
       uri: "at://did:plc:pgwr6hkosgznfl5nz7egajei/org.hypercerts.claim.activity/ierr-2025",
-      cid: "bafyreibbhmrkyb7vokzvl4pco6oopzen2j47uwrkvdkgvhujnfzcwy5h4e",
+      cid: "bafyreieiwf3qal3lqmlntbfvztqsegmicu6m6fzbyi6msjar5fn4oksnxy",
     },
     funding: {
       costUsd: 140_000,
@@ -108,9 +119,9 @@ export const HYPERCERTS: Hypercert[] = [
     },
     title: "IERR 2025 · Impact Evaluator Research Retreat",
     shortDescription:
-      "Two-week research retreat in the Westfjords of Iceland producing 22 published works on impact evaluators, evaluation mechanisms, and public goods funding.",
+      "Two-week research retreat in Reykjavík, Iceland producing 22 published works on impact evaluators, evaluation mechanisms, and public goods funding.",
     description:
-      "A two-week intensive residency in Iceland exploring the Impact Evaluator framework. 23 researchers developed design principles and robustness metrics for IEs, documented implementations in the wild, and prototyped new scopes, measurement, evaluation, and reward functions. They published 22 open-access works into the retreat proceedings.",
+      "A two-week intensive residency in Reykjavík, Iceland exploring the Impact Evaluator framework. 23 researchers developed design principles and robustness metrics for IEs, documented implementations in the wild, and prototyped new scopes, measurement, evaluation, and reward functions. They published 22 open-access works into the retreat proceedings.",
     startDate: "2025-07-26",
     endDate: "2025-08-10",
     workScope: [
@@ -130,11 +141,11 @@ export const HYPERCERTS: Hypercert[] = [
       { name: "23 retreat researchers", role: "Authors of the proceedings" },
     ],
     rights: "Public display · open-access proceedings",
-    location: "Westfjords, Iceland",
+    location: "Reykjavík, Iceland",
     image:
-      "https://res.cloudinary.com/icelandtours/g_auto,f_auto,c_fill,w_1600,q_auto:good/Westfjords_1300x867_4a5b2425be.jpg",
-    imageAlt: "The Westfjords region of Iceland, venue of IERR 2025",
-    imageCredit: "Westfjords, Iceland",
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Reykjavik_skyline_%284046575309%29.jpg/1920px-Reykjavik_skyline_%284046575309%29.jpg",
+    imageAlt: "Reykjavík and the Esja mountain range, venue of IERR 2025",
+    imageCredit: "Reykjavík, Iceland",
     dateLabel: "Jul 26 – Aug 10, 2025",
     stats: [
       { label: "RoI to date", value: "20×" },
@@ -147,9 +158,9 @@ export const HYPERCERTS: Hypercert[] = [
         date: "2025-07-26",
         dateLabel: "Jul 26, 2025",
         kind: "milestone",
-        title: "Cohort convened in the Westfjords",
+        title: "Cohort convened in Reykjavík",
         description:
-          "23 researchers and practitioners arrived in Iceland to open the two-week Impact Evaluator Research Retreat, setting the agenda across IE design, measurement, and reward functions.",
+          "23 researchers and practitioners arrived in Reykjavík to open the two-week Impact Evaluator Research Retreat, setting the agenda across IE design, measurement, and reward functions.",
         badge: "23 researchers",
       },
       {
@@ -185,7 +196,7 @@ export const HYPERCERTS: Hypercert[] = [
         kind: "milestone",
         title: "Participants report an outstanding experience",
         description:
-          "Post-retreat feedback from the cohort was overwhelmingly positive. Researchers described the retreat as one of the most productive research environments they had worked in, and many kept collaborating after leaving the Westfjords.",
+          "Post-retreat feedback from the cohort was overwhelmingly positive. Researchers described the retreat as one of the most productive research environments they had worked in, and many kept collaborating after leaving Iceland.",
         badge: "cohort feedback",
       },
     ],
