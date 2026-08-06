@@ -528,18 +528,18 @@ export default function FundingCheckout({
               )}
             </div>
 
-            {/* Always-visible footer link (not a card) to the collections view */}
-            {mode === 'individual' && (
-              <div className="shrink-0 border-t border-gray-100 bg-white px-6 py-3 text-center">
-                <button
-                  type="button"
-                  onClick={() => setMode('collections')}
-                  className="text-[13px] font-medium text-gray-500 underline decoration-gray-300 underline-offset-4 transition-colors hover:text-blue hover:decoration-blue"
-                >
-                  Fund a whole collection instead →
-                </button>
-              </div>
-            )}
+            {/* Always-visible footer link (not a card) to the other view */}
+            <div className="shrink-0 border-t border-gray-100 bg-white px-6 py-3 text-center">
+              <button
+                type="button"
+                onClick={() => setMode(mode === 'individual' ? 'collections' : 'individual')}
+                className="text-[13px] font-medium text-gray-500 underline decoration-gray-300 underline-offset-4 transition-colors hover:text-blue hover:decoration-blue"
+              >
+                {mode === 'individual'
+                  ? 'Fund a whole collection instead →'
+                  : 'Fund individual efforts instead →'}
+              </button>
+            </div>
           </div>
 
           {/* Right — selection + amount + checkout */}
