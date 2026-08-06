@@ -310,6 +310,16 @@ export default function FundingCheckout({
     [certs],
   )
 
+  // How many collections live under each type (shown on the type tiles) and the
+  // metadata for the currently drilled-into type.
+  const typeCounts: Record<CollectionGroup, number> = {
+    focus: collections.length,
+    intervention: interventionCollections.length,
+    inflection: inflectionCollections.length,
+    curated: curatedCollections.length,
+  }
+  const openTypeMeta = COLLECTION_TYPES.find((t) => t.id === openType)
+
   // Unified, filterable grid: live claims + “coming soon” placeholders. Filter
   // by focus area / intervention type, then sort, then progressively reveal.
   const gridItems = useMemo(() => {
@@ -553,117 +563,142 @@ export default function FundingCheckout({
                   )}
                 </>
               ) : (
-                <>
-                  <p className="mb-4 max-w-2xl text-sm leading-relaxed text-gray-500">
-                    Pick a collection type, then choose a collection to fund. You can still fine-tune the
-                    mix under{' '}
-                    <button
-                      type="button"
-                      onClick={() => setMode('individual')}
-                      className="font-medium text-blue hover:underline"
+                <AnimatePresence mode="wait" initial={false}>
+                  {openType === null ? (
+                    // Step 1 — a grid of collection-*type* tiles (date-picker style).
+                    <motion.div
+                      key="type-grid"
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -12 }}
+                      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
                     >
-                      Individual efforts
-                    </button>
-                    .
-                  </p>
-                  <div className="flex flex-col gap-3">
-                    {COLLECTION_TYPES.map((type) => (
-                      <CollectionTypeSection
-                        key={type.id}
-                        label={type.label}
-                        blurb={type.blurb}
-                        open={openType === type.id}
-                        onToggle={() => setOpenType(openType === type.id ? null : type.id)}
+                      <p className="mb-4 max-w-2xl text-sm leading-relaxed text-gray-500">
+                        Pick a collection type to browse the collections inside it. You can still
+                        fine-tune the mix under{' '}
+                        <button
+                          type="button"
+                          onClick={() => setMode('individual')}
+                          className="font-medium text-blue hover:underline"
+                        >
+                          Individual efforts
+                        </button>
+                        .
+                      </p>
+                      <div className="grid grid-cols-2 gap-3">
+                        {COLLECTION_TYPES.map((type) => (
+                          <CollectionTypeTile
+                            key={type.id}
+                            id={type.id}
+                            label={type.label}
+                            blurb={type.blurb}
+                            count={typeCounts[type.id]}
+                            onClick={() => setOpenType(type.id)}
+                          />
+                        ))}
+                      </div>
+                    </motion.div>
+                  ) : (
+                    // Step 2 — the collections inside the chosen type, one per row.
+                    <motion.div
+                      key={openType}
+                      initial={{ opacity: 0, x: 12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 12 }}
+                      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setOpenType(null)}
+                        className="mb-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-gray-500 transition-colors hover:text-blue"
                       >
-                        {type.id === 'focus' && (
-                          <div className="flex flex-col gap-3.5">
-                            {collections.map((col) => (
-                              <CollectionRow
-                                key={col.key}
-                                area={col.key}
-                                label={col.label}
-                                images={col.images}
-                                count={col.rkeys.length}
-                                comingSoon={col.comingSoon}
-                                active={collectionInCart({ key: col.key, group: 'focus', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
-                                onPick={() =>
-                                  toggleCollection(
-                                    { key: col.key, group: 'focus', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
-                                    col.comingSoon,
-                                  )
-                                }
-                              />
-                            ))}
-                          </div>
-                        )}
-                        {type.id === 'intervention' && (
-                          <div className="flex flex-col gap-3.5">
-                            {interventionCollections.map((col) => (
-                              <InterventionRow
-                                key={col.key}
-                                label={col.label}
-                                subtitle={col.subtitle}
-                                oneLiner={col.oneLiner}
-                                images={col.images}
-                                count={col.rkeys.length}
-                                active={collectionInCart({ key: col.key, group: 'intervention', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
-                                onPick={() =>
-                                  toggleCollection(
-                                    { key: col.key, group: 'intervention', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
-                                    false,
-                                  )
-                                }
-                              />
-                            ))}
-                          </div>
-                        )}
-                        {type.id === 'inflection' && (
-                          <div className="flex flex-col gap-3.5">
-                            {inflectionCollections.map((col) => (
-                              <BundleRow
-                                key={col.key}
-                                badge={<AreaIcon type={FA_ICON[col.area]} className="h-5 w-5 text-white" />}
-                                label={col.label}
-                                subtitle={col.subtitle}
-                                oneLiner={col.oneLiner}
-                                images={col.images}
-                                count={col.rkeys.length}
-                                active={collectionInCart({ key: col.key, group: 'inflection', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
-                                onPick={() =>
-                                  toggleCollection(
-                                    { key: col.key, group: 'inflection', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
-                                    false,
-                                  )
-                                }
-                              />
-                            ))}
-                          </div>
-                        )}
-                        {type.id === 'curated' && (
-                          <div className="flex flex-col gap-3.5">
-                            {curatedCollections.map((col) => (
-                              <BundleRow
-                                key={col.key}
-                                badge={<span className="text-[13px] font-bold leading-none text-white">{col.badge}</span>}
-                                label={col.label}
-                                oneLiner={col.oneLiner}
-                                images={col.images}
-                                count={col.rkeys.length}
-                                active={collectionInCart({ key: col.key, group: 'curated', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
-                                onPick={() =>
-                                  toggleCollection(
-                                    { key: col.key, group: 'curated', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
-                                    false,
-                                  )
-                                }
-                              />
-                            ))}
-                          </div>
-                        )}
-                      </CollectionTypeSection>
-                    ))}
-                  </div>
-                </>
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                        All collection types
+                      </button>
+                      <div className="mb-4">
+                        <h3 className="text-[15.5px] font-semibold text-black">{openTypeMeta?.label}</h3>
+                        <p className="mt-0.5 text-[13px] leading-snug text-gray-500">{openTypeMeta?.blurb}</p>
+                      </div>
+                      <div className="flex flex-col gap-3.5">
+                        {openType === 'focus' &&
+                          collections.map((col) => (
+                            <CollectionRow
+                              key={col.key}
+                              area={col.key}
+                              label={col.label}
+                              images={col.images}
+                              count={col.rkeys.length}
+                              comingSoon={col.comingSoon}
+                              active={collectionInCart({ key: col.key, group: 'focus', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
+                              onPick={() =>
+                                toggleCollection(
+                                  { key: col.key, group: 'focus', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
+                                  col.comingSoon,
+                                )
+                              }
+                            />
+                          ))}
+                        {openType === 'intervention' &&
+                          interventionCollections.map((col) => (
+                            <InterventionRow
+                              key={col.key}
+                              label={col.label}
+                              subtitle={col.subtitle}
+                              oneLiner={col.oneLiner}
+                              images={col.images}
+                              count={col.rkeys.length}
+                              active={collectionInCart({ key: col.key, group: 'intervention', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
+                              onPick={() =>
+                                toggleCollection(
+                                  { key: col.key, group: 'intervention', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
+                                  false,
+                                )
+                              }
+                            />
+                          ))}
+                        {openType === 'inflection' &&
+                          inflectionCollections.map((col) => (
+                            <BundleRow
+                              key={col.key}
+                              badge={<AreaIcon type={FA_ICON[col.area]} className="h-5 w-5 text-white" />}
+                              label={col.label}
+                              subtitle={col.subtitle}
+                              oneLiner={col.oneLiner}
+                              images={col.images}
+                              count={col.rkeys.length}
+                              active={collectionInCart({ key: col.key, group: 'inflection', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
+                              onPick={() =>
+                                toggleCollection(
+                                  { key: col.key, group: 'inflection', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
+                                  false,
+                                )
+                              }
+                            />
+                          ))}
+                        {openType === 'curated' &&
+                          curatedCollections.map((col) => (
+                            <BundleRow
+                              key={col.key}
+                              badge={<span className="text-[13px] font-bold leading-none text-white">{col.badge}</span>}
+                              label={col.label}
+                              oneLiner={col.oneLiner}
+                              images={col.images}
+                              count={col.rkeys.length}
+                              active={collectionInCart({ key: col.key, group: 'curated', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
+                              onPick={() =>
+                                toggleCollection(
+                                  { key: col.key, group: 'curated', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
+                                  false,
+                                )
+                              }
+                            />
+                          ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               )}
             </div>
 
@@ -925,60 +960,79 @@ function InterventionRow({
   )
 }
 
-// Expandable collection-*type* card. Header is always visible; picking it
-// animates the collections in that type open (accordion — one at a time).
-function CollectionTypeSection({
+// Per-type glyph shown on the collection-type tiles.
+function TypeGlyph({ id }: { id: CollectionGroup }) {
+  const common = { className: 'h-5 w-5', fill: 'none', stroke: 'currentColor', viewBox: '0 0 24 24' } as const
+  switch (id) {
+    case 'focus':
+      return (
+        <svg {...common}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v4H4zM14 15h6v4h-6z" />
+        </svg>
+      )
+    case 'intervention':
+      return (
+        <svg {...common}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 3.5a2.12 2.12 0 013 3L12 16l-4 1 1-4 9.5-9.5z" />
+        </svg>
+      )
+    case 'inflection':
+      return (
+        <svg {...common}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4 18l5-6 4 3 7-8" />
+          <circle cx={20} cy={7} r={1.6} fill="currentColor" stroke="none" />
+        </svg>
+      )
+    case 'curated':
+      return (
+        <svg {...common}>
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 4l2.35 4.76 5.25.76-3.8 3.7.9 5.23L12 16.9l-4.7 2.47.9-5.23-3.8-3.7 5.25-.76L12 4z" />
+        </svg>
+      )
+  }
+}
+
+// A collection-*type* tile (date-picker style). Multiple sit per row; clicking
+// one drills into the collections it contains.
+function CollectionTypeTile({
+  id,
   label,
   blurb,
-  open,
-  onToggle,
-  children,
+  count,
+  onClick,
 }: {
+  id: CollectionGroup
   label: string
   blurb: string
-  open: boolean
-  onToggle: () => void
-  children: ReactNode
+  count: number
+  onClick: () => void
 }) {
   return (
-    <div
-      className={`overflow-hidden rounded-2xl border transition-colors ${
-        open ? 'border-blue/40 bg-blue/[0.02]' : 'border-gray-200 hover:border-gray-300'
-      }`}
+    <button
+      type="button"
+      onClick={onClick}
+      className="group flex h-full flex-col rounded-2xl border border-gray-200 p-4 text-left transition-all hover:border-blue/40 hover:bg-blue/[0.02] hover:shadow-sm"
     >
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        className="flex w-full items-center gap-4 p-4 text-left"
-      >
-        <div className="min-w-0 flex-1">
-          <div className="text-[15.5px] font-semibold text-black">{label}</div>
-          <p className="mt-0.5 text-[13px] leading-snug text-gray-500">{blurb}</p>
-        </div>
-        <svg
-          className={`h-5 w-5 shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      <div className="mb-3 flex items-center justify-between">
+        <span
+          className="flex h-10 w-10 items-center justify-center rounded-xl text-white"
+          style={{ background: HAND_COLOR }}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <TypeGlyph id={id} />
+        </span>
+        <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-gray-500">
+          {count}
+        </span>
+      </div>
+      <div className="text-[15px] font-semibold leading-snug text-black">{label}</div>
+      <p className="mt-1 text-[12.5px] leading-snug text-gray-500">{blurb}</p>
+      <span className="mt-3 inline-flex items-center gap-1 text-[12px] font-medium text-gray-400 transition-colors group-hover:text-blue">
+        Browse
+        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
         </svg>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
-            className="overflow-hidden"
-          >
-            <div className="border-t border-gray-100 p-4">{children}</div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+      </span>
+    </button>
   )
 }
 
