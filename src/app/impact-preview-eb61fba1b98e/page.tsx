@@ -132,7 +132,8 @@ export default async function ImpactPage() {
           <p className="text-base text-gray-600 leading-relaxed max-w-3xl mb-8">
             Pick a focus area. The summary above reads that field&rsquo;s velocity across the instruments
             that apply to it; the inflection points below are the specific markers we track, each with its
-            live signal.
+            live signal. <span className="text-gray-500">Tip: click, hold and drag across any spark line to
+            measure the change between two points.</span>
           </p>
           <ImpactDashboardV2
             liveOutputs={liveOutputs}

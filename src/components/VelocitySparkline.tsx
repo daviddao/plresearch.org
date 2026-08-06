@@ -5,15 +5,23 @@
 // unreliable points, an optional secondary normalizer line, an optional
 // labelled vertical axis (min/max of the series, so the reader can see what the
 // curve indexes to), and — when `interactive` — a hover crosshair with a tooltip
-// that reads the value and x-axis position under the cursor.
+// that reads the value and x-axis position under the cursor. Click-hold-drag
+// across the curve to measure the delta between two points (absolute + relative
+// change).
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 export type SeriesPoint = { x: number | string; y: number; lo?: number; hi?: number; reliable?: boolean }
 
 function fmt(v: number, unit: string): string {
   const n = Math.abs(v) >= 1000 ? `${(v / 1000).toFixed(1)}k` : Number.isInteger(v) ? `${v}` : v.toFixed(1)
   return unit ? `${n}${unit}` : n
+}
+
+// Signed absolute delta, e.g. "+1.2k" / "−3" / "±0".
+function fmtDelta(v: number, unit: string): string {
+  const sign = v > 0 ? '+' : v < 0 ? '−' : '±'
+  return `${sign}${fmt(Math.abs(v), unit)}`
 }
 
 export function Sparkline({
@@ -39,6 +47,11 @@ export function Sparkline({
   interactive?: boolean
 }) {
   const [hover, setHover] = useState<number | null>(null)
+  // Drag-to-measure: a two-point selection (indices into `series`). While the
+  // pointer is down we grow it; on release it stays put so the reader can read
+  // the delta. A plain click (no drag) clears it back to the hover crosshair.
+  const [sel, setSel] = useState<{ a: number; b: number } | null>(null)
+  const dragging = useRef(false)
   if (!series.length) return null
   const tf = (v: number) => (scale === 'log' ? Math.log10(Math.max(v, 1e-6)) : v)
   const xOf = (p: { x: number | string }, i: number) => (typeof p.x === 'number' ? p.x : i)
@@ -90,10 +103,10 @@ export function Sparkline({
 
   const last = series[series.length - 1]
 
-  // Map the cursor to the nearest data point (by horizontal distance).
-  const onMove = (e: React.MouseEvent<SVGSVGElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const svgX = ((e.clientX - rect.left) / rect.width) * width
+  // Map a client X coordinate to the nearest data-point index (by horizontal
+  // distance).
+  const nearestIndex = (clientX: number, rect: DOMRect) => {
+    const svgX = ((clientX - rect.left) / rect.width) * width
     let best = 0
     let bestD = Infinity
     series.forEach((p, i) => {
@@ -103,12 +116,49 @@ export function Sparkline({
         best = i
       }
     })
-    setHover(best)
+    return best
+  }
+
+  const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
+    const i = nearestIndex(e.clientX, e.currentTarget.getBoundingClientRect())
+    dragging.current = true
+    setSel({ a: i, b: i })
+    setHover(i)
+    e.currentTarget.setPointerCapture?.(e.pointerId)
+  }
+
+  const onPointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
+    const i = nearestIndex(e.clientX, e.currentTarget.getBoundingClientRect())
+    setHover(i)
+    if (dragging.current) setSel((s) => (s ? { a: s.a, b: i } : { a: i, b: i }))
+  }
+
+  const onPointerUp = () => {
+    dragging.current = false
+    // A click without a drag (both ends equal) collapses to the hover crosshair.
+    setSel((s) => (s && s.a === s.b ? null : s))
+  }
+
+  const onPointerLeave = () => {
+    if (!dragging.current) setHover(null)
   }
 
   const hp = hover != null ? series[hover] : null
   const hx = hp ? px(xOf(hp, hover as number)) : 0
   const hy = hp ? py(hp.y) : 0
+
+  // Resolved selection (ordered left → right), with the change it measures.
+  const selReady = sel && sel.a !== sel.b
+  const lo = selReady ? Math.min(sel!.a, sel!.b) : 0
+  const hi = selReady ? Math.max(sel!.a, sel!.b) : 0
+  const yLo = selReady ? series[lo].y : 0
+  const yHi = selReady ? series[hi].y : 0
+  const dAbs = yHi - yLo
+  const dRel = yLo !== 0 ? (dAbs / Math.abs(yLo)) * 100 : NaN
+  const selX1 = selReady ? px(xOf(series[lo], lo)) : 0
+  const selX2 = selReady ? px(xOf(series[hi], hi)) : 0
+  const selMidX = (selX1 + selX2) / 2
+  const selTopY = selReady ? Math.min(py(yLo), py(yHi)) : 0
 
   const svg = (
     <svg
@@ -116,8 +166,15 @@ export function Sparkline({
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       aria-hidden={!interactive}
-      className={`overflow-visible${interactive ? ' cursor-crosshair' : ''}`}
-      {...(interactive ? { onMouseMove: onMove, onMouseLeave: () => setHover(null) } : {})}
+      className={`overflow-visible${interactive ? ' cursor-crosshair touch-none select-none' : ''}`}
+      {...(interactive
+        ? {
+            onPointerDown,
+            onPointerMove,
+            onPointerUp,
+            onPointerLeave,
+          }
+        : {})}
     >
       {axis && (
         <g>
@@ -155,7 +212,18 @@ export function Sparkline({
         />
       )}
       <circle cx={px(xOf(last, series.length - 1))} cy={py(last.y)} r={1.9} fill="var(--impact-field)" />
-      {interactive && hp && (
+      {/* Drag selection: shaded span between the two chosen points */}
+      {interactive && selReady && (
+        <g>
+          <rect x={selX1} y={2} width={Math.max(selX2 - selX1, 0)} height={height - 4} fill="var(--impact-field)" opacity={0.08} />
+          <line x1={selX1} y1={2} x2={selX1} y2={height - 2} stroke="currentColor" className="text-gray-400" strokeWidth={1} strokeDasharray="2 2" />
+          <line x1={selX2} y1={2} x2={selX2} y2={height - 2} stroke="currentColor" className="text-gray-400" strokeWidth={1} strokeDasharray="2 2" />
+          <circle cx={selX1} cy={py(yLo)} r={2.8} fill="var(--impact-field)" stroke="#fff" strokeWidth={1.25} />
+          <circle cx={selX2} cy={py(yHi)} r={2.8} fill="var(--impact-field)" stroke="#fff" strokeWidth={1.25} />
+        </g>
+      )}
+      {/* Hover crosshair (only when not showing a selection) */}
+      {interactive && !selReady && hp && (
         <g>
           <line x1={hx} y1={2} x2={hx} y2={height - 2} stroke="currentColor" className="text-gray-400" strokeWidth={1} strokeDasharray="2 2" />
           <circle cx={hx} cy={hy} r={2.8} fill="var(--impact-field)" stroke="#fff" strokeWidth={1.25} />
@@ -166,19 +234,39 @@ export function Sparkline({
 
   if (!interactive) return svg
 
+  const scaleX = (v: number) => `${(v / width) * 100}%`
+
   return (
     <span className="relative inline-block leading-none">
       {svg}
-      {hp && (
+      {/* Delta readout for a drag selection (takes precedence over hover) */}
+      {selReady ? (
         <span
           className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-center shadow-lg"
-          style={{ left: hx, top: hy - 6 }}
+          style={{ left: scaleX(selMidX), top: selTopY - 6 }}
         >
           <span className="block text-[11px] font-semibold leading-tight tabular-nums text-white">
-            {fmt(hp.y, unit)}
+            {fmtDelta(dAbs, unit)}
           </span>
-          <span className="block text-[9px] leading-tight tabular-nums text-gray-300">{String(hp.x)}</span>
+          <span className="block text-[10px] font-medium leading-tight tabular-nums text-gray-200">
+            {Number.isFinite(dRel) ? `${dRel > 0 ? '+' : dRel < 0 ? '−' : '±'}${Math.abs(dRel).toFixed(0)}%` : '—'}
+          </span>
+          <span className="block text-[9px] leading-tight tabular-nums text-gray-400">
+            {String(series[lo].x)} → {String(series[hi].x)}
+          </span>
         </span>
+      ) : (
+        hp && (
+          <span
+            className="pointer-events-none absolute z-20 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-md bg-gray-900 px-2 py-1 text-center shadow-lg"
+            style={{ left: scaleX(hx), top: hy - 6 }}
+          >
+            <span className="block text-[11px] font-semibold leading-tight tabular-nums text-white">
+              {fmt(hp.y, unit)}
+            </span>
+            <span className="block text-[9px] leading-tight tabular-nums text-gray-300">{String(hp.x)}</span>
+          </span>
+        )
       )}
     </span>
   )

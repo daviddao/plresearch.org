@@ -12,11 +12,11 @@
 //   • run a mock checkout (USDC / Card / PayPal / Apple Pay / Wire).
 // There is no price on any effort — the funder chooses what to give.
 
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Hypercert } from '@/data/hypercerts'
-import { FOCUS_AREAS, type FocusAreaKey } from '@/lib/inflection-points'
+import { FOCUS_AREAS, INFLECTION_POINTS, inflectionSlug, type FocusAreaKey } from '@/lib/inflection-points'
 import { AreaIcon, type AreaIconType } from '@/components/AreaIcons'
 import { TOOLKIT_V2, HAND_COLOR, type ToolId } from '@/lib/field-velocity'
 
@@ -91,7 +91,40 @@ function usd(n: number): string {
 }
 
 type Mode = 'individual' | 'collections'
-type CollectionGroup = 'focus' | 'intervention'
+// A collection's provenance. Also the id of the collection *type* the reader
+// first picks in the two-step Collections flow.
+type CollectionGroup = 'focus' | 'intervention' | 'inflection' | 'curated'
+
+// Curated, human/movement-picked bundles (prototype). Each backs the live
+// claims; the framing is who assembled it and why.
+const CURATED: { key: string; label: string; badge: string; oneLiner: string }[] = [
+  {
+    key: 'juan-benet',
+    label: "Juan Benet's collection",
+    badge: 'JB',
+    oneLiner: 'Frontier bets Juan is personally backing across PL R&D.',
+  },
+  {
+    key: 'e-accel',
+    label: 'e/accel collection',
+    badge: 'e/',
+    oneLiner: 'Efforts that compound the rate of progress itself.',
+  },
+  {
+    key: 'fridays-for-future',
+    label: 'Fridays for Future collection',
+    badge: 'FF',
+    oneLiner: 'Climate-aligned work, verified on open infrastructure.',
+  },
+]
+
+// The collection *types* the reader picks between, top level of the flow.
+const COLLECTION_TYPES: { id: CollectionGroup; label: string; blurb: string }[] = [
+  { id: 'focus', label: 'Focus areas', blurb: 'Back a whole PL R&D field in one gift.' },
+  { id: 'intervention', label: 'Intervention types', blurb: 'Fund a kind of work from the PL R&D toolkit.' },
+  { id: 'inflection', label: 'Inflection points', blurb: 'Fund progress toward a specific field shift we are betting on.' },
+  { id: 'curated', label: 'Curated collections', blurb: 'Hand-picked bundles from people and movements.' },
+]
 type Step = 'select' | 'pay' | 'done'
 type PayMethod = 'USDC' | 'Card' | 'PayPal' | 'Apple Pay' | 'Wire'
 type SortKey = 'recent' | 'popular' | 'title'
@@ -126,7 +159,7 @@ export function FundEffortButton({ onClick }: { onClick: () => void }) {
           d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
         />
       </svg>
-      Fund this effort
+      Fund efforts like this
     </button>
   )
 }
@@ -143,7 +176,8 @@ export default function FundingCheckout({
   onClose: () => void
 }) {
   const [mode, setMode] = useState<Mode>('individual')
-  const [collectionGroup, setCollectionGroup] = useState<CollectionGroup>('focus')
+  // Which collection *type* is expanded in the two-step Collections flow.
+  const [openType, setOpenType] = useState<CollectionGroup | null>(null)
   const [step, setStep] = useState<Step>('select')
   // Cumulative cart: individually-added efforts + added collections. Both
   // persist across mode / filter / sort switches so nothing gets dropped when
@@ -241,6 +275,37 @@ export default function FundingCheckout({
         oneLiner: t.oneLiner,
         rkeys: certs.map((c) => c.rkey),
         images: certs.map((c) => c.image),
+      })),
+    [certs],
+  )
+
+  // Inflection-point collections — pulled from the inflection points tracked
+  // further up the page. Backing one funds the work on that point's critical
+  // path (prototype: the live claims).
+  const inflectionCollections = useMemo(
+    () =>
+      INFLECTION_POINTS.map((p) => ({
+        key: inflectionSlug(p),
+        area: p.area,
+        label: p.title,
+        subtitle: labelFor(p.area),
+        oneLiner: p.opportunitySpace,
+        rkeys: certs.map((c) => c.rkey),
+        images: certs.map((c) => c.image),
+      })),
+    [certs],
+  )
+
+  // Curated, hand-picked bundles.
+  const curatedCollections = useMemo(
+    () =>
+      CURATED.map((c) => ({
+        key: c.key,
+        label: c.label,
+        badge: c.badge,
+        oneLiner: c.oneLiner,
+        rkeys: certs.map((x) => x.rkey),
+        images: certs.map((x) => x.image),
       })),
     [certs],
   )
@@ -380,10 +445,7 @@ export default function FundingCheckout({
         {/* Header */}
         <header className="flex shrink-0 items-center justify-between gap-4 border-b border-gray-200 px-6 py-4">
           <div className="flex items-baseline gap-3">
-            <h2 className="text-lg font-semibold tracking-tight text-black">Fund this effort</h2>
-            <span className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
-              Mockup
-            </span>
+            <h2 className="text-lg font-semibold tracking-tight text-black">Accelerate R&amp;D</h2>
           </div>
           <button
             type="button"
@@ -451,19 +513,7 @@ export default function FundingCheckout({
                     options={SORT_OPTIONS.map((s) => ({ value: s.id, label: s.label }))}
                   />
                 </div>
-              ) : (
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <FilterSelect
-                    label="Group by"
-                    value={collectionGroup}
-                    onChange={(v) => setCollectionGroup(v as CollectionGroup)}
-                    options={[
-                      { value: 'focus', label: 'Focus area' },
-                      { value: 'intervention', label: 'Intervention type' },
-                    ]}
-                  />
-                </div>
-              )}
+              ) : null}
             </div>
 
             {/* Scrollable list */}
@@ -505,7 +555,8 @@ export default function FundingCheckout({
               ) : (
                 <>
                   <p className="mb-4 max-w-2xl text-sm leading-relaxed text-gray-500">
-                    Fund a whole group in one move. You can still fine-tune the mix under{' '}
+                    Pick a collection type, then choose a collection to fund. You can still fine-tune the
+                    mix under{' '}
                     <button
                       type="button"
                       onClick={() => setMode('individual')}
@@ -515,47 +566,103 @@ export default function FundingCheckout({
                     </button>
                     .
                   </p>
-                  {collectionGroup === 'focus' ? (
-                    <div className="flex flex-col gap-3.5">
-                      {collections.map((col) => (
-                        <CollectionRow
-                          key={col.key}
-                          area={col.key}
-                          label={col.label}
-                          images={col.images}
-                          count={col.rkeys.length}
-                          comingSoon={col.comingSoon}
-                          active={collectionInCart({ key: col.key, group: 'focus', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
-                          onPick={() =>
-                            toggleCollection(
-                              { key: col.key, group: 'focus', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
-                              col.comingSoon,
-                            )
-                          }
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-3.5">
-                      {interventionCollections.map((col) => (
-                        <InterventionRow
-                          key={col.key}
-                          label={col.label}
-                          subtitle={col.subtitle}
-                          oneLiner={col.oneLiner}
-                          images={col.images}
-                          count={col.rkeys.length}
-                          active={collectionInCart({ key: col.key, group: 'intervention', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
-                          onPick={() =>
-                            toggleCollection(
-                              { key: col.key, group: 'intervention', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
-                              false,
-                            )
-                          }
-                        />
-                      ))}
-                    </div>
-                  )}
+                  <div className="flex flex-col gap-3">
+                    {COLLECTION_TYPES.map((type) => (
+                      <CollectionTypeSection
+                        key={type.id}
+                        label={type.label}
+                        blurb={type.blurb}
+                        open={openType === type.id}
+                        onToggle={() => setOpenType(openType === type.id ? null : type.id)}
+                      >
+                        {type.id === 'focus' && (
+                          <div className="flex flex-col gap-3.5">
+                            {collections.map((col) => (
+                              <CollectionRow
+                                key={col.key}
+                                area={col.key}
+                                label={col.label}
+                                images={col.images}
+                                count={col.rkeys.length}
+                                comingSoon={col.comingSoon}
+                                active={collectionInCart({ key: col.key, group: 'focus', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
+                                onPick={() =>
+                                  toggleCollection(
+                                    { key: col.key, group: 'focus', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
+                                    col.comingSoon,
+                                  )
+                                }
+                              />
+                            ))}
+                          </div>
+                        )}
+                        {type.id === 'intervention' && (
+                          <div className="flex flex-col gap-3.5">
+                            {interventionCollections.map((col) => (
+                              <InterventionRow
+                                key={col.key}
+                                label={col.label}
+                                subtitle={col.subtitle}
+                                oneLiner={col.oneLiner}
+                                images={col.images}
+                                count={col.rkeys.length}
+                                active={collectionInCart({ key: col.key, group: 'intervention', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
+                                onPick={() =>
+                                  toggleCollection(
+                                    { key: col.key, group: 'intervention', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
+                                    false,
+                                  )
+                                }
+                              />
+                            ))}
+                          </div>
+                        )}
+                        {type.id === 'inflection' && (
+                          <div className="flex flex-col gap-3.5">
+                            {inflectionCollections.map((col) => (
+                              <BundleRow
+                                key={col.key}
+                                badge={<AreaIcon type={FA_ICON[col.area]} className="h-5 w-5 text-white" />}
+                                label={col.label}
+                                subtitle={col.subtitle}
+                                oneLiner={col.oneLiner}
+                                images={col.images}
+                                count={col.rkeys.length}
+                                active={collectionInCart({ key: col.key, group: 'inflection', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
+                                onPick={() =>
+                                  toggleCollection(
+                                    { key: col.key, group: 'inflection', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
+                                    false,
+                                  )
+                                }
+                              />
+                            ))}
+                          </div>
+                        )}
+                        {type.id === 'curated' && (
+                          <div className="flex flex-col gap-3.5">
+                            {curatedCollections.map((col) => (
+                              <BundleRow
+                                key={col.key}
+                                badge={<span className="text-[13px] font-bold leading-none text-white">{col.badge}</span>}
+                                label={col.label}
+                                oneLiner={col.oneLiner}
+                                images={col.images}
+                                count={col.rkeys.length}
+                                active={collectionInCart({ key: col.key, group: 'curated', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
+                                onPick={() =>
+                                  toggleCollection(
+                                    { key: col.key, group: 'curated', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
+                                    false,
+                                  )
+                                }
+                              />
+                            ))}
+                          </div>
+                        )}
+                      </CollectionTypeSection>
+                    ))}
+                  </div>
                 </>
               )}
             </div>
@@ -818,6 +925,135 @@ function InterventionRow({
   )
 }
 
+// Expandable collection-*type* card. Header is always visible; picking it
+// animates the collections in that type open (accordion — one at a time).
+function CollectionTypeSection({
+  label,
+  blurb,
+  open,
+  onToggle,
+  children,
+}: {
+  label: string
+  blurb: string
+  open: boolean
+  onToggle: () => void
+  children: ReactNode
+}) {
+  return (
+    <div
+      className={`overflow-hidden rounded-2xl border transition-colors ${
+        open ? 'border-blue/40 bg-blue/[0.02]' : 'border-gray-200 hover:border-gray-300'
+      }`}
+    >
+      <button
+        type="button"
+        onClick={onToggle}
+        aria-expanded={open}
+        className="flex w-full items-center gap-4 p-4 text-left"
+      >
+        <div className="min-w-0 flex-1">
+          <div className="text-[15.5px] font-semibold text-black">{label}</div>
+          <p className="mt-0.5 text-[13px] leading-snug text-gray-500">{blurb}</p>
+        </div>
+        <svg
+          className={`h-5 w-5 shrink-0 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.25, 0.1, 0.25, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-gray-100 p-4">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+// Generic collection row for inflection-point + curated bundles: a tinted badge
+// (area icon / initials), stacked live thumbnails, label + one-liner + count.
+function BundleRow({
+  badge,
+  label,
+  subtitle,
+  oneLiner,
+  images,
+  count,
+  active,
+  onPick,
+}: {
+  badge: ReactNode
+  label: string
+  subtitle?: string
+  oneLiner: string
+  images: string[]
+  count: number
+  active: boolean
+  onPick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onPick}
+      className={`flex items-center gap-4 rounded-2xl border p-4 text-left transition-all ${
+        active ? 'border-blue ring-2 ring-blue/30' : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+      }`}
+    >
+      <div className="flex shrink-0 -space-x-3.5">
+        <span
+          className="z-10 flex h-16 w-16 items-center justify-center rounded-xl border-2 border-white shadow-sm"
+          style={{ background: HAND_COLOR }}
+        >
+          {badge}
+        </span>
+        {images.slice(0, 2).map((src) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={src}
+            src={src}
+            alt=""
+            className="h-16 w-16 rounded-xl border-2 border-white object-cover shadow-sm"
+          />
+        ))}
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="text-[15.5px] font-semibold leading-snug text-black">{label}</span>
+          {subtitle && <span className="text-[12px] font-medium text-gray-400">· {subtitle}</span>}
+          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-gray-500">
+            {count}
+          </span>
+        </div>
+        <p className="mt-1 text-[13px] leading-snug text-gray-500">{oneLiner}</p>
+      </div>
+
+      <span
+        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-all ${
+          active ? 'border-blue bg-blue text-white' : 'border-gray-300 text-transparent'
+        }`}
+      >
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+        </svg>
+      </span>
+    </button>
+  )
+}
+
 function CollectionRow({
   area,
   label,
@@ -1006,7 +1242,7 @@ function AmountPanel({
         </div>
         <h3 className="mt-4 text-lg font-semibold text-black">Funding confirmed</h3>
         <p className="mt-2 max-w-xs text-sm leading-relaxed text-gray-500">
-          This is a mockup — no payment was taken. You pledged {usd(amount)} via {method} across {count} effort
+          You pledged {usd(amount)} via {method} across {count} effort
           {count === 1 ? '' : 's'}. In production this would mint an on-chain funding record against each
           hypercert.
         </p>
@@ -1096,7 +1332,13 @@ function AmountPanel({
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                      {col.group === 'focus' ? 'Focus-area collection' : 'Intervention collection'}
+                      {col.group === 'focus'
+                        ? 'Focus-area collection'
+                        : col.group === 'intervention'
+                          ? 'Intervention collection'
+                          : col.group === 'inflection'
+                            ? 'Inflection-point collection'
+                            : 'Curated collection'}
                     </div>
                     <div className="truncate text-[13px] font-semibold text-black">{col.label}</div>
                     <div className="text-[11px] text-gray-500">
@@ -1263,9 +1505,7 @@ function AmountPanel({
             </button>
           </div>
         )}
-        <p className="mt-2 text-center text-[10px] leading-relaxed text-gray-400">
-          Mockup only — no payment is processed.
-        </p>
+
       </div>
     </>
   )

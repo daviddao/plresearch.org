@@ -293,6 +293,7 @@ function InstrumentCell({ record, markets }: { record: InstrumentRecord; markets
               band={record.series.some((p) => (p as SeriesPoint).lo != null)}
               axis
               unit={record.instrument === 'idea_vintage' ? 'y' : ''}
+              interactive
             />
           )}
           <span className="line-clamp-2 text-sm font-semibold leading-snug text-black">{record.value}</span>
