@@ -99,7 +99,7 @@ type AreaFilter = FocusAreaKey | 'all'
 type InterventionFilter = ToolId | 'all'
 
 // A collection selected into the cart, rendered as a single line item.
-type ActiveCollection = { key: string; group: CollectionGroup; label: string; images: string[]; count: number }
+type ActiveCollection = { key: string; group: CollectionGroup; label: string; images: string[]; rkeys: string[]; count: number }
 
 // How many effort cards to reveal before the reader scrolls for more.
 const PAGE_SIZE = 6
@@ -145,10 +145,13 @@ export default function FundingCheckout({
   const [mode, setMode] = useState<Mode>('individual')
   const [collectionGroup, setCollectionGroup] = useState<CollectionGroup>('focus')
   const [step, setStep] = useState<Step>('select')
-  const [selected, setSelected] = useState<Set<string>>(
+  // Cumulative cart: individually-added efforts + added collections. Both
+  // persist across mode / filter / sort switches so nothing gets dropped when
+  // the reader browses around.
+  const [cartEfforts, setCartEfforts] = useState<Set<string>>(
     () => new Set(initialRkey ? [initialRkey] : []),
   )
-  const [activeCollection, setActiveCollection] = useState<ActiveCollection | null>(null)
+  const [cartCollections, setCartCollections] = useState<ActiveCollection[]>([])
 
   // Individual-mode filter + sort + progressive reveal.
   const [filterArea, setFilterArea] = useState<AreaFilter>('all')
@@ -186,9 +189,28 @@ export default function FundingCheckout({
     }
   }, [onClose])
 
-  const selectedList = certs.filter((c) => selected.has(c.rkey))
-  const count = selectedList.length
-  const valid = amount > 0 && count > 0
+  // Efforts pulled in by any added collection.
+  const collectionEffortKeys = useMemo(() => {
+    const s = new Set<string>()
+    cartCollections.forEach((col) => col.rkeys.forEach((r) => s.add(r)))
+    return s
+  }, [cartCollections])
+
+  // Individual line items = efforts added on their own and NOT already covered
+  // by a collection in the cart (avoids showing the same effort twice).
+  const selectedList = certs.filter(
+    (c) => cartEfforts.has(c.rkey) && !collectionEffortKeys.has(c.rkey),
+  )
+
+  // Distinct efforts backed across everything in the cart.
+  const distinctEffortCount = useMemo(() => {
+    const s = new Set<string>(collectionEffortKeys)
+    cartEfforts.forEach((r) => s.add(r))
+    return s.size
+  }, [collectionEffortKeys, cartEfforts])
+
+  const cartIsEmpty = cartCollections.length === 0 && selectedList.length === 0
+  const valid = amount > 0 && !cartIsEmpty
 
   // Per-focus-area collections. Economies & Governance is live (real claims);
   // the rest are "coming soon" mocks.
@@ -300,9 +322,9 @@ export default function FundingCheckout({
     return () => io.disconnect()
   }, [mode, hasMore, gridItems.length])
 
+  // Add/remove a single effort — accumulates, never wipes the rest.
   const toggleCert = (rkey: string) => {
-    setActiveCollection(null)
-    setSelected((prev) => {
+    setCartEfforts((prev) => {
       const next = new Set(prev)
       if (next.has(rkey)) next.delete(rkey)
       else next.add(rkey)
@@ -310,15 +332,27 @@ export default function FundingCheckout({
     })
   }
 
-  const pickCollection = (col: ActiveCollection, rkeys: string[], comingSoon: boolean) => {
+  const collectionInCart = (col: ActiveCollection) =>
+    cartCollections.some((c) => c.key === col.key && c.group === col.group)
+
+  // Add/remove a whole collection as its own cart line item — accumulates
+  // alongside individual efforts and other collections.
+  const toggleCollection = (col: ActiveCollection, comingSoon: boolean) => {
     if (comingSoon) return
-    setActiveCollection(col)
-    setSelected(new Set(rkeys))
+    setCartCollections((prev) => {
+      const exists = prev.some((c) => c.key === col.key && c.group === col.group)
+      return exists
+        ? prev.filter((c) => !(c.key === col.key && c.group === col.group))
+        : [...prev, col]
+    })
   }
 
+  const removeCollection = (key: string, group: CollectionGroup) =>
+    setCartCollections((prev) => prev.filter((c) => !(c.key === key && c.group === group)))
+
   const clearCart = () => {
-    setSelected(new Set())
-    setActiveCollection(null)
+    setCartEfforts(new Set())
+    setCartCollections([])
     setStep('select')
   }
 
@@ -448,7 +482,7 @@ export default function FundingCheckout({
                             key={it.key}
                             cert={it.cert}
                             index={i}
-                            selected={selected.has(it.key)}
+                            selected={cartEfforts.has(it.key) || collectionEffortKeys.has(it.key)}
                             onToggle={() => toggleCert(it.key)}
                             noEntrance={it.key === initialRkey && Boolean(morphFrom)}
                             hidden={it.key === initialRkey && Boolean(clone)}
@@ -491,11 +525,10 @@ export default function FundingCheckout({
                           images={col.images}
                           count={col.rkeys.length}
                           comingSoon={col.comingSoon}
-                          active={activeCollection?.key === col.key}
+                          active={collectionInCart({ key: col.key, group: 'focus', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
                           onPick={() =>
-                            pickCollection(
-                              { key: col.key, group: 'focus', label: col.label, images: col.images, count: col.rkeys.length },
-                              col.rkeys,
+                            toggleCollection(
+                              { key: col.key, group: 'focus', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
                               col.comingSoon,
                             )
                           }
@@ -512,11 +545,10 @@ export default function FundingCheckout({
                           oneLiner={col.oneLiner}
                           images={col.images}
                           count={col.rkeys.length}
-                          active={activeCollection?.key === col.key}
+                          active={collectionInCart({ key: col.key, group: 'intervention', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length })}
                           onPick={() =>
-                            pickCollection(
-                              { key: col.key, group: 'intervention', label: col.label, images: col.images, count: col.rkeys.length },
-                              col.rkeys,
+                            toggleCollection(
+                              { key: col.key, group: 'intervention', label: col.label, images: col.images, rkeys: col.rkeys, count: col.rkeys.length },
                               false,
                             )
                           }
@@ -548,9 +580,10 @@ export default function FundingCheckout({
               step={step}
               setStep={setStep}
               selectedList={selectedList}
-              activeCollection={activeCollection}
+              collections={cartCollections}
+              distinctEffortCount={distinctEffortCount}
               onRemove={(r) => toggleCert(r)}
-              onRemoveCollection={clearCart}
+              onRemoveCollection={removeCollection}
               amount={amount}
               setAmount={setAmount}
               custom={custom}
@@ -929,7 +962,8 @@ function AmountPanel({
   step,
   setStep,
   selectedList,
-  activeCollection,
+  collections,
+  distinctEffortCount,
   onRemove,
   onRemoveCollection,
   amount,
@@ -945,9 +979,10 @@ function AmountPanel({
   step: Step
   setStep: (s: Step) => void
   selectedList: Hypercert[]
-  activeCollection: ActiveCollection | null
+  collections: ActiveCollection[]
+  distinctEffortCount: number
   onRemove: (rkey: string) => void
-  onRemoveCollection: () => void
+  onRemoveCollection: (key: string, group: CollectionGroup) => void
   amount: number
   setAmount: (n: number) => void
   custom: boolean
@@ -958,7 +993,8 @@ function AmountPanel({
   onClose: () => void
   onReset: () => void
 }) {
-  const count = selectedList.length
+  const count = distinctEffortCount
+  const isEmpty = collections.length === 0 && selectedList.length === 0
 
   if (step === 'done') {
     return (
@@ -1023,7 +1059,7 @@ function AmountPanel({
             {count} effort{count === 1 ? '' : 's'}
           </span>
         </div>
-        {count > 0 && step === 'select' && (
+        {!isEmpty && step === 'select' && (
           <button type="button" onClick={onReset} className="text-[12px] font-medium text-gray-400 hover:text-gray-700">
             Clear
           </button>
@@ -1031,76 +1067,80 @@ function AmountPanel({
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-        {count === 0 ? (
+        {isEmpty ? (
           <div className="flex h-full flex-col items-center justify-center px-4 text-center">
-            <p className="text-sm font-medium text-gray-700">Nothing selected yet</p>
+            <p className="text-sm font-medium text-gray-700">Nothing added yet</p>
             <p className="mt-1.5 text-xs leading-relaxed text-gray-500">
-              Pick efforts or a collection on the left to fund one or many at once.
+              Add efforts and collections from any view — they stack up here as you browse.
             </p>
           </div>
         ) : (
           <>
-            {activeCollection ? (
-              // A picked collection reads as ONE line item, not its members.
-              <div className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-2.5">
-                <div className="flex shrink-0 -space-x-3">
-                  {activeCollection.images.slice(0, 3).map((src, i) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      key={i}
-                      src={src}
-                      alt=""
-                      className="h-10 w-10 rounded-lg border-2 border-white object-cover shadow-sm"
-                    />
-                  ))}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                    {activeCollection.group === 'focus' ? 'Focus-area collection' : 'Intervention collection'}
+            <ul className="flex flex-col gap-2">
+              {/* Collections first — each an accumulating line item */}
+              {collections.map((col) => (
+                <li
+                  key={`${col.group}:${col.key}`}
+                  className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-2.5"
+                >
+                  <div className="flex shrink-0 -space-x-3">
+                    {col.images.slice(0, 3).map((src, i) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={i}
+                        src={src}
+                        alt=""
+                        className="h-10 w-10 rounded-lg border-2 border-white object-cover shadow-sm"
+                      />
+                    ))}
                   </div>
-                  <div className="truncate text-[13px] font-semibold text-black">{activeCollection.label}</div>
-                  <div className="text-[11px] text-gray-500">
-                    {activeCollection.count} effort{activeCollection.count === 1 ? '' : 's'}
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                      {col.group === 'focus' ? 'Focus-area collection' : 'Intervention collection'}
+                    </div>
+                    <div className="truncate text-[13px] font-semibold text-black">{col.label}</div>
+                    <div className="text-[11px] text-gray-500">
+                      {col.count} effort{col.count === 1 ? '' : 's'}
+                    </div>
                   </div>
-                </div>
-                {step === 'select' && (
-                  <button
-                    type="button"
-                    onClick={onRemoveCollection}
-                    aria-label="Remove collection"
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500"
-                  >
-                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                )}
-              </div>
-            ) : (
-              <ul className="flex flex-col gap-2">
-                {selectedList.map((c) => (
-                  <li key={c.rkey} className="flex items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-2">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={c.image} alt="" className="h-9 w-9 shrink-0 rounded-md object-cover" />
-                    <span className="min-w-0 flex-1 line-clamp-2 text-[12.5px] font-semibold leading-snug text-black">
-                      {c.title}
-                    </span>
-                    {step === 'select' && (
-                      <button
-                        type="button"
-                        onClick={() => onRemove(c.rkey)}
-                        aria-label="Remove"
-                        className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500"
-                      >
-                        <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
+                  {step === 'select' && (
+                    <button
+                      type="button"
+                      onClick={() => onRemoveCollection(col.key, col.group)}
+                      aria-label="Remove collection"
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                    >
+                      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </li>
+              ))}
+
+              {/* Individually-added efforts (not already covered by a collection) */}
+              {selectedList.map((c) => (
+                <li key={c.rkey} className="flex items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-2">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.image} alt="" className="h-9 w-9 shrink-0 rounded-md object-cover" />
+                  <span className="min-w-0 flex-1 line-clamp-2 text-[12.5px] font-semibold leading-snug text-black">
+                    {c.title}
+                  </span>
+                  {step === 'select' && (
+                    <button
+                      type="button"
+                      onClick={() => onRemove(c.rkey)}
+                      aria-label="Remove"
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-400 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+                    >
+                      <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
 
             {step === 'select' && (
               <div className="mt-5">
