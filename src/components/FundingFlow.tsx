@@ -585,7 +585,7 @@ export default function FundingCheckout({
                         </button>
                         .
                       </p>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
                         {COLLECTION_TYPES.map((type) => (
                           <CollectionTypeTile
                             key={type.id}
@@ -1011,11 +1011,11 @@ function CollectionTypeTile({
     <button
       type="button"
       onClick={onClick}
-      className="group flex h-full flex-col rounded-2xl border border-gray-200 p-4 text-left transition-all hover:border-blue/40 hover:bg-blue/[0.02] hover:shadow-sm"
+      className="group flex h-full flex-col rounded-2xl border border-gray-200 p-3.5 text-left transition-all hover:border-blue/40 hover:bg-blue/[0.02] hover:shadow-sm"
     >
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-2.5 flex items-center justify-between">
         <span
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-white"
+          className="flex h-9 w-9 items-center justify-center rounded-xl text-white"
           style={{ background: HAND_COLOR }}
         >
           <TypeGlyph id={id} />
@@ -1024,9 +1024,9 @@ function CollectionTypeTile({
           {count}
         </span>
       </div>
-      <div className="text-[15px] font-semibold leading-snug text-black">{label}</div>
-      <p className="mt-1 text-[12.5px] leading-snug text-gray-500">{blurb}</p>
-      <span className="mt-3 inline-flex items-center gap-1 text-[12px] font-medium text-gray-400 transition-colors group-hover:text-blue">
+      <div className="text-[14px] font-semibold leading-snug text-black">{label}</div>
+      <p className="mt-1 text-[12px] leading-snug text-gray-500">{blurb}</p>
+      <span className="mt-2.5 inline-flex items-center gap-1 text-[12px] font-medium text-gray-400 transition-colors group-hover:text-blue">
         Browse
         <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
