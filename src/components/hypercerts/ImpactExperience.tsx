@@ -99,15 +99,46 @@ export function ImpactExperience({
   const items = certs
   const activeCert = items.find((c) => c.rkey === selected) ?? null
 
-  // Deep-link: …/hypercerts/#<rkey> opens that cert's detail.
-  useEffect(() => {
-    const rkey = window.location.hash.slice(1)
-    if (!rkey) return
+  // URL <-> modal sync. The open cert lives in the URL hash (…/#<rkey>) so a
+  // reload or shared link reopens that cert's detail, and the browser Back
+  // button closes it.
+  const openDetail = (rkey: string) => {
     const idx = items.findIndex((c) => c.rkey === rkey)
-    if (idx >= 0) {
-      setActiveIndex(idx)
-      setSelected(rkey)
+    if (idx >= 0) setActiveIndex(idx)
+    setSelected(rkey)
+    const base = window.location.pathname + window.location.search
+    window.history.pushState({ hypercert: rkey }, "", `${base}#${rkey}`)
+  }
+
+  const closeDetail = () => {
+    // If we pushed a history entry for this modal, pop it so the URL and the
+    // Back button stay consistent; otherwise (e.g. opened via a deep link)
+    // just strip the hash in place.
+    if (typeof window !== "undefined" && (window.history.state as { hypercert?: string } | null)?.hypercert) {
+      window.history.back()
+    } else {
+      setSelected(null)
+      const base = window.location.pathname + window.location.search
+      window.history.replaceState(null, "", base)
     }
+  }
+
+  // Read the hash on mount (deep link) and on Back/Forward (popstate), keeping
+  // the open cert in step with the URL.
+  useEffect(() => {
+    const sync = () => {
+      const rkey = window.location.hash.slice(1)
+      const idx = rkey ? items.findIndex((c) => c.rkey === rkey) : -1
+      if (idx >= 0) {
+        setActiveIndex(idx)
+        setSelected(rkey)
+      } else {
+        setSelected(null)
+      }
+    }
+    sync()
+    window.addEventListener("popstate", sync)
+    return () => window.removeEventListener("popstate", sync)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -317,7 +348,7 @@ export function ImpactExperience({
                     layoutDependency={`${safeActive}|${selected ?? ""}`}
                     // Center card opens its detail; a slanted side card first
                     // navigates itself into the center.
-                    onSelect={() => (discreteOffset === 0 ? setSelected(cert.rkey) : navigate(idx))}
+                    onSelect={() => (discreteOffset === 0 ? openDetail(cert.rkey) : navigate(idx))}
                   />
                 </div>
               )
@@ -356,7 +387,7 @@ export function ImpactExperience({
             certs={items}
             showFunding={showFunding}
             variant={detailVariant}
-            onClose={() => setSelected(null)}
+            onClose={closeDetail}
           />
         )}
       </AnimatePresence>
