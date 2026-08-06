@@ -11,10 +11,18 @@ const FULLSCREEN_PATTERNS = [
   /^\/areas\/economies-governance\/dependency-graph\/[^/]+\/?$/,
 ]
 
+// Routes that end on a colored full-bleed section and manage their own bottom
+// spacing, so the default white pb-12 gap before the footer would show as an
+// out-of-place white bar.
+const NO_BOTTOM_PAD_PATTERNS = [
+  /^\/impact-preview-[^/]+\/?$/,
+]
+
 export default function SiteShell({ children }: { children: React.ReactNode }) {
   const [navOpen, setNavOpen] = useState(false)
   const pathname = usePathname()
   const isFullscreen = FULLSCREEN_PATTERNS.some(p => p.test(pathname))
+  const noBottomPad = NO_BOTTOM_PAD_PATTERNS.some(p => p.test(pathname))
 
   useEffect(() => {
     if (isFullscreen) {
@@ -28,7 +36,7 @@ export default function SiteShell({ children }: { children: React.ReactNode }) {
       <SiteHeader onMenuClick={() => setNavOpen(true)} />
       <OffCanvasNav isOpen={navOpen} onClose={() => setNavOpen(false)} />
 
-      <div className={isFullscreen ? 'w-full' : 'w-full pb-12'}>
+      <div className={isFullscreen ? 'w-full' : noBottomPad ? 'w-full' : 'w-full pb-12'}>
         {children}
       </div>
 
