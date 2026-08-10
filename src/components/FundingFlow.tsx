@@ -566,12 +566,15 @@ export default function FundingCheckout({
                 <AnimatePresence mode="wait" initial={false}>
                   {openType === null ? (
                     // Step 1 — a grid of collection-*type* tiles (date-picker style).
+                    // Drilling into a type reads as "opening" it: this grid zooms
+                    // forward and fades out as the chosen collection expands up.
                     <motion.div
                       key="type-grid"
-                      initial={{ opacity: 0, x: -12 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -12 }}
-                      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 1.06 }}
+                      transition={{ duration: 0.22, ease: [0.25, 0.1, 0.25, 1] }}
+                      style={{ transformOrigin: 'center' }}
                     >
                       <p className="mb-4 max-w-2xl text-sm leading-relaxed text-gray-500">
                         Pick a collection type to browse the collections inside it. You can still
@@ -600,12 +603,15 @@ export default function FundingCheckout({
                     </motion.div>
                   ) : (
                     // Step 2 — the collections inside the chosen type, one per row.
+                    // Expands up from a slightly smaller scale so it feels like the
+                    // picked type is opening toward the reader (zoom, not a slide).
                     <motion.div
                       key={openType}
-                      initial={{ opacity: 0, x: 12 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: 12 }}
-                      transition={{ duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }}
+                      initial={{ opacity: 0, scale: 0.94 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{ duration: 0.24, ease: [0.25, 0.1, 0.25, 1] }}
+                      style={{ transformOrigin: 'center' }}
                     >
                       <button
                         type="button"
