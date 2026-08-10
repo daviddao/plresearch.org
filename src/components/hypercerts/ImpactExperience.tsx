@@ -29,10 +29,16 @@ type CardStyle = {
 // pose at ±3). Fractional offsets — produced while dragging — are
 // linearly interpolated between the neighbouring anchors so the cards
 // track the pointer continuously.
+//
+// Side cards stay (near-)opaque: depth reads from scale + tilt + z-depth,
+// not fade. Keeping opacity high stops the light page background from
+// bleeding through a tilted card where it isn't backed by its neighbour
+// (the gaps between stacked cards). Only the ±3 pose fades to 0 so a card
+// still dissolves cleanly as it leaves the stack while dragging.
 const POSES = [
   { x: 0, rot: 0, z: 0, scale: 1, opacity: 1 },
-  { x: 62, rot: 25, z: -160, scale: 0.85, opacity: 0.65 },
-  { x: 112, rot: 35, z: -260, scale: 0.7, opacity: 0.35 },
+  { x: 62, rot: 25, z: -160, scale: 0.85, opacity: 1 },
+  { x: 112, rot: 35, z: -260, scale: 0.7, opacity: 0.92 },
   { x: 150, rot: 40, z: -340, scale: 0.6, opacity: 0 },
 ]
 
