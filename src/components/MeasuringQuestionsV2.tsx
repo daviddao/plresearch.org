@@ -5,7 +5,7 @@
 // toolkit), and (2) observed field velocity, the five instruments we read the
 // result with. Both the toolkit tools and the velocity instruments open modals.
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { HAND_COLOR, FIELD_COLOR, TOOLKIT_V2, type ToolkitEntry } from '@/lib/field-velocity'
 import { VELOCITY_INSTRUMENTS, INFLECTION_EXPLAINER } from '@/lib/velocity-instruments'
 import { IdeaVintageExamples, InflectionQuadrant, type IdeaVintageExample } from '@/components/velocity-explainers'
@@ -19,8 +19,13 @@ type Modal =
 
 export default function MeasuringQuestionsV2({
   ideaVintageExamples = [],
+  interlude,
 }: {
   ideaVintageExamples?: IdeaVintageExample[]
+  /** Optional block rendered between the interventions and observed-velocity
+      sections (e.g. the Verified Impact hypercerts, which mirror the
+      interventions above). */
+  interlude?: ReactNode
 }) {
   const [modal, setModal] = useState<Modal | null>(null)
 
@@ -75,6 +80,8 @@ export default function MeasuringQuestionsV2({
           </div>
         </div>
       </section>
+
+      {interlude}
 
       {/* Downward divider — interventions drive the observed velocity below. */}
       <div className="relative my-12" aria-hidden>
