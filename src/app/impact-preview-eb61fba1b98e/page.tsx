@@ -151,52 +151,56 @@ export default async function ImpactPage() {
           The method is the meta-research design of how we do field acceleration. We name the
           interventions we run, then read field velocity as the result. Same design, every focus area.
         </p>
-        <MeasuringQuestionsV2 ideaVintageExamples={ideaVintageExamples} />
-      </div>
-
-      {/* Hypercerts — the impact claims themselves, as a cover carousel. The
-          toned-down card view of intervention examples lives in the methodology
-          modals above; here we surface only the real, published hypercerts. */}
-      {certs.length > 0 && (
-        <section className="border-t border-gray-200 bg-gray-50">
-          <div className="max-w-6xl mx-auto px-6 py-14 lg:py-16">
-            <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div className="max-w-2xl">
-                <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--impact-hand)' }}>
-                  Our hand, as verifiable claims
+        <MeasuringQuestionsV2
+          ideaVintageExamples={ideaVintageExamples}
+          interlude={
+            certs.length > 0 ? (
+              /* Hypercerts — the impact claims themselves, as a cover carousel.
+                 Sits between the interventions and observed-velocity blocks: the
+                 published hypercerts mirror the interventions above. The
+                 toned-down card view of intervention examples lives in the
+                 methodology modals; here we surface only the real, published
+                 hypercerts. */
+              <section className="my-12 rounded-2xl border border-gray-200 bg-gray-50 p-6 sm:p-8 lg:p-10">
+                <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                  <div className="max-w-2xl">
+                    <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--impact-hand)' }}>
+                      Our hand, as verifiable claims
+                    </div>
+                    <h3 className="text-lg font-semibold tracking-tight text-black">Verified Impact</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                      A{' '}
+                      <a
+                        href="https://hypercerts.org"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue hover:underline"
+                      >
+                        hypercert
+                      </a>{' '}
+                      is a verifiable, evolving record of impactful work &mdash; what was done, by whom, and where.
+                      Each Research Retreat edition is published as one on open infrastructure PL R&amp;D helped
+                      originate. Open a card to walk its evidence timeline.
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 flex-wrap items-center gap-3">
+                    <a
+                      href="/areas/economies-governance/impact/hypercerts/"
+                      className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-blue/40 hover:text-blue hover:shadow-sm"
+                    >
+                      See all impact claims
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </a>
+                  </div>
                 </div>
-                <h2 className="text-xl lg:text-2xl font-semibold tracking-tight mb-2">Verified Impact</h2>
-                <p className="text-base text-gray-600 leading-relaxed">
-                  A{' '}
-                  <a
-                    href="https://hypercerts.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue hover:underline"
-                  >
-                    hypercert
-                  </a>{' '}
-                  is a verifiable, evolving record of impactful work &mdash; what was done, by whom, and where.
-                  Each Research Retreat edition is published as one on open infrastructure PL R&amp;D helped
-                  originate. Open a card to walk its evidence timeline.
-                </p>
-              </div>
-              <div className="flex shrink-0 flex-wrap items-center gap-3">
-                <a
-                  href="/areas/economies-governance/impact/hypercerts/"
-                  className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all hover:border-blue/40 hover:text-blue hover:shadow-sm"
-                >
-                  See all impact claims
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </a>
-              </div>
-            </div>
-            <HypercertsShowcase certs={certs} />
-          </div>
-        </section>
-      )}
+                <HypercertsShowcase certs={certs} />
+              </section>
+            ) : null
+          }
+        />
+      </div>
     </div>
   )
 }
