@@ -161,7 +161,11 @@ export default async function ImpactPage() {
                  toned-down card view of intervention examples lives in the
                  methodology modals; here we surface only the real, published
                  hypercerts. */
-              <section className="my-12 rounded-2xl border border-gray-200 bg-gray-50 p-6 sm:p-8 lg:p-10">
+              /* Full-bleed grey band: break out of the centered max-w-6xl
+                 methodology container to span the whole viewport width, then
+                 re-center the content in an inner max-w-6xl wrapper. */
+              <section className="relative left-1/2 my-12 w-screen -translate-x-1/2 border-y border-gray-200 bg-gray-50">
+                <div className="mx-auto max-w-6xl px-6 py-14 lg:py-16">
                 <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                   <div className="max-w-2xl">
                     <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--impact-hand)' }}>
@@ -196,6 +200,7 @@ export default async function ImpactPage() {
                   </div>
                 </div>
                 <HypercertsShowcase certs={certs} />
+                </div>
               </section>
             ) : null
           }
