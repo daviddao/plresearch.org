@@ -91,7 +91,7 @@ export function ImpactExperience({
 
   // Click-and-drag: dragPx follows the pointer while grabbing, and is
   // converted into a fractional index shift for the card poses.
-  const dragRef = useRef<{ pointerId: number; startX: number; dragging: boolean; downIdx: number | null } | null>(null)
+  const dragRef = useRef<{ pointerId: number; startX: number; startY: number; dragging: boolean; downIdx: number | null } | null>(null)
   const suppressClickRef = useRef(false)
   const [dragPx, setDragPx] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
@@ -198,7 +198,7 @@ export function ImpactExperience({
     // can bring it to center even if the pointer jitters past the drag slop.
     const cardEl = (e.target as HTMLElement).closest<HTMLElement>("[data-card-idx]")
     const downIdx = cardEl ? Number(cardEl.dataset.cardIdx) : null
-    dragRef.current = { pointerId: e.pointerId, startX: e.clientX, dragging: false, downIdx }
+    dragRef.current = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, dragging: false, downIdx }
   }
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -230,10 +230,19 @@ export function ImpactExperience({
     // Which card did a tap target? The 3D-transformed side cards (perspective +
     // translateZ behind the center) don't reliably capture pointer events — a
     // press on a slanted card often falls through to the stage, leaving
-    // downIdx null. When that happens, infer the target from where the press
-    // landed relative to the carousel center so the tap still centers a card.
+    // downIdx null. When that happens, hit-test the exact press point for any
+    // card wrapper stacked underneath so a click on a far card (e.g. +2) still
+    // centers *that* card, instead of only ever stepping one toward it.
     const resolveTap = (): number | null => {
       if (drag.downIdx != null) return drag.downIdx
+      if (typeof document !== "undefined") {
+        for (const el of document.elementsFromPoint(drag.startX, drag.startY)) {
+          const cardEl = (el as HTMLElement).closest?.<HTMLElement>("[data-card-idx]")
+          if (cardEl?.dataset.cardIdx != null) return Number(cardEl.dataset.cardIdx)
+        }
+      }
+      // Nothing under the pointer resolved to a card — fall back to inferring
+      // direction from where the press landed relative to the carousel center.
       const rect = e.currentTarget.getBoundingClientRect()
       const off = drag.startX - (rect.left + rect.width / 2)
       if (Math.abs(off) < 40) return null // dead-center: leave it alone
