@@ -7,10 +7,6 @@ authors:
 cover_image: "/images/blog/securing-fundamental-rights-in-the-digital-realm/hero.webp"
 areas:
   - digital-human-rights
-# Live at its URL, but kept out of the carousel, insights/blog listings,
-# sitemap, RSS feed, and search index (and set to noindex). Flip to false
-# (or remove) to publish it publicly.
-unlisted: true
 ---
 <figure class="post-figure post-hero"><img src="/images/blog/securing-fundamental-rights-in-the-digital-realm/hero.webp" alt="Securing fundamental rights in the digital realm." /></figure>
 
