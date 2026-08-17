@@ -1,6 +1,6 @@
 ---
 title: "Neurotechnology: Bridging Minds and Machines for Human Flourishing"
-date: 2026-07-27
+date: 2026-08-22
 summary: "An overview of PL R&D's Neurotechnology focus area — brain-computer interfaces, biologically inspired AI, and whole-organism emulation — the three opportunity spaces we are backing, the inflection points we believe are within reach, and the 2030 milestones we are working toward."
 authors:
   - sean-escola
@@ -169,3 +169,5 @@ We invite you to explore the [projects and publications already contributing to 
 The future of neurotechnology remains unwritten. That is precisely what makes it worth building.
 
 Join us.
+
+*This post is for informational purposes only. It is not an offer, solicitation, or recommendation of any security or investment product, and nothing here is a commitment or guarantee of any future performance or any outcome.*
