@@ -1,6 +1,6 @@
 ---
 title: "Securing Fundamental Rights in the Digital Realm: The Infrastructure Freedom Now Runs On"
-date: 2026-06-30
+date: 2026-08-30
 summary: "The digital foundations our fundamental rights now depend on — censorship-resistant communication, portable identity, verifiable public knowledge, and sovereign infrastructure for AI and agents — the four opportunity spaces we are backing and the inflection points we believe are within reach."
 authors:
   - will-scott
