@@ -30,35 +30,21 @@ Together, these areas form a loop: advances in neuroscience generate new data an
 <div class="loop-diagram">
 <svg viewBox="0 0 860 520" style="max-width:680px" role="img" aria-label="A virtuous loop between understanding of the brain and the capability of AI systems and neurotechnologies. Deeper understanding of the brain yields brain-derived representations, architectures and algorithms that enable more capable AI and neurotech; those better tools and models in turn generate more and richer neural data, which deepens understanding of the brain. At the center, the loop produces new possibilities for augmenting human cognition.">
   <defs>
-    <marker id="neuroRing" markerUnits="userSpaceOnUse" markerWidth="36" markerHeight="36" refX="20" refY="11" orient="auto">
-      <path d="M0,0 L22,11 L0,22 z" style="fill:var(--color-gray-500);fill-opacity:.85" />
-    </marker>
+    <marker id="neuroRing" markerUnits="userSpaceOnUse" markerWidth="36" markerHeight="36" refX="20" refY="11" orient="auto"><path d="M0,0 L22,11 L0,22 z" style="fill:var(--color-gray-500);fill-opacity:.85" /></marker>
   </defs>
-
-  <!-- Ring: two clockwise ribbon-arrows forming the cycle -->
   <path d="M441.6,90.9 A180,180 0 0 1 507.3,387.3" style="fill:none;stroke:var(--color-gray-500);stroke-opacity:.4;stroke-width:16;stroke-linecap:round" marker-end="url(#neuroRing)" />
   <path d="M318.4,429.1 A180,180 0 0 1 252.7,132.7" style="fill:none;stroke:var(--color-gray-500);stroke-opacity:.4;stroke-width:16;stroke-linecap:round" marker-end="url(#neuroRing)" />
-
-  <!-- Center: the output of the loop -->
   <text x="380" y="250" font-size="17" text-anchor="middle" style="fill:var(--color-black)">New possibilities for</text>
   <text x="380" y="273" font-size="17" text-anchor="middle" style="fill:var(--color-black)">augmenting human cognition</text>
-
-  <!-- Top node: understanding of the brain -->
   <rect x="250" y="45" width="260" height="70" rx="16" style="fill:var(--color-gray-500)" />
   <text class="loop-pill-text" x="380" y="80" dy="0.34em" font-size="17" text-anchor="middle">Understanding of the brain</text>
-
-  <!-- Bottom node: capability of AI & neurotech -->
   <rect x="250" y="405" width="260" height="70" rx="16" style="fill:var(--color-gray-500)" />
   <text class="loop-pill-text" x="380" y="436" font-size="15" text-anchor="middle">Capability of AI systems &amp;</text>
   <text class="loop-pill-text" x="380" y="458" font-size="15" text-anchor="middle">neurotechnologies</text>
-
-  <!-- Right edge label (brain -> AI) -->
   <text x="590" y="178" font-size="15" text-anchor="start" style="fill:var(--color-black)">Brain-derived representations,</text>
   <text x="590" y="200" font-size="15" text-anchor="start" style="fill:var(--color-black)">architectures &amp; algorithms</text>
   <text x="590" y="222" font-size="15" text-anchor="start" style="fill:var(--color-black)">enable more capable AI &amp;</text>
   <text x="590" y="244" font-size="15" text-anchor="start" style="fill:var(--color-black)">neurotech</text>
-
-  <!-- Left edge label (AI -> brain) -->
   <text x="175" y="232" font-size="15" text-anchor="end" style="fill:var(--color-black)">Better tools &amp; models</text>
   <text x="175" y="254" font-size="15" text-anchor="end" style="fill:var(--color-black)">generate more and</text>
   <text x="175" y="276" font-size="15" text-anchor="end" style="fill:var(--color-black)">richer neural data</text>
