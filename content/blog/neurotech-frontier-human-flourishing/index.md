@@ -27,7 +27,45 @@ We focus on three opportunity spaces that could reshape both neuroscience and co
   <li><span class="os-num">3</span><span><strong>Whole-Organism Emulation</strong> = computational models that reproduce the behavior of biological organisms (WOE)</span></li>
 </ol>
 
-These areas form a stack. Advances in neuroscience generate new data and understanding. Those insights enable more capable AI systems and neurotechnologies. Progress across the stack opens new possibilities for augmenting human cognition, and each layer feeds the next: better recording produces better data, better data trains better models, and better models improve both the interfaces we build and the emulations we can run.
+Together, these areas form a loop. Advances in neuroscience deepen our understanding of the brain; those insights enable more capable AI systems and neurotechnologies; and better tools and models in turn produce more and richer neural data, which deepens our understanding of the brain again. Progress around the loop opens entirely new possibilities for augmenting human cognition.
+
+<div class="loop-diagram">
+<svg viewBox="0 0 560 400" style="max-width:560px" role="img" aria-label="A virtuous loop between understanding of the brain and the capability of AI systems and neurotechnologies. Deeper understanding of the brain yields brain-derived representations, architectures and algorithms that enable more capable AI and neurotech; those better tools and models in turn generate more and richer neural data, which deepens understanding of the brain. The loop produces new possibilities for augmenting human cognition.">
+  <defs>
+    <marker id="neuroFlow" markerWidth="9" markerHeight="9" refX="6.5" refY="4.5" orient="auto-start-reverse">
+      <path class="loop-flow-head" d="M0,0 L7.5,4.5 L0,9 z" />
+    </marker>
+  </defs>
+
+  <!-- Node A: understanding of the brain -->
+  <rect class="loop-pill" x="24" y="150" width="168" height="92" rx="20" />
+  <text class="loop-pill-text" x="108" y="190" font-size="16.5" text-anchor="middle">Understanding</text>
+  <text class="loop-pill-text" x="108" y="212" font-size="16.5" text-anchor="middle">of the brain</text>
+
+  <!-- Node B: capability of AI & neurotech -->
+  <rect class="loop-pill" x="368" y="150" width="168" height="92" rx="20" />
+  <text class="loop-pill-text" x="452" y="182" font-size="15.5" text-anchor="middle">Capability of AI</text>
+  <text class="loop-pill-text" x="452" y="201" font-size="15.5" text-anchor="middle">systems &amp;</text>
+  <text class="loop-pill-text" x="452" y="220" font-size="15.5" text-anchor="middle">neurotechnologies</text>
+
+  <!-- Top edge A -> B -->
+  <path class="loop-flow" d="M108,150 C108,72 452,72 452,150" marker-end="url(#neuroFlow)" />
+  <text class="loop-desc" x="280" y="34" font-size="15" text-anchor="middle">Brain-derived representations, architectures &amp; algorithms</text>
+  <text class="loop-desc" x="280" y="54" font-size="15" text-anchor="middle">enable more capable AI &amp; neurotech</text>
+
+  <!-- Bottom edge B -> A -->
+  <path class="loop-flow" d="M452,242 C452,320 108,320 108,242" marker-end="url(#neuroFlow)" />
+  <text class="loop-desc" x="280" y="268" font-size="15" text-anchor="middle">Better tools &amp; models generate</text>
+  <text class="loop-desc" x="280" y="288" font-size="15" text-anchor="middle">more and richer neural data</text>
+
+  <!-- Output of the loop -->
+  <path class="loop-flow" d="M280,308 L280,336" marker-end="url(#neuroFlow)" />
+  <rect class="loop-pill" x="150" y="338" width="260" height="54" rx="27" />
+  <text class="loop-pill-text" x="280" y="360" font-size="15" text-anchor="middle">New possibilities for</text>
+  <text class="loop-pill-text" x="280" y="380" font-size="15" text-anchor="middle">augmenting human cognition</text>
+</svg>
+</div>
+<p class="loop-caption">Understanding of the brain &rarr; more capable AI &amp; neurotech &rarr; better tools &amp; richer neural data &rarr; and around again.</p>
 
 <h2 class="os-heading">Opportunity Space <span class="os-num">1</span> Neural Augmentation (BCI)</h2>
 
@@ -126,7 +164,7 @@ High-throughput connectomics is getting cheaper and faster: a Nature study on [l
 
 ## The 2030 milestones we are working toward
 
-Field-building needs shared targets. We are organizing PL Neuro's work around three measurable milestones that mark real progress across the stack:
+Field-building needs shared targets. We are organizing PL Neuro's work around three measurable milestones that mark real progress around the loop:
 
 <div class="milestones">
   <div class="milestone"><span class="milestone-figure">10,000</span><div class="milestone-body"><strong>invasive high-bandwidth neural implants in humans</strong> — multiple devices with clinical approval, and a first invasive consumer use case.</div></div>
