@@ -4,15 +4,11 @@ date: 2026-08-30
 summary: "The digital foundations our fundamental rights now depend on — censorship-resistant communication, portable identity, verifiable public knowledge, and sovereign infrastructure for AI and agents — the four opportunity spaces we are backing and the inflection points we believe are within reach."
 authors:
   - will-scott
-cover_image: "/images/blog/preview-dhr-f12c6df6/hero.webp"
+cover_image: "/images/blog/securing-fundamental-rights-in-the-digital-realm/hero.webp"
 areas:
   - digital-human-rights
-# Live at its URL, but kept out of the carousel, insights/blog listings,
-# sitemap, RSS feed, and search index (and set to noindex). Flip to false
-# (or remove) to publish it publicly.
-unlisted: true
 ---
-<figure class="post-figure post-hero"><img src="/images/blog/preview-dhr-f12c6df6/hero.webp" alt="Securing fundamental rights in the digital realm." /></figure>
+<figure class="post-figure post-hero"><img src="/images/blog/securing-fundamental-rights-in-the-digital-realm/hero.webp" alt="Securing fundamental rights in the digital realm." /></figure>
 
 *Part of a series introducing the focus areas of PL R&D.*
 
@@ -20,7 +16,7 @@ Our information environment is being reshaped in real time by algorithms, networ
 
 The types of freedoms we mean are specific: freedom of speech (to seek, receive, and impart information regardless of frontiers); freedom of peaceful assembly and association; the right to privacy; recognition everywhere as a person before the law; and the freedom of thought and self-determination that underwrites them all. Far from new, each was hard-won through long debate.
 
-<figure><img src="/images/blog/preview-dhr-f12c6df6/web3-summit-2019.png" alt="Juan Benet presenting &lsquo;Some Web3 values&rsquo; at the Web3 Summit, 2019" style="width:100%;height:auto;border-radius:0.5rem" /><figcaption style="color:var(--color-gray-500)">Juan Benet, CEO of Protocol Labs, discussing the importance of embedding fundamental rights into software at the Web3 Summit in 2019.</figcaption></figure>
+<figure><img src="/images/blog/securing-fundamental-rights-in-the-digital-realm/web3-summit-2019.png" alt="Juan Benet presenting &lsquo;Some Web3 values&rsquo; at the Web3 Summit, 2019" style="width:100%;height:auto;border-radius:0.5rem" /><figcaption style="color:var(--color-gray-500)">Juan Benet, CEO of Protocol Labs, discussing the importance of embedding fundamental rights into software at the Web3 Summit in 2019.</figcaption></figure>
 
 At PL R&D, we know that the infrastructure we build today will determine which of these freedoms can be exercised tomorrow. To preserve and extend them, we invest in research, funding, and product development across four interconnected opportunity spaces. These are the frontiers where a technical breakthrough can become a durable protection for a specific right, rather than one more tool for eroding it.
 
