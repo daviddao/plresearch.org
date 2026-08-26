@@ -48,10 +48,11 @@ export type LiveMetric = { value: string; label: string }
 export type LiveOutputs = Record<string, LiveMetric[]>
 export type MarketSignals = Record<string, MarketSignal>
 
-const PLATFORM_LABEL: Record<'polymarket' | 'kalshi' | 'metaculus', string> = {
+const PLATFORM_LABEL: Record<'polymarket' | 'kalshi' | 'metaculus' | 'futarchy', string> = {
   polymarket: 'Polymarket',
   kalshi: 'Kalshi',
   metaculus: 'Metaculus',
+  futarchy: 'Bayes Market',
 }
 
 const FA_ICON: Record<FocusAreaKey, AreaIconType> = {
